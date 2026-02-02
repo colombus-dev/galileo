@@ -10,7 +10,7 @@ Décris clairement ce que fait cette PR et pourquoi elle est nécessaire.
 - [ ] Refactor
 - [ ] Tâche / maintenance
 - [ ] Documentation
-- [ ] Autre
+- [ ] Autre, précisez
 
 ---
 
