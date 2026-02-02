@@ -1,29 +1,25 @@
 name: "Tâche"
-description: "Template générique pour créer une tâche"
+description: "Créer une tâche de travail"
 title: "Tâche: "
 labels: []
 assignees: []
 
 body:
-  - type: markdown
+  - type: textarea
+    id: goal
     attributes:
-      value: "Merci de remplir les informations ci-dessous."
-
-  - type: input
-    id: summary
-    attributes:
-      label: "Résumé"
-      description: "Une phrase pour décrire le travail à faire."
-      placeholder: "Ex: Ajouter une CI GitHub Actions"
+      label: "Objectif"
+      description: "Qu’est-ce qu’on veut obtenir ?"
+      placeholder: "Décrire le résultat attendu."
     validations:
       required: true
 
   - type: textarea
-    id: details
+    id: context
     attributes:
-      label: "Détails"
-      description: "Contexte, contraintes, liens utiles, etc."
-      placeholder: "Décris le besoin et les contraintes."
+      label: "Contexte"
+      description: "Pourquoi / pour qui / liens utiles."
+      placeholder: "Contexte, contraintes, références."
     validations:
       required: false
 
@@ -31,7 +27,17 @@ body:
     id: checklist
     attributes:
       label: "Checklist"
-      description: "Éléments à réaliser."
+      description: "Découpage en étapes."
       options:
-        - label: "Lint"
-        - label: "Prettier"
+        - label: "À définir"
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "Critères d’acceptation"
+      description: "Comment on sait que c’est terminé ?"
+      placeholder: "- …\n- …"
+    validations:
+      required: false
