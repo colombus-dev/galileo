@@ -1,0 +1,40 @@
+name: ""
+about: ""
+title: ""
+labels: []
+assignees: []
+# type: ""
+
+body:
+  - type: markdown
+    attributes:
+      value: ""
+
+  - type: input
+    id: summary
+    attributes:
+      label: ""
+      description: ""
+      placeholder: ""
+      value: ""
+    validations:
+      required: false
+
+  - type: textarea
+    id: details
+    attributes:
+      label: ""
+      description: ""
+      placeholder: ""
+      value: ""
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ""
+      description: ""
+      options:
+        - label: ""
+        - label: ""
