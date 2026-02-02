@@ -23,13 +23,16 @@ body:
     validations:
       required: false
 
-  - type: checkboxes
+  - type: textarea
     id: checklist
     attributes:
       label: "Checklist"
-      description: "Découpage en étapes."
-      options:
-        - label: "À définir"
+      description: "Ajoute/modifie les étapes à cocher de la tâche."
+      value: |
+        - [ ] 
+        - [ ] 
+        - [ ] 
+      render: markdown
     validations:
       required: false
 
