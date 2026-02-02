@@ -19,16 +19,19 @@ body:
       required: true
 
   - type: textarea
-  attributes:
-    label: "Détails"
-    description: "Contexte, contraintes, liens utiles, etc."
-    placeholder: "Décris le besoin et les contraintes."
+    id: details
+    attributes:
+      label: "Détails"
+      description: "Contexte, contraintes, liens utiles, etc."
+      placeholder: "Décris le besoin et les contraintes."
+    validations:
+      required: false
 
   - type: checkboxes
     id: checklist
     attributes:
       label: "Checklist"
-      description: "Liste des éléments à réaliser."
+      description: "Éléments à réaliser."
       options:
         - label: "Lint"
         - label: "Prettier"
