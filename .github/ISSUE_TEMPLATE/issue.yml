@@ -1,31 +1,29 @@
-name: Template générique
-about: Template d’issue générique
-title: ""
+name: "Tâche"
+description: "Template générique pour créer une tâche"
+title: "Tâche: "
 labels: []
 assignees: []
-# type: ""
 
 body:
   - type: markdown
     attributes:
-      value: ""
+      value: "Merci de remplir les informations ci-dessous."
 
   - type: input
     id: summary
     attributes:
-      label: ""
-      description: ""
-      placeholder: ""
-      value: ""
+      label: "Résumé"
+      description: "Une phrase pour décrire le travail à faire."
+      placeholder: "Ex: Ajouter une CI GitHub Actions"
     validations:
-      required: false
+      required: true
 
   - type: textarea
     id: details
     attributes:
-      label: ""
-      description: ""
-      placeholder: ""
+      label: "Détails"
+      description: "Contexte, contraintes, liens utiles, etc."
+      placeholder: "Décris le besoin et les contraintes."
       value: ""
     validations:
       required: false
@@ -33,8 +31,8 @@ body:
   - type: checkboxes
     id: checklist
     attributes:
-      label: ""
-      description: ""
+      label: "Checklist"
+      description: "Liste des éléments à réaliser."
       options:
-        - label: ""
-        - label: ""
+        - label: "Lint"
+        - label: "Prettier"
