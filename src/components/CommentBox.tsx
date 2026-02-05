@@ -18,8 +18,8 @@ export const CommentBox: React.FC<CommentBoxProps> = ({
 }) => (
   <div className={`bg-[#f7fafd] rounded-b-2xl rounded-t-xl px-6 pt-4 pb-5 border-0 max-w-md ${className}`}>
     <div className="flex items-center gap-2 mb-3">
-      <MdOutlineChatBubbleOutline className="text-slate-500 text-xl" />
-      <span className="font-medium text-slate-700 text-base">{label}</span>
+      <MdOutlineChatBubbleOutline className="text-lg text-slate-600" />
+      <span className="text-slate-700 font-medium flex items-center gap-2">{label}</span>
     </div>
     <input
       type="text"
