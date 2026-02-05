@@ -5,6 +5,7 @@ import { NotebookImporter } from "../components/NotebookImporter";
 const meta: Meta<typeof NotebookImporter> = {
   title: "Galileo/NotebookImporter",
   component: NotebookImporter,
+  tags: ["autodocs"],
   parameters: { layout: "centered" },
   argTypes: {
     onConfirm: { action: "confirm" },
