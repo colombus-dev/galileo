@@ -3,7 +3,7 @@ import React from "react";
 import { Storyteller } from "../components/Storyteller";
 
 const meta: Meta<typeof Storyteller> = {
-  title: "Components/Storyteller",
+  title: "Storytelling/Storyteller",
   component: Storyteller,
   tags: ["autodocs"],
   args: {
