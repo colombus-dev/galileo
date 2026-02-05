@@ -167,10 +167,10 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   const onConfirmClick = useCallback(async () => {
     if (!selectedFile || !notebook) return;
 
-    // ✅ Pour l’instant: confirmation côté front (callback)
+    // Pour l’instant: confirmation côté front (callback)
     onConfirm?.({ file: selectedFile, notebook });
 
-    // 🚀 Plus tard: upload vers le backend (exemple)
+    // Plus tard: upload vers le backend (exemple)
     // const form = new FormData();
     // form.append("file", selectedFile);
     // const res = await fetch("/api/notebooks/upload", { method: "POST", body: form });
