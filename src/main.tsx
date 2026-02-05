@@ -3,13 +3,16 @@ import { createRoot } from "react-dom/client";
 import "@/index.css";
 import { BrowserRouter, Route, Routes } from "react-router";
 import App from "@/App.tsx";
+import HomePage from "@/pages/HomePage";
 
 // biome-ignore lint/style/noNonNullAssertion: TODO
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<BrowserRouter>
 			<Routes>
-				<Route index element={<App />} />
+				<Route path="/" element={<App />}>
+					<Route index element={<HomePage />} />
+				</Route>
 			</Routes>
 		</BrowserRouter>
 	</StrictMode>,

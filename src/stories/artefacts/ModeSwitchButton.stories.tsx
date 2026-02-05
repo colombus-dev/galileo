@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { ModeSwitchButton, ModeType } from "../components/ModeSwitchButton";
+import { ModeSwitchButton, ModeType } from "../../components/ModeSwitchButton";
 
 const meta: Meta<typeof ModeSwitchButton> = {
-  title: "Galileo/ModeSwitchButton",
+  title: "Artefacts/ModeSwitchButton",
   component: ModeSwitchButton,
 };
 

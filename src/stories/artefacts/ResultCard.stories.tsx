@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MdShowChart, MdBarChart } from "react-icons/md";
-import { ResultCard } from "../components/ResultCard";
+import { ResultCard } from "../../components/ResultCard";
 
 const meta: Meta<typeof ResultCard> = {
-  title: "Galileo/ResultCard",
+  title: "Artefacts/ResultCard",
   component: ResultCard,
 };
 

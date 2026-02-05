@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { NotebookSelectorDropdown, NotebookOption } from "../components/NotebookSelectorDropdown";
+import { NotebookSelectorDropdown, NotebookOption } from "../../components/NotebookSelectorDropdown";
 
 const meta: Meta<typeof NotebookSelectorDropdown> = {
-  title: "Galileo/NotebookSelectorDropdown",
+  title: "Artefacts/NotebookSelectorDropdown",
   component: NotebookSelectorDropdown,
 };
 

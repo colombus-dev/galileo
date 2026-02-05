@@ -1,9 +1,9 @@
+import { ArtefactFilterKey, ArtefactFilterMenu } from "@/components/ArtefactFilterMenu";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { ArtefactFilterMenu, ArtefactFilterKey } from "../components/ArtefactFilterMenu";
 
 const meta: Meta<typeof ArtefactFilterMenu> = {
-  title: "Galileo/ArtefactFilterMenu",
+  title: "Artefacts/ArtefactFilterMenu",
   component: ArtefactFilterMenu,
 };
 

@@ -1,9 +1,9 @@
+import { CommentBox } from "@/components/CommentBox";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { CommentBox } from "../components/CommentBox";
 
 const meta: Meta<typeof CommentBox> = {
-  title: "Galileo/CommentBox",
+  title: "Artefacts/CommentBox",
   component: CommentBox,
 };
 

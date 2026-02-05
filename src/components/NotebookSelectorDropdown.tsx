@@ -21,7 +21,7 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
   selected,
   onChange,
   multiple = false,
-  label = "Choisir un étudiant",
+  label = "Choisir un notebook",
   compareLabel = "Sélectionnez les notebooks à comparer",
 }) => {
   const [open, setOpen] = useState(false);
