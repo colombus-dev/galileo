@@ -37,7 +37,7 @@ export interface NotebookData {
 export const mockNotebooks: NotebookData[] = [
   {
     id: 'notebook-1',
-    student: 'Marie Dupont',
+    student: 'Laura Dupont',
     title: 'Classification de fleurs Iris',
     artifacts: [
       {

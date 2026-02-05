@@ -1,45 +1,93 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { MdMenuBook, MdExpandMore } from "react-icons/md";
+import { listNotebookOptions, type NotebookOption } from "@/services/notebook";
 
-export interface NotebookOption {
-  id: string;
-  user: string;
-  project: string;
-}
+export type { NotebookOption };
 
 export interface NotebookSelectorDropdownProps {
-  options: NotebookOption[];
-  selected: string[];
-  onChange: (selected: string[]) => void;
+  options?: NotebookOption[];
+  selected?: string[];
+  defaultSelected?: string[];
+  onChange?: (selected: string[]) => void;
   multiple?: boolean;
   label?: string;
   compareLabel?: string;
 }
 
 export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> = ({
-  options,
-  selected,
+  options: optionsOverride,
+  selected: selectedProp,
+  defaultSelected,
   onChange,
   multiple = false,
   label = "Choisir un notebook",
   compareLabel = "Sélectionnez les notebooks à comparer",
 }) => {
   const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState<NotebookOption[]>(optionsOverride ?? []);
+  const [isLoading, setIsLoading] = useState(!optionsOverride);
+  const [error, setError] = useState<string | null>(null);
+
+  const isControlled = selectedProp !== undefined;
+  const [internalSelected, setInternalSelected] = useState<string[]>(
+    defaultSelected ?? selectedProp ?? [],
+  );
+
+  const selected = isControlled ? selectedProp : internalSelected;
+  const setSelected = (next: string[]) => {
+    if (!isControlled) {
+      setInternalSelected(next);
+    }
+    onChange?.(next);
+  };
+
+  useEffect(() => {
+    if (optionsOverride) {
+      setOptions(optionsOverride);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const loaded = await listNotebookOptions();
+        if (cancelled) return;
+        setOptions(loaded);
+      } catch (e) {
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : "Erreur lors du chargement des notebooks");
+      } finally {
+        if (cancelled) return;
+        setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [optionsOverride]);
 
   const handleSelect = (id: string) => {
     if (multiple) {
       if (selected.includes(id)) {
-        onChange(selected.filter((s) => s !== id));
+        setSelected(selected.filter((s) => s !== id));
       } else {
-        onChange([...selected, id]);
+        setSelected([...selected, id]);
       }
     } else {
-      onChange([id]);
+      setSelected([id]);
       setOpen(false);
     }
   };
 
-  const selectedOptions = options.filter((o) => selected.includes(o.id));
+  const selectedOptions = useMemo(
+    () => options.filter((o) => selected.includes(o.id)),
+    [options, selected],
+  );
   const displayLabel = multiple
     ? `${selected.length} notebook${selected.length > 1 ? "s" : ""} sélectionné${selected.length > 1 ? "s" : ""}`
     : selectedOptions[0]?.user || label;
@@ -63,7 +111,14 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
             {multiple ? compareLabel : label}
           </div>
           <ul className="flex flex-col gap-1 max-h-80 overflow-y-auto">
-            {options.map((o) => {
+            {isLoading ? (
+              <li className="px-7 py-3 text-slate-500">Chargement…</li>
+            ) : error ? (
+              <li className="px-7 py-3 text-red-700">{error}</li>
+            ) : options.length === 0 ? (
+              <li className="px-7 py-3 text-slate-500">Aucun notebook disponible</li>
+            ) : (
+              options.map((o) => {
               const isSelected = selected.includes(o.id);
               return (
                 <li key={o.id}>
@@ -93,7 +148,8 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
                   </button>
                 </li>
               );
-            })}
+              })
+            )}
           </ul>
         </div>
       )}

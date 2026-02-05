@@ -5,6 +5,10 @@ import { useState } from "react";
 const meta: Meta<typeof ArtefactFilterMenu> = {
   title: "Artefacts/ArtefactFilterMenu",
   component: ArtefactFilterMenu,
+  tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
+  },
 };
 
 export default meta;

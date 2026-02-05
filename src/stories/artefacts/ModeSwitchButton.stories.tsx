@@ -5,6 +5,10 @@ import { ModeSwitchButton, ModeType } from "../../components/ModeSwitchButton";
 const meta: Meta<typeof ModeSwitchButton> = {
   title: "Artefacts/ModeSwitchButton",
   component: ModeSwitchButton,
+  tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
+  },
 };
 
 export default meta;

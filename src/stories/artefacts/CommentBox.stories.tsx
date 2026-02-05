@@ -5,6 +5,10 @@ import { useState } from "react";
 const meta: Meta<typeof CommentBox> = {
   title: "Artefacts/CommentBox",
   component: CommentBox,
+  tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
+  },
 };
 
 export default meta;

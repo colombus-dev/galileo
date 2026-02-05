@@ -6,6 +6,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 const meta: Meta<typeof ArtefactItem> = {
   title: "Artefacts/ArtefactItem",
   component: ArtefactItem,
+  tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
+  },
 };
 
 export default meta;

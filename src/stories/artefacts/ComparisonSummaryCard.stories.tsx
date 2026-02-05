@@ -4,6 +4,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 const meta: Meta<typeof ComparisonSummaryCard> = {
   title: "Artefacts/ComparisonSummaryCard",
   component: ComparisonSummaryCard,
+  tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
+  },
 };
 
 export default meta;

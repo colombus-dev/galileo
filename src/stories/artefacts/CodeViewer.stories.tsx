@@ -4,6 +4,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 const meta: Meta<typeof CodeViewer> = {
   title: "Artefacts/CodeViewer",
   component: CodeViewer,
+  tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
+  },
 };
 
 export default meta;
