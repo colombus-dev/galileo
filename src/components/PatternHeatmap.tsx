@@ -1,24 +1,31 @@
 import { useEffect, useRef } from 'react';
 import Plotly from 'plotly.js-dist-min';
-import { type PatternStat } from '../types';
+import { type PatternType, type Counts } from '../PatternType';
 
 interface PatternHeatmapProps {
     title: string;
-    data: PatternStat[];
+    data: PatternType[];
     fullWidth?: boolean;
     className?: string;
 }
 
-export const PatternHeatmap = ({ 
-    title, 
-    data, 
+const PatternHeatmap = ({
+    title,
+    data,
     fullWidth = true,
     className = ''
 }: PatternHeatmapProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
 
-   
-    const SCORE_KEYS = ['0-0.2', '0.2-0.4', '0.4-0.6', '0.6-0.8', '0.8-1.0'];
+    const DATA_KEYS: (keyof Counts)[] = [
+        '[0-0.2[',
+        '[0.2-0.4[',
+        '[0.4-0.6[',
+        '[0.6-0.8[',
+        '[0.8-1.0]'
+    ];
+
+    const DISPLAY_LABELS = ['0-0.2', '0.2-0.4', '0.4-0.6', '0.6-0.8', '0.8-1.0'];
 
     useEffect(() => {
         if (!chartRef.current) return;
@@ -29,45 +36,62 @@ export const PatternHeatmap = ({
         }
 
         const sortedData = [...data].sort((a, b) => {
-            const sumA = a.totalCount ?? Object.values(a.counts).reduce((acc, v) => acc + v, 0);
-            const sumB = b.totalCount ?? Object.values(b.counts).reduce((acc, v) => acc + v, 0);
-            return sumA - sumB; 
+            const sumA = Object.values(a.counts).reduce((acc, v) => acc + (v || 0), 0);
+            const sumB = Object.values(b.counts).reduce((acc, v) => acc + (v || 0), 0);
+            return sumA - sumB;
         });
 
         const zValues = sortedData.map(pattern => {
-            return SCORE_KEYS.map(key => pattern.counts[key] || 0);
+            return DATA_KEYS.map(key => pattern.counts[key] || 0);
         });
 
         const trace: Plotly.Data = {
-            z: zValues,           
-            x: SCORE_KEYS,        
+            z: zValues,
+            x: DISPLAY_LABELS,
             y: sortedData.map(d => d.id),
             type: 'heatmap',
             colorscale: [
                 [0.0, '#ef4444'], 
-                [0.5, '#f97316'], 
-                [1.0, '#22c55e']  
+                [0.25, '#f97316'],
+                [0.5, '#facc15'], 
+                [0.75, '#84cc16'],
+                [1.0, '#22c55e'] 
             ],
+
             showscale: true,
             xgap: 1,
             ygap: 1,
-            hovertemplate: 
+            hovertemplate:
                 '<b>%{y}</b><br>' +
-                'Score: %{x}<br>' +
+                'Intervalle: %{x}<br>' +
                 'Fréquence: %{z}<extra></extra>'
         };
 
         const layout: Plotly.Layout = {
             autosize: true,
-            margin: { l: 150, r: 20, t: 30, b: 50 },
+            margin: { l: 150, r: 20, t: 40, b: 50 },
             paper_bgcolor: 'transparent',
             plot_bgcolor: 'transparent',
             font: { family: 'Inter, sans-serif' },
-            xaxis: { title: 'Score du pattern', fixedrange: true },
-            yaxis: { automargin: true, fixedrange: true }
+            xaxis: {
+                title: 'Score du pattern',
+                fixedrange: true,
+                tickmode: 'array',
+                tickvals: DISPLAY_LABELS
+            },
+            yaxis: {
+                automargin: true,
+                fixedrange: true,
+                title: 'ID Pattern'
+            }
         };
 
-        Plotly.newPlot(chartRef.current, [trace], layout, { responsive: true, displayModeBar: false });
+        const config: Plotly.Config = {
+            responsive: true,
+            displayModeBar: false
+        };
+
+        Plotly.newPlot(chartRef.current, [trace], layout, config);
 
         return () => {
             if (chartRef.current) Plotly.purge(chartRef.current);
@@ -75,11 +99,11 @@ export const PatternHeatmap = ({
     }, [data]);
 
     return (
-        <div 
-            className={`card ${className}`} 
-            style={{ 
-                padding: '20px', 
-                borderRadius: '8px', 
+        <div
+            className={`card ${className}`}
+            style={{
+                padding: '20px',
+                borderRadius: '8px',
                 boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                 width: fullWidth ? '100%' : '50%',
                 backgroundColor: 'white'
@@ -90,3 +114,5 @@ export const PatternHeatmap = ({
         </div>
     );
 };
+
+export default PatternHeatmap;
