@@ -4,11 +4,11 @@ import {
   ArtefactFilterMenu,
   type ArtefactFilterKey,
 } from "@/components/ArtefactFilterMenu";
-import { SearchBar } from "../components/SearchBar";
 import { NotebookSelectorDropdown } from "@/components/NotebookSelectorDropdown";
 import type { NotebookData } from "@/data/mockData";
 import { getNotebookById } from "@/services/notebook";
 import { NavBar } from "@/components/NavBar";
+import SearchBar from "@/components/SearchBar";
 
 function matchesFilter(type: string, filter: ArtefactFilterKey) {
   if (filter === "all") return true;
@@ -80,11 +80,11 @@ export default function ArtefactsView() {
   }, [selectedId]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 py-10">
-      <div className="grid grid-rows-6 space-y-4">
+    <div className="flex flex-col h-screen">
+      <div className="grid grid-rows-2">
         <NavBar
           logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
-          title="Galileo - Patterns"
+          title="Galileo - Artefacts"
         >
           <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
             <a href="/storytelling">Storytelling</a>
@@ -97,63 +97,61 @@ export default function ArtefactsView() {
           </button>
         </NavBar>
       </div>
-      <div className="mt-8">
+      <div className="flex flex-col gap-6 p-6 mb-6">
         <NotebookSelectorDropdown
           multiple={false}
           label="Choisir un notebook"
           onChange={setSelectedIds}
         />
-      </div>
 
-      <div className="mt-8">
-        {!selectedId ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-700">
-            Sélectionne un notebook pour afficher ses artefacts.
-          </div>
-        ) : isLoading ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-700">
-            Chargement…
-          </div>
-        ) : error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-800">
-            {error}
-          </div>
-        ) : notebook ? (
-          <div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <div className="flex items-start justify-between gap-6">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-900">
-                    Artefacts
-                  </h2>
-                  <div className="text-sm text-slate-600 mt-1">
-                    {notebook.student} - {notebook.title}
+        <div className="mt-8">
+          {!selectedId ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-700">
+              Sélectionne un notebook pour afficher ses artefacts.
+            </div>
+          ) : isLoading ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-700">
+              Chargement…
+            </div>
+          ) : error ? (
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-800">
+              {error}
+            </div>
+          ) : notebook ? (
+            <div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6">
+                <div className="flex items-start justify-between gap-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-slate-900">
+                      Artefacts
+                    </h2>
+                    <div className="text-sm text-slate-600 mt-1">
+                      {notebook.student} - {notebook.title}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <SearchBar
+                      onSearch={setQuery}
+                      placeholder="Rechercher des artefacts..."
+                    />
+                    <ArtefactFilterMenu
+                      value={filterKey}
+                      onChange={setFilterKey}
+                    />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <SearchBar
-                    value={query}
-                    onChange={setQuery}
-                    placeholder="Rechercher un artefact..."
-                    minWidth={260}
-                  />
-                  <ArtefactFilterMenu
-                    value={filterKey}
-                    onChange={setFilterKey}
+                <div className="mt-6">
+                  <ArtefactPipeline
+                    artifacts={filteredArtifacts}
+                    cells={notebook.cells}
                   />
                 </div>
               </div>
-
-              <div className="mt-6">
-                <ArtefactPipeline
-                  artifacts={filteredArtifacts}
-                  cells={notebook.cells}
-                />
-              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     </div>
   );

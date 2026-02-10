@@ -1,8 +1,5 @@
 export interface PatternStat {
-    id: string;          
-    counts: number[];   
-    totalCount: number;
-    totalScore: number;
+    id: string;
+    counts: Record<string, number>; 
+    totalCount?: number;
 }
-
-export type ChartVariant = 'bar-compare' | 'heatmap' | 'bubble' | 'stack-bar';
