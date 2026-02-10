@@ -19,3 +19,8 @@ export async function listNotebookOptions(): Promise<NotebookOption[]> {
 		project: n.title
 	}));
 }
+
+export async function getNotebookById(id: string): Promise<NotebookData | null> {
+	const notebooks = await listNotebooks();
+	return notebooks.find((n) => n.id === id) ?? null;
+}
