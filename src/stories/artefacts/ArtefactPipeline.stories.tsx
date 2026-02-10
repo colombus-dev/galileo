@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 
 import { ArtefactPipeline } from "@/components/ArtefactPipeline";
 import { ArtefactFilterMenu, type ArtefactFilterKey } from "@/components/ArtefactFilterMenu";
-import { SearchBar } from "@/components/SearchBar";
+import SearchBar from "@/components/SearchBar";
 import { mockNotebooks } from "@/data/mockData";
 
 const meta: Meta<typeof ArtefactPipeline> = {
@@ -58,12 +58,7 @@ export const Default: Story = {
 							</div>
 
 							<div className="flex items-center gap-3">
-								<SearchBar
-									value={query}
-									onChange={setQuery}
-									placeholder="Rechercher un artefact..."
-									minWidth={260}
-								/>
+								<SearchBar onSearch={setQuery} placeholder="Rechercher un artefact..." />
 								<ArtefactFilterMenu value={filterKey} onChange={setFilterKey} />
 							</div>
 						</div>

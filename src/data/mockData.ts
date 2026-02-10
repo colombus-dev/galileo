@@ -4,9 +4,13 @@ export interface Artifact {
   name: string;
   cellIndex: number;
   description: string;
-  // URLs d'images/SVG représentant la visualisation (ou la carte de métrique)
-  // Ex: ['/mock/confusion-matrix.svg']
+  // Images de prévisualisation.
+  // - soit des data URLs: "data:image/png;base64,..."
+  // - soit du base64 brut (payload), qui sera converti en data URL côté UI
+  // (les URLs/paths restent acceptés pour compat rétro/Storybook)
   previewUrls?: string[];
+  previewMimeType?: string;
+  previewMimeTypes?: string[];
   metadata?: {
     accuracy?: number;
     samples?: number;

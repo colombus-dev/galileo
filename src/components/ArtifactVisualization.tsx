@@ -1,5 +1,6 @@
 import { Artifact } from '../data/mockData';
 import { Database, Brain } from 'lucide-react';
+import { resolveImageSrc } from '@/utils/imageSrc';
 
 interface ArtifactVisualizationProps {
   artifact: Artifact;
@@ -48,18 +49,23 @@ function PreviewVisualization({
 }) {
   const urls = artifact.previewUrls ?? [];
   const displayUrls = (compact ? urls.slice(0, 1) : urls.slice(0, 4)).filter(Boolean);
+  const displaySrcs = displayUrls
+    .map((value, index) =>
+      resolveImageSrc(value, artifact.previewMimeTypes?.[index] ?? artifact.previewMimeType)
+    )
+    .filter(Boolean) as string[];
 
   const outerPadding = compact ? 'p-2' : 'p-4';
   const minHeight = compact ? 'min-h-[140px]' : 'min-h-[220px]';
 
-  if (displayUrls.length <= 1) {
-    const url = displayUrls[0];
+  if (displaySrcs.length <= 1) {
+    const src = displaySrcs[0];
     return (
       <div className={`${outerPadding} ${minHeight} h-full`}> 
         <div className="h-full w-full rounded-lg border border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center">
-          {url ? (
+          {src ? (
             <img
-              src={url}
+              src={src}
               alt={`Prévisualisation: ${artifact.name}`}
               className="w-full h-full object-contain"
               loading="lazy"
@@ -75,14 +81,14 @@ function PreviewVisualization({
   return (
     <div className={`${outerPadding} ${minHeight} h-full`}>
       <div className="grid grid-cols-2 gap-2 h-full">
-        {displayUrls.map((url, index) => (
+        {displaySrcs.map((src, index) => (
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: stable previews; URLs are not guaranteed unique
-            key={`${url}-${index}`}
+            key={`${src}-${index}`}
             className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center"
           >
             <img
-              src={url}
+              src={src}
               alt={`Prévisualisation ${index + 1}: ${artifact.name}`}
               className="w-full h-full object-contain"
               loading="lazy"

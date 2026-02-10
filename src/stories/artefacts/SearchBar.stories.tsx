@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 
-import { SearchBar } from "@/components/SearchBar";
+import SearchBar from "@/components/SearchBar";
 
 const meta: Meta<typeof SearchBar> = {
 	title: "Artefacts/SearchBar",
@@ -21,7 +21,8 @@ export const Default: Story = {
 		const [value, setValue] = useState("");
 		return (
 			<div className="p-8 bg-slate-50 rounded-2xl">
-				<SearchBar value={value} onChange={setValue} placeholder="Rechercher un artefact..." minWidth={320} />
+				<SearchBar onSearch={setValue} placeholder="Rechercher un artefact..." />
+				<div className="mt-3 text-xs text-slate-600">Valeur: {value}</div>
 			</div>
 		);
 	},
