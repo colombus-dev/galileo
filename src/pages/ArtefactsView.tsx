@@ -11,6 +11,7 @@ import { NavBar } from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import { NotebookContextProblem } from "@/components/artefacts/NotebookContextProblem";
 import { NotebookPerformanceEvaluation } from "@/components/artefacts/NotebookPerformanceEvaluation";
+import { NotebookPedagogicalValidation } from "@/components/artefacts/NotebookPedagogicalValidation";
 
 function matchesFilter(type: string, filter: ArtefactFilterKey) {
   if (filter === "all") return true;
@@ -127,7 +128,7 @@ export default function ArtefactsView() {
               <div className="mb-6">
                 <NotebookPerformanceEvaluation notebook={notebook} />
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 mb-6">
                 <div className="flex items-start justify-between gap-6">
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900">
@@ -156,6 +157,9 @@ export default function ArtefactsView() {
                     cells={notebook.cells}
                   />
                 </div>
+              </div>
+              <div className="mb-6">
+                <NotebookPedagogicalValidation notebook={notebook} />
               </div>
             </div>
           ) : null}

@@ -73,6 +73,28 @@ export interface NotebookContext {
 	};
 }
 
+export interface NotebookPedagogicalValidationCheckpoint {
+  /** Identifiant stable (sert pour le state des cases à cocher) */
+  id: string;
+  /** Catégorie (5 grandes sections) */
+	category: "data" | "preprocessing" | "split" | "modeling" | "evaluation";
+  /** Libellé court */
+  title: string;
+  /** Explication lisible */
+  description: string;
+  /** Résultat issu de l'analyse du notebook (ou de son import) */
+  status: "success" | "warning" | "error";
+  /** Détail optionnel pour aider l'enseignant */
+  detail?: string;
+}
+
+export interface NotebookPedagogicalValidation {
+  checkpoints: NotebookPedagogicalValidationCheckpoint[];
+  /** État initial (ex: validation déjà commencée) */
+  initialCheckedCheckpointIds?: string[];
+  initialComment?: string;
+}
+
 export interface NotebookData {
   id: string;
   student: string;
@@ -81,6 +103,8 @@ export interface NotebookData {
   cells: CodeCell[];
   /** Contexte fourni explicitement par le notebook (ou son import) */
   context?: NotebookContext;
+	/** Validation pédagogique fournie par le notebook (ou son import) */
+	pedagogicalValidation?: NotebookPedagogicalValidation;
   issues?: string[];
 }
 
@@ -89,6 +113,36 @@ export const mockNotebooks: NotebookData[] = [
     id: 'notebook-1',
     student: 'Laura Dupont',
     title: 'Classification de fleurs Iris',
+    pedagogicalValidation: {
+      checkpoints: [
+        {
+          id: 'cp-standardscaler',
+				category: 'preprocessing',
+          title: 'Normalisation StandardScaler',
+          description:
+            'Données normalisées avec succès. Moyenne ≈ 0, écart-type ≈ 1 pour toutes les features.',
+          status: 'success',
+        },
+        {
+          id: 'cp-stratified-split',
+				category: 'split',
+          title: 'Vérification split stratifié',
+          description:
+            'Distribution des classes identique entre train (40/40/40) et test (10/10/10).',
+          status: 'success',
+        },
+        {
+          id: 'cp-post-train-eval',
+				category: 'evaluation',
+          title: 'Validation post-entraînement',
+          description:
+            "Accuracy sur train: 100%, sur test: 96% → pas de sur-ajustement détecté.",
+          status: 'success',
+        },
+      ],
+      initialCheckedCheckpointIds: [],
+      initialComment: '',
+    },
     context: {
       problem: {
         taskTypeLabel: 'Classification multi-classes',
@@ -304,6 +358,39 @@ plt.show()`,
     id: 'notebook-2',
     student: 'Lucas Martin',
     title: 'Classification de fleurs Iris',
+    pedagogicalValidation: {
+      checkpoints: [
+        {
+          id: 'cp-scaler',
+				category: 'preprocessing',
+          title: 'Normalisation des features',
+          description:
+            "Vérifier que les features sont normalisées (si nécessaire) et que la normalisation est fit sur train puis appliquée à test.",
+          status: 'warning',
+          detail: 'Le notebook indique un split sans normalisation (à justifier selon le modèle).',
+        },
+        {
+          id: 'cp-stratified-split',
+				category: 'split',
+          title: 'Split train/test défini',
+          description:
+            "Le notebook doit définir un split train/test clair (idéalement stratifié en classification).",
+          status: 'warning',
+          detail: 'Le contexte indique un split manquant (trainTestSplitLabel = —).',
+        },
+        {
+          id: 'cp-eval-on-test',
+				category: 'evaluation',
+          title: 'Évaluation sur test set',
+          description:
+            "La métrique de performance doit être calculée sur le test set (ou via validation), pas sur les données d'entraînement.",
+          status: 'error',
+          detail: "Le contexte indique une évaluation sur Train : risque de score surestimé.",
+        },
+      ],
+      initialCheckedCheckpointIds: [],
+      initialComment: '',
+    },
     context: {
       problem: {
         taskTypeLabel: 'Classification multi-classes',
