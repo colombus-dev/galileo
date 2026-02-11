@@ -16,10 +16,17 @@ export const mockDataPattern: PatternType[] = [
         TypePattern: 'Loading'
     },
     {
-        id: 'Normalisation',
+        id: 'Normalisation DB',
         counts: { '[0-0.2[': 150, '[0.2-0.4[': 80, '[0.4-0.6[': 20, '[0.6-0.8[': 5, '[0.8-1.0]': 0 },
         notebooks: { 'debug_session.ipynb': 0.6, 'old_version.ipynb': 0.4 },
         TypeAlgo: 'DBSCAN',
+        TypePattern: 'Normalisation'
+    },
+    {
+        id: 'Normalisation Forest',
+        counts: { '[0-0.2[': 100, '[0.2-0.4[': 90, '[0.4-0.6[': 50, '[0.6-0.8[': 12, '[0.8-1.0]': 100 },
+        notebooks: { 'debug_session.ipynb': 0.6, 'old_version.ipynb': 0.4 },
+        TypeAlgo: 'Isolation Forest',
         TypePattern: 'Normalisation'
     }
 ];

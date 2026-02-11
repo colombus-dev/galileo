@@ -20,10 +20,21 @@ export const PatternSummary: React.FC<PatternSummaryProps> = ({ pattern, classNa
         weightedScoreSum += midpoint * count;
     });
 
-    const averageScore = totalFrequency > 0 
-        ? (weightedScoreSum / totalFrequency).toFixed(2) 
-        : "N/A";
+    const rawScore = totalFrequency > 0 ? (weightedScoreSum / totalFrequency) : 0;
+    
+    const displayScore = totalFrequency > 0 ? rawScore.toFixed(2) : "N/A";
 
+    const getScoreStyles = (score: number) => {
+        if (totalFrequency === 0) return 'bg-gray-100 text-gray-400 border-gray-200';
+        
+        if (score < 0.3) {
+            return 'bg-red-100 text-red-700 border-red-200'; 
+        } else if (score < 0.7) {
+            return 'bg-orange-100 text-orange-700 border-orange-200';
+        } else {
+            return 'bg-green-100 text-green-700 border-green-200';
+        }
+    };
 
     return (
         <div className={`flex flex-row items-center justify-between w-full p-3 bg-white border border-gray-200 rounded-lg shadow-sm ${className}`}>
@@ -39,7 +50,7 @@ export const PatternSummary: React.FC<PatternSummaryProps> = ({ pattern, classNa
             </div>
 
             <div className="flex items-center gap-6 text-sm">
-                
+
                 <div className="flex items-center gap-2">
                     <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">Freq.</span>
                     <span className="font-mono font-bold text-gray-900">
@@ -49,10 +60,10 @@ export const PatternSummary: React.FC<PatternSummaryProps> = ({ pattern, classNa
 
                 <div className="h-4 w-px bg-gray-200"></div>
 
-                <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">Score moy.</span>
-                    <span className="font-mono font-bold text-gray-900">
-                        {averageScore}
+                <div className={`flex items-center gap-2 px-2 py-1 rounded border ${getScoreStyles(rawScore)} transition-colors`}>
+                    <span className="text-xs uppercase font-bold tracking-wider opacity-80">Score moy.</span>
+                    <span className="font-mono font-bold">
+                        {displayScore}
                     </span>
                 </div>
 
