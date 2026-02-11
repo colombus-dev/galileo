@@ -11,6 +11,7 @@ interface SelectProps {
   label?: string;
   placeholder?: string;
   className?: string;
+  defaultValue?: Option;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -18,10 +19,12 @@ const Select: React.FC<SelectProps> = ({
   onSelect,
   label,
   placeholder = "Choisir une option",
-  className = ""
+  className = "",
+  defaultValue 
 }) => {
+
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<Option | null>(null);
+  const [selected, setSelected] = useState<Option | null>(defaultValue || null);
 
   const handleSelect = (option: Option) => {
     setSelected(option);
@@ -33,7 +36,6 @@ const Select: React.FC<SelectProps> = ({
     <div className={`relative w-full max-w-xs ${className}`}>
       {label && <label className="block mb-2 text-sm font-medium text-gray-700">{label}</label>}
       
-      {/* Bouton principal */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -52,7 +54,6 @@ const Select: React.FC<SelectProps> = ({
         </svg>
       </button>
 
-      {/* Menu déroulant */}
       {isOpen && (
         <ul className="absolute z-10 w-full mt-1 overflow-auto bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 focus:outline-none">
           {options.map((option) => (
