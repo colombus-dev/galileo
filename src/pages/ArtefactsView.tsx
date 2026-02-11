@@ -9,7 +9,7 @@ import type { NotebookData } from "@/data/mockData";
 import { getNotebookById } from "@/services/notebook";
 import { NavBar } from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
-import { NotebookContextProblem } from "@/components/NotebookContextProblem";
+import { NotebookContextProblem } from "@/components/artefacts/NotebookContextProblem";
 
 function matchesFilter(type: string, filter: ArtefactFilterKey) {
   if (filter === "all") return true;
