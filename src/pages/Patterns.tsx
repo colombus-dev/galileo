@@ -1,69 +1,75 @@
+import { useState } from 'react';
 import { NavBar } from "@/components/NavBar";
 import Select, { Option } from '../components/Select';
-import SearchBar from "@/components/SearchBar";
+import SearchBar, { SearchSuggestion } from "@/components/SearchBar";
 import PatternHeatmap from "@/components/PatternHeatmap";
 import { type PatternType } from "@/PatternType";
 
 const mockOptionsType: Option[] = [
-    { label: 'Préparation', value: 'preparation' },
-    { label: 'Exploration', value: 'explore' },
-    { label: 'Modélisation', value: 'mondel' },
-    { label: 'Normalisation', value: 'norm' },
+    { label: 'Anomaly', value: 'anomaly' },
+    { label: 'Nominal', value: 'nominal' },
+    { label: 'Noise', value: 'noise' },
 ];
 
 const mockOptionsAlgos: Option[] = [
-    { label: 'K-means', value: 'kmeans' },
+    { label: 'Isolation Forest', value: 'isoforest' },
+    { label: 'Random Forest', value: 'ranforest' },
     { label: 'DBSCAN', value: 'dbscan' },
-    { label: 'PCA', value: 'pca' },
-    { label: 'Random Forest', value: 'rf' },
 ];
 
 const mockData: PatternType[] = [
     {
-        id: 'Pattern Rare',
+        id: 'Gaussian Distribution',
         counts: { 
-            '[0-0.2[': 1, 
-            '[0.2-0.4[': 0, 
-            '[0.4-0.6[': 0, 
-            '[0.6-0.8[': 2, 
-            '[0.8-1.0]': 1 
+            '[0-0.2[': 1, '[0.2-0.4[': 0, '[0.4-0.6[': 0, '[0.6-0.8[': 2, '[0.8-1.0]': 1 
         },
         notebooks: { 'analysis_v1.ipynb': 0.6, 'experiment_A.ipynb': 0.4 },
         TypeAlgo: 'Isolation Forest',
-        TypePattern: 'Anomaly'
+        TypePattern: 'Distribution'
     },
     {
-        id: 'Pattern Très Fréquent (Bon)',
+        id: 'Annealing and binary',
         counts: { 
-            '[0-0.2[': 0, 
-            '[0.2-0.4[': 5, 
-            '[0.4-0.6[': 20, 
-            '[0.6-0.8[': 80, 
-            '[0.8-1.0]': 160 
+            '[0-0.2[': 0, '[0.2-0.4[': 5, '[0.4-0.6[': 20, '[0.6-0.8[': 80, '[0.8-1.0]': 160 
         },
         notebooks: { 'production_model.ipynb': 0.9 },
         TypeAlgo: 'Random Forest',
-        TypePattern: 'Nominal'
+        TypePattern: 'Loading'
     },
     {
-        id: 'Pattern Critique (Mauvais)',
+        id: 'Normalisation',
         counts: { 
-            '[0-0.2[': 150, 
-            '[0.2-0.4[': 80, 
-            '[0.4-0.6[': 20, 
-            '[0.6-0.8[': 5, 
-            '[0.8-1.0]': 0 
+            '[0-0.2[': 150, '[0.2-0.4[': 80, '[0.4-0.6[': 20, '[0.6-0.8[': 5, '[0.8-1.0]': 0 
         },
         notebooks: { 'debug_session.ipynb': 0.6, 'old_version.ipynb': 0.4 },
         TypeAlgo: 'DBSCAN',
-        TypePattern: 'Noise'
+        TypePattern: 'Normalisation'
     }
 ];
 
 export default function Patterns() {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredData = mockData.filter((pattern) => {
+        const query = searchQuery.toLowerCase();
+        if (!query) return true;
+        return (
+            pattern.id.toLowerCase().includes(query) ||
+            pattern.TypePattern.toLowerCase().includes(query) ||
+            pattern.TypeAlgo.toLowerCase().includes(query)
+        );
+    });
+
+    const searchSuggestions: SearchSuggestion[] = searchQuery 
+        ? filteredData.map(pattern => ({
+            label: pattern.id,
+            subLabel: `${pattern.TypePattern} • ${pattern.TypeAlgo}`,
+            value: pattern.id
+          }))
+        : [];
+
     return (
         <main className="flex flex-col h-screen bg-gray-50 overflow-hidden">
-            {/* 1. BARRE DE NAVIGATION */}
             <NavBar
                 logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
                 title="Galileo - Patterns"
@@ -79,10 +85,8 @@ export default function Patterns() {
                 </button>
             </NavBar>
 
-            {/* 2. BARRE DE FILTRES ET RECHERCHE */}
             <div className="p-4 flex flex-row items-center justify-between gap-4 bg-white border-b shadow-sm">
                 <div className="flex flex-row gap-6">
-                    {/* Select Type avec largeur fixe pour éviter le saut de ligne */}
                     <div className="w-64">
                         <Select
                             options={mockOptionsType}
@@ -90,8 +94,6 @@ export default function Patterns() {
                             onSelect={(value) => console.log("Type:", value)}
                         />
                     </div>
-
-                    {/* Select Algo avec largeur fixe */}
                     <div className="w-64">
                         <Select
                             options={mockOptionsAlgos}
@@ -101,18 +103,21 @@ export default function Patterns() {
                     </div>
                 </div>
 
-                {/* Barre de recherche à droite */}
-                <div className="flex-1 max-w-md">
-                    <SearchBar placeholder="Rechercher un pattern" />
+                <div className="flex-1 max-w-md relative">
+                    <SearchBar 
+                        placeholder="Rechercher (Nom, Type, Algo)..." 
+                        onSearch={(value) => setSearchQuery(value)}
+                        suggestions={searchSuggestions}
+                        onSelectSuggestion={(value) => setSearchQuery(value)}
+                    />
                 </div>
             </div>
 
-            {/* 3. ZONE PRINCIPALE (HEATMAP) */}
             <section className="flex-1 p-6 flex flex-col min-h-0">
                 <div className="bg-white rounded-xl shadow-lg p-4 flex-1 flex flex-col">
                     <PatternHeatmap 
                         title="Distribution des patterns par score" 
-                        data={mockData} 
+                        data={filteredData} 
                         fullWidth
                         className="flex-1"
                     />
