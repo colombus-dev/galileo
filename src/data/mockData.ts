@@ -19,6 +19,9 @@ export interface Artifact {
     classCount?: number;
     classLabels?: string[];
     classes?: number;
+
+		/** Optionnel: distribution des classes (pour rendre la carte "Distribution classes") */
+		classDistribution?: Array<{ label: string; count: number }>;
   };
   inputs?: string[];
   className?: string;
@@ -63,6 +66,11 @@ export interface NotebookContext {
   methodology: NotebookContextMethodology;
   /** Liste explicite, dans l'ordre souhaité */
   libraries: string[];
+
+	/** Optionnel: métriques de qualité/exécution du notebook */
+	codeQuality?: {
+		executionTimeSeconds?: number;
+	};
 }
 
 export interface NotebookData {
@@ -104,6 +112,9 @@ export const mockNotebooks: NotebookData[] = [
         evaluatedOnLabel: 'Test',
       },
       libraries: ['scikit-learn', 'pandas', 'matplotlib', 'seaborn'],
+      codeQuality: {
+        executionTimeSeconds: 12,
+      },
     },
     artifacts: [
       {
@@ -119,6 +130,11 @@ export const mockNotebooks: NotebookData[] = [
           classLabels: ['Setosa', 'Versicolor', 'Virginica'],
           samples: 150,
           features: 4,
+				classDistribution: [
+					{ label: 'Setosa', count: 50 },
+					{ label: 'Versicolor', count: 50 },
+					{ label: 'Virginica', count: 50 },
+				],
         },
         className: 'df'
       },
@@ -311,6 +327,9 @@ plt.show()`,
         evaluatedOnLabel: 'Train',
       },
       libraries: ['scikit-learn', 'pandas'],
+      codeQuality: {
+        executionTimeSeconds: 8,
+      },
     },
     artifacts: [
       {
