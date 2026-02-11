@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { NotebookImporter } from "../components/NotebookImporter";
 
 const meta: Meta<typeof NotebookImporter> = {

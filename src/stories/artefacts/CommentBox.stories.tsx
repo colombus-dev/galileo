@@ -1,4 +1,4 @@
-import { CommentBox } from "@/components/CommentBox";
+import { CommentBox } from "@/components/artefacts/CommentBox";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Artifact, CodeCell } from "@/data/mockData";
-import { ArtefactDetailsPanel } from "@/components/ArtefactDetailsPanel";
-import { ArtefactItem } from "@/components/ArtefactItem";
+import { ArtefactDetailsPanel } from "@/components/artefacts/ArtefactDetailsPanel";
+import { ArtefactItem } from "@/components/artefacts/ArtefactItem";
 
 export interface ArtefactPipelineProps {
 	artifacts: Artifact[];

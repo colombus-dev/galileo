@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { MdMenuBook, MdExpandMore } from "react-icons/md";
 import { listNotebookOptions, type NotebookOption } from "@/services/notebook";
+import SearchBar from "@/components/SearchBar";
+import Select, { type Option } from "@/components/Select";
 
 export type { NotebookOption };
 
@@ -12,6 +14,8 @@ export interface NotebookSelectorDropdownProps {
   multiple?: boolean;
   label?: string;
   compareLabel?: string;
+  enableSearch?: boolean;
+  enableGrouping?: boolean;
 }
 
 export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> = ({
@@ -22,11 +26,16 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
   multiple = false,
   label = "Choisir un notebook",
   compareLabel = "Sélectionnez les notebooks à comparer",
+  enableSearch = true,
+  enableGrouping = true,
 }) => {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<NotebookOption[]>(optionsOverride ?? []);
   const [isLoading, setIsLoading] = useState(!optionsOverride);
   const [error, setError] = useState<string | null>(null);
+
+  const [query, setQuery] = useState("");
+  const [groupBy, setGroupBy] = useState<"none" | "domain" | "problem">("domain");
 
   const isControlled = selectedProp !== undefined;
   const [internalSelected, setInternalSelected] = useState<string[]>(
@@ -90,7 +99,62 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
   );
   const displayLabel = multiple
     ? `${selected.length} notebook${selected.length > 1 ? "s" : ""} sélectionné${selected.length > 1 ? "s" : ""}`
-    : selectedOptions[0]?.user || label;
+    : selectedOptions[0]
+      ? `${selectedOptions[0].project} — ${selectedOptions[0].user}`
+      : label;
+
+  const groupOptions: Option[] = useMemo(
+    () => [
+      { label: "Aucun", value: "none" },
+      { label: "Domaine", value: "domain" },
+      { label: "Problème", value: "problem" },
+    ],
+    [],
+  );
+
+  const filteredOptions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return options;
+    return options.filter((o) => {
+      const haystack = [
+        o.project,
+        o.user,
+        o.domain ?? "",
+        o.problem ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [options, query]);
+
+  const groupedOptions = useMemo(() => {
+    if (!enableGrouping || groupBy === "none") {
+      return [{ key: "Tous", items: filteredOptions }];
+    }
+
+    const getKey = (o: NotebookOption) => {
+      if (groupBy === "domain") return o.domain?.trim() || "Sans domaine";
+      return o.problem?.trim() || "Sans problème";
+    };
+
+    const map = new Map<string, NotebookOption[]>();
+    for (const o of filteredOptions) {
+      const key = getKey(o);
+      const arr = map.get(key);
+      if (arr) arr.push(o);
+      else map.set(key, [o]);
+    }
+
+    const groups = [...map.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, items]) => ({
+        key,
+        items: items.sort((a, b) => a.project.localeCompare(b.project) || a.user.localeCompare(b.user)),
+      }));
+
+    return groups;
+  }, [enableGrouping, filteredOptions, groupBy]);
 
   return (
     <div className="relative inline-block text-left">
@@ -110,45 +174,91 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
           <div className="px-7 pt-1 pb-3 text-slate-500 text-base font-medium select-none">
             {multiple ? compareLabel : label}
           </div>
+
+          {(enableSearch || enableGrouping) && (
+            <div className="px-7 pb-3">
+              <div className="flex items-start gap-3">
+                {enableSearch ? (
+                  <div className="flex-1 min-w-[180px]">
+                    <SearchBar
+                      placeholder="Rechercher (titre, auteur, domaine, problème…)"
+                      onSearch={setQuery}
+                    />
+                  </div>
+                ) : null}
+
+                {enableGrouping ? (
+                  <div className="w-[170px]">
+                    <Select
+                      options={groupOptions}
+                      defaultValue={groupOptions.find((o) => o.value === groupBy) ?? groupOptions[1]}
+                      onSelect={(opt) => setGroupBy(String(opt.value) as "none" | "domain" | "problem")}
+                      placeholder="Classer par"
+                      className="max-w-none"
+                    />
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          )}
+
           <ul className="flex flex-col gap-1 max-h-80 overflow-y-auto">
             {isLoading ? (
               <li className="px-7 py-3 text-slate-500">Chargement…</li>
             ) : error ? (
               <li className="px-7 py-3 text-red-700">{error}</li>
-            ) : options.length === 0 ? (
+            ) : filteredOptions.length === 0 ? (
               <li className="px-7 py-3 text-slate-500">Aucun notebook disponible</li>
             ) : (
-              options.map((o) => {
-              const isSelected = selected.includes(o.id);
-              return (
-                <li key={o.id}>
-                  <button
-                    className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-left transition font-medium text-lg
-                      ${isSelected ? "bg-blue-50" : "hover:bg-blue-50"}
-                    `}
-                    onClick={() => handleSelect(o.id)}
-                    type="button"
-                  >
-                    <span
-                      className={`flex items-center justify-center w-7 h-7 rounded-lg border-2 mr-2
-                        ${isSelected ? "bg-blue-600 border-blue-600" : "bg-white border-slate-200"}
-                      `}
-                    >
-                      {isSelected && (
-                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                          <rect width="20" height="20" rx="6" fill="#2563eb" />
-                          <path d="M6 10.5L9 13.5L14 8.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
-                    </span>
-                    <div className="flex flex-col items-start">
-                      <span className={`font-semibold ${isSelected ? "text-blue-700" : "text-slate-800"}`}>{o.user}</span>
-                      <span className="text-slate-500 text-base leading-tight">{o.project}</span>
+              groupedOptions.map((group) => (
+                <li key={group.key} className="px-2">
+                  {enableGrouping && groupBy !== "none" ? (
+                    <div className="px-4 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      {group.key}
                     </div>
-                  </button>
+                  ) : null}
+
+                  <ul className="flex flex-col gap-1">
+                    {group.items.map((o) => {
+                      const isSelected = selected.includes(o.id);
+                      const metaParts = [o.domain, o.problem].filter(Boolean);
+                      return (
+                        <li key={o.id}>
+                          <button
+                            className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-left transition font-medium text-lg
+                              ${isSelected ? "bg-blue-50" : "hover:bg-blue-50"}
+                            `}
+                            onClick={() => handleSelect(o.id)}
+                            type="button"
+                          >
+                            <span
+                              className={`flex items-center justify-center w-7 h-7 rounded-lg border-2 mr-2
+                                ${isSelected ? "bg-blue-600 border-blue-600" : "bg-white border-slate-200"}
+                              `}
+                            >
+                              {isSelected && (
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                  <rect width="20" height="20" rx="6" fill="#2563eb" />
+                                  <path d="M6 10.5L9 13.5L14 8.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              )}
+                            </span>
+                            <div className="flex flex-col items-start min-w-0">
+                              <span className={`font-semibold ${isSelected ? "text-blue-700" : "text-slate-800"}`}>{o.project}</span>
+                              <span className="text-slate-500 text-base leading-tight">{o.user}</span>
+                              {metaParts.length > 0 ? (
+                                <span className="text-slate-400 text-sm leading-tight truncate">
+                                  {metaParts.join(" • ")}
+                                </span>
+                              ) : null}
+                            </div>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </li>
-              );
-              })
+              ))
             )}
           </ul>
         </div>

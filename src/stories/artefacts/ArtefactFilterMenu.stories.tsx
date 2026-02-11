@@ -1,4 +1,4 @@
-import { ArtefactFilterKey, ArtefactFilterMenu } from "@/components/ArtefactFilterMenu";
+import { ArtefactFilterKey, ArtefactFilterMenu } from "@/components/artefacts/ArtefactFilterMenu";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 

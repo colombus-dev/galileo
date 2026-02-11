@@ -1,4 +1,4 @@
-import { Artifact } from '../data/mockData';
+import { Artifact } from '../../data/mockData';
 import { BarChart3, Activity, Brain, Code2, Database } from 'lucide-react';
 import { ArtifactVisualization } from './ArtifactVisualization';
 

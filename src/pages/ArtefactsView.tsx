@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArtefactPipeline } from "@/components/ArtefactPipeline";
+import { ArtefactPipeline } from "@/components/artefacts/ArtefactPipeline";
 import {
   ArtefactFilterMenu,
   type ArtefactFilterKey,
-} from "@/components/ArtefactFilterMenu";
+} from "@/components/artefacts/ArtefactFilterMenu";
 import { NotebookSelectorDropdown } from "@/components/NotebookSelectorDropdown";
 import type { NotebookData } from "@/data/mockData";
 import { getNotebookById } from "@/services/notebook";
 import { NavBar } from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
+import { NotebookContextProblem } from "@/components/artefacts/NotebookContextProblem";
 
 function matchesFilter(type: string, filter: ArtefactFilterKey) {
   if (filter === "all") return true;
@@ -81,7 +82,7 @@ export default function ArtefactsView() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="grid grid-rows-2">
+      <div className="grid grid-rows-1">
         <NavBar
           logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
           title="Galileo - Artefacts"
@@ -97,7 +98,7 @@ export default function ArtefactsView() {
           </button>
         </NavBar>
       </div>
-      <div className="flex flex-col gap-6 p-6 mb-6">
+      <div className="flex flex-col gap-2 p-6 mb-4">
         <NotebookSelectorDropdown
           multiple={false}
           label="Choisir un notebook"
@@ -119,6 +120,9 @@ export default function ArtefactsView() {
             </div>
           ) : notebook ? (
             <div>
+              <div className="mb-6">
+                <NotebookContextProblem notebook={notebook} />
+              </div>
               <div className="rounded-2xl border border-slate-200 bg-white p-6">
                 <div className="flex items-start justify-between gap-6">
                   <div>

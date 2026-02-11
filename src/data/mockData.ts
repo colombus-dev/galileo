@@ -4,9 +4,9 @@ export interface Artifact {
   name: string;
   cellIndex: number;
   description: string;
-  // URLs d'images/SVG représentant la visualisation (ou la carte de métrique)
-  // Ex: ['/mock/confusion-matrix.svg']
   previewUrls?: string[];
+  previewMimeType?: string;
+  previewMimeTypes?: string[];
   metadata?: {
     accuracy?: number;
     samples?: number;
@@ -14,6 +14,11 @@ export interface Artifact {
     modelType?: string;
     metric?: string;
     value?: number;
+    datasetName?: string;
+    targetName?: string;
+    classCount?: number;
+    classLabels?: string[];
+    classes?: number;
   };
   inputs?: string[];
   className?: string;
@@ -25,12 +30,49 @@ export interface CodeCell {
   description: string;
 }
 
+export interface NotebookContextProblem {
+  /** Ex: "Classification multi-classes" */
+  taskTypeLabel: string;
+  /** Ex: "Médecine", "Histoire", "Botanique" */
+  domainLabel: string;
+  /** 2–4 phrases, lisibles, orientées problème */
+  description: string;
+}
+
+export interface NotebookContextData {
+  inputLabel: string;
+  inputDetail: string;
+  outputLabel: string;
+  outputDetail: string;
+  /** "Équilibrées" | "Déséquilibrées" | "Inconnu" */
+  classBalanceLabel?: string;
+  /** Petit texte d'aide sur l'interprétation de l'accuracy */
+  classBalanceHint?: string;
+}
+
+export interface NotebookContextMethodology {
+  algorithmLabel: string;
+  trainTestSplitLabel: string;
+  validationLabel: string;
+  evaluatedOnLabel: string;
+}
+
+export interface NotebookContext {
+  problem: NotebookContextProblem;
+  data: NotebookContextData;
+  methodology: NotebookContextMethodology;
+  /** Liste explicite, dans l'ordre souhaité */
+  libraries: string[];
+}
+
 export interface NotebookData {
   id: string;
   student: string;
   title: string;
   artifacts: Artifact[];
   cells: CodeCell[];
+  /** Contexte fourni explicitement par le notebook (ou son import) */
+  context?: NotebookContext;
   issues?: string[];
 }
 
@@ -39,6 +81,30 @@ export const mockNotebooks: NotebookData[] = [
     id: 'notebook-1',
     student: 'Laura Dupont',
     title: 'Classification de fleurs Iris',
+    context: {
+      problem: {
+        taskTypeLabel: 'Classification multi-classes',
+        domainLabel: 'Botanique',
+        description:
+          "Identifier automatiquement l'espèce d'une fleur d'Iris à partir de mesures morphologiques. Le notebook compare des classes distinctes (Setosa, Versicolor, Virginica) et vise une bonne généralisation sur des données jamais vues.",
+      },
+      data: {
+        inputLabel: 'Entrée',
+        inputDetail: 'Mesures morphologiques (longueur/largeur sépales et pétales) — 150 × 4',
+        outputLabel: 'Sortie',
+        outputDetail: "Espèce d'Iris — Multi-classes (3): Setosa, Versicolor, Virginica",
+        classBalanceLabel: 'Équilibrées',
+        classBalanceHint:
+          "Les classes étant équilibrées, l'accuracy est généralement un indicateur fiable (à compléter idéalement par une matrice de confusion).",
+      },
+      methodology: {
+        algorithmLabel: 'RandomForestClassifier',
+        trainTestSplitLabel: '80/20 (stratifié)',
+        validationLabel: 'Non',
+        evaluatedOnLabel: 'Test',
+      },
+      libraries: ['scikit-learn', 'pandas', 'matplotlib', 'seaborn'],
+    },
     artifacts: [
       {
         id: 'art-1',
@@ -46,7 +112,14 @@ export const mockNotebooks: NotebookData[] = [
         name: 'Données brutes',
         cellIndex: 0,
         description: 'Chargement du dataset Iris',
-        metadata: { samples: 150, features: 4 },
+        metadata: {
+          datasetName: 'Iris',
+          targetName: 'Espèce d\'Iris',
+          classCount: 3,
+          classLabels: ['Setosa', 'Versicolor', 'Virginica'],
+          samples: 150,
+          features: 4,
+        },
         className: 'df'
       },
       {
@@ -215,6 +288,30 @@ plt.show()`,
     id: 'notebook-2',
     student: 'Lucas Martin',
     title: 'Classification de fleurs Iris',
+    context: {
+      problem: {
+        taskTypeLabel: 'Classification multi-classes',
+        domainLabel: 'Botanique',
+        description:
+          "Prédire l'espèce d'Iris à partir de mesures morphologiques. Ce notebook illustre une approche plus simple (sans normalisation) et met en évidence le risque d'évaluer un modèle sur les mêmes données que l'entraînement.",
+      },
+      data: {
+        inputLabel: 'Entrée',
+        inputDetail: 'Mesures morphologiques — 150 × 4',
+        outputLabel: 'Sortie',
+        outputDetail: "Espèce d'Iris — Multi-classes (3)",
+        classBalanceLabel: 'Équilibrées',
+        classBalanceHint:
+          "Si les classes sont équilibrées, l'accuracy reste pertinente. Si elles ne le sont pas, préfère des métriques comme F1-macro, balanced accuracy ou AUC.",
+      },
+      methodology: {
+        algorithmLabel: 'DecisionTreeClassifier',
+        trainTestSplitLabel: '—',
+        validationLabel: 'Non',
+        evaluatedOnLabel: 'Train',
+      },
+      libraries: ['scikit-learn', 'pandas'],
+    },
     artifacts: [
       {
         id: 'art-2-1',
