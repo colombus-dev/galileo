@@ -73,7 +73,6 @@ function parseLibrariesFromNotebookCells(notebook: NotebookData): string[] {
 export function buildNotebookContextViewModel(notebook: NotebookData): NotebookContextViewModel {
   const parsedLibraries = parseLibrariesFromNotebookCells(notebook);
 
-  // Source of truth: notebook.context (données explicites fournies par le notebook/import)
   if (notebook.context) {
     const explicit = notebook.context.libraries ?? [];
     const libSet = new Set(explicit);
@@ -106,7 +105,6 @@ export function buildNotebookContextViewModel(notebook: NotebookData): NotebookC
     };
   }
 
-  // Fallback: notebook sans contexte explicite — on évite les heuristiques, on affiche des placeholders.
   return {
     problem: {
       taskTypeLabel: "—",

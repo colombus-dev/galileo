@@ -82,7 +82,7 @@ export default function ArtefactsView() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="grid grid-rows-2">
+      <div className="grid grid-rows-1">
         <NavBar
           logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
           title="Galileo - Artefacts"
@@ -98,7 +98,7 @@ export default function ArtefactsView() {
           </button>
         </NavBar>
       </div>
-      <div className="flex flex-col gap-6 p-6 mb-6">
+      <div className="flex flex-col gap-2 p-6 mb-4">
         <NotebookSelectorDropdown
           multiple={false}
           label="Choisir un notebook"

@@ -4,6 +4,10 @@ export interface NotebookOption {
 	id: string;
 	user: string;
 	project: string;
+	/** Domaine métier (ex: Médecine, Histoire, Botanique…) */
+	domain?: string;
+	/** Problème / type de tâche (ex: Classification multi-classes) */
+	problem?: string;
 }
 
 export async function listNotebooks(): Promise<NotebookData[]> {
@@ -16,7 +20,9 @@ export async function listNotebookOptions(): Promise<NotebookOption[]> {
 	return notebooks.map((n) => ({
 		id: n.id,
 		user: n.student,
-		project: n.title
+		project: n.title,
+		domain: n.context?.problem.domainLabel,
+		problem: n.context?.problem.taskTypeLabel,
 	}));
 }
 

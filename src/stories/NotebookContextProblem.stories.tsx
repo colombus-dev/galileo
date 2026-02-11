@@ -5,6 +5,7 @@ import { mockNotebooks } from "@/data/mockData";
 const meta: Meta<typeof NotebookContextProblem> = {
   title: "Notebooks/NotebookContextProblem",
   component: NotebookContextProblem,
+  tags: ["autodocs"],
   parameters: {
     layout: "padded",
   },
