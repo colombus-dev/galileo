@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { ArtefactDetailsPanel } from "@/components/ArtefactDetailsPanel";
+import { ArtefactDetailsPanel } from "@/components/artefacts/ArtefactDetailsPanel";
 import { mockNotebooks } from "@/data/mockData";
 
 const meta: Meta<typeof ArtefactDetailsPanel> = {

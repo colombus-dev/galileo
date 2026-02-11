@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArtefactPipeline } from "@/components/ArtefactPipeline";
+import { ArtefactPipeline } from "@/components/artefacts/ArtefactPipeline";
 import {
   ArtefactFilterMenu,
   type ArtefactFilterKey,
-} from "@/components/ArtefactFilterMenu";
+} from "@/components/artefacts/ArtefactFilterMenu";
 import { NotebookSelectorDropdown } from "@/components/NotebookSelectorDropdown";
 import type { NotebookData } from "@/data/mockData";
 import { getNotebookById } from "@/services/notebook";
 import { NavBar } from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
+import { NotebookContextProblem } from "@/components/NotebookContextProblem";
 
 function matchesFilter(type: string, filter: ArtefactFilterKey) {
   if (filter === "all") return true;
@@ -119,6 +120,9 @@ export default function ArtefactsView() {
             </div>
           ) : notebook ? (
             <div>
+              <div className="mb-6">
+                <NotebookContextProblem notebook={notebook} />
+              </div>
               <div className="rounded-2xl border border-slate-200 bg-white p-6">
                 <div className="flex items-start justify-between gap-6">
                   <div>

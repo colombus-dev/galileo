@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useMemo, useState } from "react";
 
-import { ArtefactPipeline } from "@/components/ArtefactPipeline";
-import { ArtefactFilterMenu, type ArtefactFilterKey } from "@/components/ArtefactFilterMenu";
+import { ArtefactPipeline } from "@/components/artefacts/ArtefactPipeline";
+import { ArtefactFilterMenu, type ArtefactFilterKey } from "@/components/artefacts/ArtefactFilterMenu";
 import SearchBar from "@/components/SearchBar";
 import { mockNotebooks } from "@/data/mockData";
 

@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { MdCode } from "react-icons/md";
 
 import type { Artifact, CodeCell } from "@/data/mockData";
-import { CodeViewer } from "@/components/CodeViewer";
-import { CommentBox } from "@/components/CommentBox";
+import { CodeViewer } from "@/components/artefacts/CodeViewer";
+import { CommentBox } from "@/components/artefacts/CommentBox";
 
 export interface ArtefactDetailsPanelProps {
 	artifact: Artifact | null;

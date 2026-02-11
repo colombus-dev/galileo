@@ -1,4 +1,4 @@
-import { ComparisonSummaryCard } from "@/components/ComparisonSummaryCard";
+import { ComparisonSummaryCard } from "@/components/artefacts/ComparisonSummaryCard";
 import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof ComparisonSummaryCard> = {

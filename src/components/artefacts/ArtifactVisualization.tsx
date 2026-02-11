@@ -1,4 +1,4 @@
-import { Artifact } from '../data/mockData';
+import { Artifact } from '../../data/mockData';
 import { Database, Brain } from 'lucide-react';
 import { resolveImageSrc } from '@/utils/imageSrc';
 
