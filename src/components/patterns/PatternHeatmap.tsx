@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Plotly from 'plotly.js-dist-min';
-import { type PatternType, type Counts } from '../PatternType';
+import { type PatternType, type Counts } from '@/PatternType';
 
 interface PatternHeatmapProps {
     title: string;

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { NavBar } from "@/components/NavBar";
-import Select, { Option } from '../components/Select';
+import Select, { Option } from '@/components/Select';
 import SearchBar, { SearchSuggestion } from "@/components/SearchBar";
-import PatternHeatmap from "@/components/PatternHeatmap";
+import PatternHeatmap from "@/components/patterns/PatternHeatmap";
 import { mockDataPattern } from "@/data/patternMockData";
 
 const mockData = mockDataPattern;

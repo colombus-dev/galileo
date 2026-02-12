@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { PatternType } from "@/PatternType";
-import { mockDataPattern } from '../data/patternMockData';
+import { mockDataPattern } from '@/data/patternMockData';
 
 interface PatternRankingProps {
     currentPattern: PatternType;
