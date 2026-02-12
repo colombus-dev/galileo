@@ -3,7 +3,7 @@ import { NotebookContextProblem } from "@/components/artefacts/NotebookContextPr
 import { mockNotebooks } from "@/data/mockData";
 
 const meta: Meta<typeof NotebookContextProblem> = {
-  title: "Notebooks/NotebookContextProblem",
+  title: "Artefacts/NotebookContextProblem",
   component: NotebookContextProblem,
   tags: ["autodocs"],
   parameters: {

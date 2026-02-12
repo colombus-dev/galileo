@@ -3,7 +3,7 @@ import { NotebookPerformanceEvaluation } from "@/components/artefacts/NotebookPe
 import { mockNotebooks } from "@/data/mockData";
 
 const meta: Meta<typeof NotebookPerformanceEvaluation> = {
-  title: "Notebooks/NotebookPerformanceEvaluation",
+  title: "Artefacts/NotebookPerformanceEvaluation",
   component: NotebookPerformanceEvaluation,
   parameters: {
     layout: "padded",
