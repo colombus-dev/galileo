@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import type { Artifact, NotebookData } from "@/data/mockData";
 import { ArtefactItem } from "@/components/artefacts/ArtefactItem";
+import { NotebookBadge } from "@/components/artefacts/NotebookBadge";
+import { getNotebookColsClass, getVisibleNotebooks } from "@/utils/notebookComparison";
 import {
   Activity,
   BarChart3,
@@ -39,14 +41,6 @@ function findArtifactByName(notebook: NotebookData, type: ArtifactType, name: st
   return notebook.artifacts.find((a) => a.type === type && a.name === name) ?? null;
 }
 
-function NotebookBadge({ index }: { index: number }) {
-  return (
-    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-      {index}
-    </span>
-  );
-}
-
 function MissingArtefact() {
   return (
     <div className="h-full min-h-[260px] rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center">
@@ -59,13 +53,8 @@ export function NotebookArtefactsComparison({
   notebooks,
   className,
 }: NotebookArtefactsComparisonProps) {
-  const visibleNotebooks = notebooks.slice(0, 3);
-  const notebookCols =
-    visibleNotebooks.length === 2
-      ? "grid-cols-2"
-      : visibleNotebooks.length === 3
-        ? "grid-cols-3"
-        : "grid-cols-1";
+  const visibleNotebooks = getVisibleNotebooks(notebooks);
+  const notebookCols = getNotebookColsClass(visibleNotebooks.length);
 
   const [openTypes, setOpenTypes] = useState<Record<ArtifactType, boolean>>({
     dataset: true,

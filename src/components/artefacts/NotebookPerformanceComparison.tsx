@@ -1,24 +1,18 @@
 import type { NotebookData } from "@/data/mockData";
+import { NotebookBadge } from "@/components/artefacts/NotebookBadge";
 import {
   findMetricArtifact,
   getConfusionMatrixArtifact,
   getNonEmptyLineCount,
   getPrimaryMetricArtifact,
 } from "@/utils/notebookPerformanceEvaluation";
+import { getResponsiveNotebookColsClass, getVisibleNotebooks } from "@/utils/notebookComparison";
 import { CheckCircle2, TrendingUp } from "lucide-react";
 
 export type NotebookPerformanceComparisonProps = {
   notebooks: NotebookData[];
   className?: string;
 };
-
-function NotebookBadge({ index }: { index: number }) {
-  return (
-    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-      {index}
-    </span>
-  );
-}
 
 function StatPill({ label, value }: { label: string; value: string }) {
   return (
@@ -115,11 +109,10 @@ export function NotebookPerformanceComparison({
   notebooks,
   className,
 }: NotebookPerformanceComparisonProps) {
-  const visibleNotebooks = notebooks.slice(0, 3);
+  const visibleNotebooks = getVisibleNotebooks(notebooks);
   if (visibleNotebooks.length < 2) return null;
 
-  const cardsGridCols =
-    visibleNotebooks.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3";
+  const cardsGridCols = getResponsiveNotebookColsClass(visibleNotebooks.length);
 
   return (
     <div className={className}>

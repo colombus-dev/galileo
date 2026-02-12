@@ -1,19 +1,12 @@
 import type { NotebookData } from "@/data/mockData";
 import { buildNotebookContextViewModel } from "@/utils/notebookContext";
+import { NotebookBadge } from "@/components/artefacts/NotebookBadge";
 
 export type NotebookContextDataCardProps = {
   notebook: NotebookData;
   index: number;
   className?: string;
 };
-
-function NotebookBadge({ index }: { index: number }) {
-  return (
-    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-      {index}
-    </span>
-  );
-}
 
 export function NotebookContextDataCard({
   notebook,

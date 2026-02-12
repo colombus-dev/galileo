@@ -1,6 +1,7 @@
 import type { NotebookData } from "@/data/mockData";
 import { NotebookComparisonDetailsTable } from "@/components/artefacts/NotebookComparisonDetailsTable.tsx";
 import { NotebookContextDataCard } from "@/components/artefacts/NotebookContextDataCard.tsx";
+import { getResponsiveNotebookColsClass, getVisibleNotebooks } from "@/utils/notebookComparison";
 
 export type NotebookContextDataComparisonProps = {
   notebooks: NotebookData[];
@@ -11,9 +12,8 @@ export function NotebookContextDataComparison({
   notebooks,
   className,
 }: NotebookContextDataComparisonProps) {
-  const visibleNotebooks = notebooks.slice(0, 3);
-  const cardsGridCols =
-    visibleNotebooks.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3";
+  const visibleNotebooks = getVisibleNotebooks(notebooks);
+  const cardsGridCols = getResponsiveNotebookColsClass(visibleNotebooks.length);
 
   if (visibleNotebooks.length < 2) return null;
 
