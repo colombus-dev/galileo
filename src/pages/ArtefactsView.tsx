@@ -1,21 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArtefactPipeline } from "@/components/artefacts/ArtefactPipeline";
 import {
-  ArtefactFilterMenu,
   type ArtefactFilterKey,
 } from "@/components/artefacts/ArtefactFilterMenu";
 import { NotebookSelectorDropdown } from "@/components/NotebookSelectorDropdown";
 import type { NotebookData } from "@/data/mockData";
 import { getNotebookById } from "@/services/notebook";
 import { NavBar } from "@/components/NavBar";
-import SearchBar from "@/components/SearchBar";
-import { NotebookContextProblem } from "@/components/artefacts/NotebookContextProblem";
-import { NotebookPerformanceEvaluation } from "@/components/artefacts/NotebookPerformanceEvaluation";
-import { NotebookPedagogicalValidation } from "@/components/artefacts/NotebookPedagogicalValidation";
 import Select, { type Option } from "@/components/Select";
-import { ScrollButtons } from "@/components/ScrollButtons";
 import { ModeSwitchButton, type ModeType } from "@/components/artefacts/ModeSwitchButton";
-import { NotebookContextDataComparison } from "@/components/artefacts/NotebookContextDataComparison.tsx";
+import { ArtefactsSimpleMode } from "@/pages/artefacts/ArtefactsSimpleMode";
+import { ArtefactsComparisonMode } from "@/pages/artefacts/ArtefactsComparisonMode";
 
 function matchesFilter(type: string, filter: ArtefactFilterKey) {
   if (filter === "all") return true;
@@ -193,68 +187,23 @@ export default function ArtefactsView() {
               {error}
             </div>
           ) : primaryNotebook ? (
-            <div>
-              <ScrollButtons
-                onScrollTop={scrollToTop}
-                onScrollBottom={scrollToBottom}
+            mode === "comparaison" ? (
+              <ArtefactsComparisonMode
+                notebooks={selectedNotebooks}
+                scrollToTop={scrollToTop}
+                scrollToBottom={scrollToBottom}
               />
-
-              {mode === "comparaison" ? (
-                <div
-                  id="section-compare-context-data"
-                  className="mb-6 scroll-mt-40"
-                >
-                  <NotebookContextDataComparison notebooks={selectedNotebooks} />
-                </div>
-              ) : null}
-
-              {mode === "simple" ? (
-                <>
-                  <div id="section-context" className="mb-6 scroll-mt-40">
-                    <NotebookContextProblem notebook={primaryNotebook} />
-                  </div>
-                  <div id="section-performance" className="mb-6 scroll-mt-40">
-                    <NotebookPerformanceEvaluation notebook={primaryNotebook} />
-                  </div>
-                  <div
-                    id="section-artefacts"
-                    className="rounded-2xl border border-slate-200 bg-white p-6 mb-6 scroll-mt-40"
-                  >
-                    <div className="flex items-start justify-between gap-6">
-                      <div>
-                        <h2 className="text-lg font-semibold text-slate-900">
-                          Artefacts
-                        </h2>
-                        <div className="text-sm text-slate-600 mt-1">
-                          {primaryNotebook.student} - {primaryNotebook.title}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <SearchBar
-                          onSearch={setQuery}
-                          placeholder="Rechercher des artefacts..."
-                        />
-                        <ArtefactFilterMenu
-                          value={filterKey}
-                          onChange={setFilterKey}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-6">
-                      <ArtefactPipeline
-                        artifacts={filteredArtifacts}
-                        cells={primaryNotebook.cells}
-                      />
-                    </div>
-                  </div>
-                  <div id="section-pedagogical" className="mb-6 scroll-mt-40">
-                    <NotebookPedagogicalValidation notebook={primaryNotebook} />
-                  </div>
-                </>
-              ) : null}
-            </div>
+            ) : (
+              <ArtefactsSimpleMode
+                notebook={primaryNotebook}
+                filteredArtifacts={filteredArtifacts}
+                filterKey={filterKey}
+                onChangeFilterKey={setFilterKey}
+                onSearch={setQuery}
+                scrollToTop={scrollToTop}
+                scrollToBottom={scrollToBottom}
+              />
+            )
           ) : null}
         </div>
       </div>
