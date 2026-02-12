@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import PatternSummary from '@/components/PatternSummary'; // Vérifie le chemin
+import PatternSummary from '@/components/patterns/PatternSummary'; // Vérifie le chemin
 import { mockDataPattern } from '@/data/patternMockData';   // Import des mocks demandés
 
 const meta: Meta<typeof PatternSummary> = {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ParamCard } from '@/components/ParamCard';
+import { ParamCard } from '@/components/patterns/ParamCard';
 
 const meta: Meta<typeof ParamCard> = {
     title: 'Patterns/ParamCard',
