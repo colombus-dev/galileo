@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import PatternTitle from '@/components/patterns/PatternTitle';
+import { mockDataPattern } from '@/data/patternMockData';
+
+const allPattern = mockDataPattern;
 
 const meta: Meta<typeof PatternTitle> = {
     title: 'Patterns/PatternTitle',
@@ -16,14 +19,12 @@ type Story = StoryObj<typeof PatternTitle>;
 
 export const Default: Story = {
     args: {
-        title: 'Loading',
-        schema: 'Library Loading -> Others -> Library Loading',
+        currentPattern: allPattern[0],
     },
 };
 
 export const LongSchema: Story = {
     args: {
-        title: 'Training',
-        schema: 'Others -> Model Building and Training -> Others -> Model Building and Training -> Others -> Model Building and Training -> Model Training -> Visualization',
+        currentPattern: allPattern[1],
     },
 };
