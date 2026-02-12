@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import PatternTitle from '../components/PatternTitle';
+import PatternTitle from '@/components/patterns/PatternTitle';
 
 const meta: Meta<typeof PatternTitle> = {
     title: 'Patterns/PatternTitle',
