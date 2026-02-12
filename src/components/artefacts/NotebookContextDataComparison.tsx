@@ -1,26 +1,7 @@
 import type { NotebookData } from "@/data/mockData";
 import { buildNotebookContextViewModel } from "@/utils/notebookContext";
 import { Info } from "lucide-react";
-
-export type NotebookContextDataComparisonProps = {
-  notebooks: NotebookData[];
-  className?: string;
-};
-
-type ComparisonRow = {
-  label: string;
-  values: string[];
-};
-
-function normalizeValue(value: string) {
-  return value.trim().replace(/\s+/g, " ").toLowerCase();
-}
-
-function isRowDifferent(values: string[]) {
-  const normalized = values.map(normalizeValue).filter((v) => v !== "—");
-  if (normalized.length <= 1) return false;
-  return new Set(normalized).size > 1;
-}
+import { NotebookComparisonDetailsTable } from "@/components/artefacts/NotebookComparisonDetailsTable.tsx";
 
 function NotebookBadge({ index }: { index: number }) {
   return (
@@ -30,37 +11,17 @@ function NotebookBadge({ index }: { index: number }) {
   );
 }
 
+export type NotebookContextDataComparisonProps = {
+  notebooks: NotebookData[];
+  className?: string;
+};
+
 export function NotebookContextDataComparison({
   notebooks,
   className,
 }: NotebookContextDataComparisonProps) {
   const visibleNotebooks = notebooks.slice(0, 3);
   const vms = visibleNotebooks.map((n) => buildNotebookContextViewModel(n));
-
-  const rows: ComparisonRow[] = [
-    {
-      label: "Type de tâche",
-      values: vms.map((vm) => vm.problem.taskTypeLabel || "—"),
-    },
-    {
-      label: "Domaine",
-      values: vms.map((vm) => vm.problem.domainLabel || "—"),
-    },
-    {
-      label: "Entrée",
-      values: vms.map((vm) => vm.data.inputDetail || "—"),
-    },
-    {
-      label: "Sortie",
-      values: vms.map((vm) => vm.data.outputDetail || "—"),
-    },
-    {
-      label: "Équilibrage",
-      values: vms.map((vm) => vm.data.classBalanceLabel || "—"),
-    },
-  ];
-
-  const diffCount = rows.filter((r) => isRowDifferent(r.values)).length;
 
   return (
     <section
@@ -80,8 +41,7 @@ export function NotebookContextDataComparison({
             Comparaison des notebooks
           </h2>
           <p className="mt-1 text-sm text-slate-600">
-            Contexte &amp; Données — {diffCount} différence{diffCount > 1 ? "s" : ""}
-            détectée{diffCount > 1 ? "s" : ""}
+            Contexte &amp; Données
           </p>
         </div>
       </header>
@@ -157,52 +117,7 @@ export function NotebookContextDataComparison({
           </div>
 
           <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-            <div className="text-sm font-semibold text-slate-900">
-              Tableau détaillé des différences
-            </div>
-
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full border-separate border-spacing-0">
-                <thead>
-                  <tr>
-                    <th className="sticky left-0 bg-white px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Critère
-                    </th>
-                    {visibleNotebooks.map((n, idx) => (
-                      <th
-                        key={n.id}
-                        className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
-                      >
-                        <div className="flex items-center gap-2">
-                          <NotebookBadge index={idx + 1} />
-                          <span className="truncate">{n.student}</span>
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row) => {
-                    const differs = isRowDifferent(row.values);
-                    return (
-                      <tr
-                        key={row.label}
-                        className={differs ? "bg-amber-50" : undefined}
-                      >
-                        <td className="sticky left-0 bg-inherit px-4 py-3 text-sm font-medium text-slate-800">
-                          {row.label}
-                        </td>
-                        {row.values.map((v, i) => (
-                          <td key={i} className="px-4 py-3 text-sm text-slate-800">
-                            {v || "—"}
-                          </td>
-                        ))}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <NotebookComparisonDetailsTable notebooks={visibleNotebooks} className="border-0 p-0" />
           </div>
         </>
       )}
