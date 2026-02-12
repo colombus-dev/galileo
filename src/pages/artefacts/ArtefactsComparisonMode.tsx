@@ -1,6 +1,9 @@
 import { ScrollButtons } from "@/components/ScrollButtons";
 import { NotebookContextDataComparison } from "@/components/artefacts/NotebookContextDataComparison.tsx";
+import { NotebookArtefactsComparison } from "@/components/artefacts/NotebookArtefactsComparison";
+import { NotebookPerformanceComparison } from "@/components/artefacts/NotebookPerformanceComparison";
 import type { NotebookData } from "@/data/mockData";
+import { getVisibleNotebooks } from "@/utils/notebookComparison";
 import { Info } from "lucide-react";
 
 export type ArtefactsComparisonModeProps = {
@@ -14,7 +17,7 @@ export function ArtefactsComparisonMode({
   scrollToTop,
   scrollToBottom,
 }: ArtefactsComparisonModeProps) {
-  const visibleNotebooks = notebooks.slice(0, 3);
+  const visibleNotebooks = getVisibleNotebooks(notebooks);
 
   return (
     <section className="rounded-2xl border border-indigo-200 bg-indigo-50/50 p-6">
@@ -40,14 +43,37 @@ export function ArtefactsComparisonMode({
               Sélectionne au moins 2 notebooks pour activer la comparaison.
             </div>
           ) : (
-            <div className="mt-5">
-              <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                Contexte &amp; Données
+            <>
+              <div className="mt-5">
+                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+                  Contexte &amp; Données
+                </div>
+                <div className="mt-4">
+                  <NotebookContextDataComparison notebooks={visibleNotebooks} />
+                </div>
               </div>
-              <div className="mt-4">
-                <NotebookContextDataComparison notebooks={visibleNotebooks} />
+
+              <div
+                id="section-compare-performance"
+                className="mt-6 mb-6 scroll-mt-40"
+              >
+                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+                  Performance &amp; Évaluation
+                </div>
+                <div className="mt-4">
+                  <NotebookPerformanceComparison notebooks={visibleNotebooks} />
+                </div>
               </div>
-            </div>
+
+              <div id="section-compare-artefacts" className="mt-6 mb-6 scroll-mt-40">
+                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+                  Artefacts
+                </div>
+                <div className="mt-4">
+                  <NotebookArtefactsComparison notebooks={visibleNotebooks} />
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>

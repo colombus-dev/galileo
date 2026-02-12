@@ -1,5 +1,7 @@
 import type { NotebookData } from "@/data/mockData";
 import { buildNotebookContextViewModel } from "@/utils/notebookContext";
+import { NotebookBadge } from "@/components/artefacts/NotebookBadge";
+import { getVisibleNotebooks } from "@/utils/notebookComparison";
 
 export type NotebookComparisonDetailsTableProps = {
   notebooks: NotebookData[];
@@ -19,14 +21,6 @@ function isRowDifferent(values: string[]) {
   const normalized = values.map(normalizeValue).filter((v) => v !== "—");
   if (normalized.length <= 1) return false;
   return new Set(normalized).size > 1;
-}
-
-function NotebookBadge({ index }: { index: number }) {
-  return (
-    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-      {index}
-    </span>
-  );
 }
 
 function extractInputSize(notebook: NotebookData): string {
@@ -83,7 +77,7 @@ export function NotebookComparisonDetailsTable({
   notebooks,
   className,
 }: NotebookComparisonDetailsTableProps) {
-  const visibleNotebooks = notebooks.slice(0, 3);
+  const visibleNotebooks = getVisibleNotebooks(notebooks);
   const vms = visibleNotebooks.map((n) => buildNotebookContextViewModel(n));
 
   const rows: ComparisonRow[] = [
