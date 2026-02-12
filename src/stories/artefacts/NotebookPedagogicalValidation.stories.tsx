@@ -3,7 +3,7 @@ import { NotebookPedagogicalValidation } from "@/components/artefacts/NotebookPe
 import { mockNotebooks } from "@/data/mockData";
 
 const meta: Meta<typeof NotebookPedagogicalValidation> = {
-	title: "Notebooks/NotebookPedagogicalValidation",
+	title: "Artefacts/NotebookPedagogicalValidation",
 	component: NotebookPedagogicalValidation,
 	parameters: {
 		layout: "padded",
