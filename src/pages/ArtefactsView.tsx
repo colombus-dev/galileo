@@ -14,6 +14,7 @@ import { NotebookPerformanceEvaluation } from "@/components/artefacts/NotebookPe
 import { NotebookPedagogicalValidation } from "@/components/artefacts/NotebookPedagogicalValidation";
 import Select, { type Option } from "@/components/Select";
 import { ScrollButtons } from "@/components/ScrollButtons";
+import { ModeSwitchButton, type ModeType } from "@/components/artefacts/ModeSwitchButton";
 
 function matchesFilter(type: string, filter: ArtefactFilterKey) {
   if (filter === "all") return true;
@@ -23,6 +24,7 @@ function matchesFilter(type: string, filter: ArtefactFilterKey) {
 }
 
 export default function ArtefactsView() {
+  const [mode, setMode] = useState<ModeType>("simple");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectedId = selectedIds[0];
   const [query, setQuery] = useState("");
@@ -70,6 +72,12 @@ export default function ArtefactsView() {
     const scrollElement = document.scrollingElement ?? document.documentElement;
     window.scrollTo({ top: scrollElement.scrollHeight, behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (mode === "simple") {
+      setSelectedIds((ids) => (ids.length > 0 ? [ids[0]] : []));
+    }
+  }, [mode]);
 
   useEffect(() => {
     if (!selectedId) {
@@ -126,14 +134,17 @@ export default function ArtefactsView() {
             <a href="/patterns">Patterns</a>
           </button>
         </NavBar>
-        <div className="p-4 flex flex-row items-center justify-around gap-4 bg-white border-b shadow-sm">
+        <div className="p-4 flex flex-row flex-wrap items-center justify-between gap-4 bg-white border-b shadow-sm">
           <div className="w-64">
             <NotebookSelectorDropdown
-              multiple={false}
+              multiple={mode === "comparaison"}
               label="Choisir un notebook"
               onChange={setSelectedIds}
             />
           </div>
+
+          <ModeSwitchButton mode={mode} onChange={setMode} />
+
           {selectedId && notebook ? (
             <div className="w-64">
               <Select
