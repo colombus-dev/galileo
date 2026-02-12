@@ -1,15 +1,7 @@
 import type { NotebookData } from "@/data/mockData";
-import { buildNotebookContextViewModel } from "@/utils/notebookContext";
 import { Info } from "lucide-react";
 import { NotebookComparisonDetailsTable } from "@/components/artefacts/NotebookComparisonDetailsTable.tsx";
-
-function NotebookBadge({ index }: { index: number }) {
-  return (
-    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-      {index}
-    </span>
-  );
-}
+import { NotebookContextDataCard } from "@/components/artefacts/NotebookContextDataCard.tsx";
 
 export type NotebookContextDataComparisonProps = {
   notebooks: NotebookData[];
@@ -21,7 +13,8 @@ export function NotebookContextDataComparison({
   className,
 }: NotebookContextDataComparisonProps) {
   const visibleNotebooks = notebooks.slice(0, 3);
-  const vms = visibleNotebooks.map((n) => buildNotebookContextViewModel(n));
+  const cardsGridCols =
+    visibleNotebooks.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3";
 
   return (
     <section
@@ -57,61 +50,13 @@ export function NotebookContextDataComparison({
               Contexte &amp; Données
             </div>
 
-            <div className="mt-4 grid gap-4 lg:grid-cols-3">
+            <div className={`mt-4 grid gap-4 ${cardsGridCols}`}>
               {visibleNotebooks.map((n, idx) => (
-                <div
+                <NotebookContextDataCard
                   key={n.id}
-                  className="rounded-2xl border border-indigo-200 bg-white p-5"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <NotebookBadge index={idx + 1} />
-                        <div className="truncate text-sm font-semibold text-slate-900">
-                          {n.student}
-                        </div>
-                      </div>
-                      <div className="mt-2 text-sm text-slate-600 line-clamp-2">
-                        {n.title}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid gap-3">
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Type de tâche
-                      </div>
-                      <div className="mt-1 text-sm font-medium text-slate-900">
-                        {vms[idx]?.problem.taskTypeLabel ?? "—"}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Domaine
-                      </div>
-                      <div className="mt-1 text-sm font-medium text-slate-900">
-                        {vms[idx]?.problem.domainLabel ?? "—"}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Entrée
-                      </div>
-                      <div className="mt-1 text-sm font-medium text-slate-900">
-                        {vms[idx]?.data.inputDetail ?? "—"}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Sortie
-                      </div>
-                      <div className="mt-1 text-sm font-medium text-slate-900">
-                        {vms[idx]?.data.outputDetail ?? "—"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  notebook={n}
+                  index={idx + 1}
+                />
               ))}
             </div>
           </div>
