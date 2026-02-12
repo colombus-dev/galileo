@@ -60,6 +60,10 @@ export default function ArtefactsView() {
         label: "Comparaison — Contexte & Données",
         value: "section-compare-context-data",
       },
+      {
+        label: "Comparaison — Performance",
+        value: "section-compare-performance",
+      },
     ];
   }, [mode]);
 

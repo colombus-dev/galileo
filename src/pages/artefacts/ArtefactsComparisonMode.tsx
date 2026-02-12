@@ -1,5 +1,6 @@
 import { ScrollButtons } from "@/components/ScrollButtons";
 import { NotebookContextDataComparison } from "@/components/artefacts/NotebookContextDataComparison.tsx";
+import { NotebookPerformanceComparison } from "@/components/artefacts/NotebookPerformanceComparison";
 import type { NotebookData } from "@/data/mockData";
 import { Info } from "lucide-react";
 
@@ -40,14 +41,28 @@ export function ArtefactsComparisonMode({
               Sélectionne au moins 2 notebooks pour activer la comparaison.
             </div>
           ) : (
-            <div className="mt-5">
-              <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                Contexte &amp; Données
+            <>
+              <div className="mt-5">
+                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+                  Contexte &amp; Données
+                </div>
+                <div className="mt-4">
+                  <NotebookContextDataComparison notebooks={visibleNotebooks} />
+                </div>
               </div>
-              <div className="mt-4">
-                <NotebookContextDataComparison notebooks={visibleNotebooks} />
+
+              <div
+                id="section-compare-performance"
+                className="mt-6 mb-6 scroll-mt-40"
+              >
+                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+                  Performance &amp; Évaluation
+                </div>
+                <div className="mt-4">
+                  <NotebookPerformanceComparison notebooks={visibleNotebooks} />
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
