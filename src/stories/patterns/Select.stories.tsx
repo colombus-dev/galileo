@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Select, { Option } from '../components/Select';
+import Select, { Option } from '@/components/Select';
 
 const meta: Meta<typeof Select> = {
   title: 'Patterns/Select',

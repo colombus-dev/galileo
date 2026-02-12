@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import PatternHeatmap from '../components/PatternHeatmap'; 
-import { PatternType } from '../PatternType';
+import PatternHeatmap from '@/components/PatternHeatmap'; 
+import { PatternType } from '@/PatternType';
 
 // Mock Data adapté à la nouvelle interface
 const mockData: PatternType[] = [

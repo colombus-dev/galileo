@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { PatternListNotebook } from '../components/PatternListNotebook';
-import { mockDataPattern } from '../data/patternMockData';
+import { PatternListNotebook } from '@/components/PatternListNotebook';
+import { mockDataPattern } from '@/data/patternMockData';
 
 const currentPattern = mockDataPattern[3];
 const meta: Meta<typeof PatternListNotebook> = {

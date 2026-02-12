@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import PatternRanking from '../components/PatternRanking';
-import { mockDataPattern } from '../data/patternMockData';
+import PatternRanking from '@/components/PatternRanking';
+import { mockDataPattern } from '@/data/patternMockData';
 
 const currentPattern = mockDataPattern[3]; 
 
