@@ -15,6 +15,7 @@ import { NotebookPedagogicalValidation } from "@/components/artefacts/NotebookPe
 import Select, { type Option } from "@/components/Select";
 import { ScrollButtons } from "@/components/ScrollButtons";
 import { ModeSwitchButton, type ModeType } from "@/components/artefacts/ModeSwitchButton";
+import { NotebookContextDataComparison } from "@/components/artefacts/NotebookContextDataComparison.tsx";
 
 function matchesFilter(type: string, filter: ArtefactFilterKey) {
   if (filter === "all") return true;
@@ -30,14 +31,16 @@ export default function ArtefactsView() {
   const [query, setQuery] = useState("");
   const [filterKey, setFilterKey] = useState<ArtefactFilterKey>("all");
 
-  const [notebook, setNotebook] = useState<NotebookData | null>(null);
+  const [selectedNotebooks, setSelectedNotebooks] = useState<NotebookData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const primaryNotebook = selectedNotebooks[0] ?? null;
+
   const filteredArtifacts = useMemo(() => {
-    if (!notebook) return [];
+    if (!primaryNotebook) return [];
     const q = query.trim().toLowerCase();
-    return notebook.artifacts.filter((a) => {
+    return primaryNotebook.artifacts.filter((a) => {
       const okFilter = matchesFilter(a.type, filterKey);
       const okQuery =
         !q ||
@@ -46,17 +49,25 @@ export default function ArtefactsView() {
         (a.className?.toLowerCase().includes(q) ?? false);
       return okFilter && okQuery;
     });
-  }, [notebook, query, filterKey]);
+  }, [primaryNotebook, query, filterKey]);
 
-  const sectionOptions = useMemo<Option[]>(
-    () => [
+  const sectionOptions = useMemo<Option[]>(() => {
+    const base: Option[] = [
       { label: "Contexte & problème", value: "section-context" },
       { label: "Évaluation performance", value: "section-performance" },
       { label: "Artefacts", value: "section-artefacts" },
       { label: "Validation pédagogique", value: "section-pedagogical" },
-    ],
-    [],
-  );
+    ];
+
+    if (mode !== "comparaison") return base;
+
+    return [
+      {
+        label: "Comparaison — Contexte & Données",
+        value: "section-compare-context-data",
+      },
+    ];
+  }, [mode]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -79,9 +90,18 @@ export default function ArtefactsView() {
     }
   }, [mode]);
 
+  const handleSelectionChange = (next: string[]) => {
+    if (mode === "simple") {
+      setSelectedIds(next.length > 0 ? [next[0]] : []);
+      return;
+    }
+    setSelectedIds(next.slice(0, 3));
+  };
+
   useEffect(() => {
-    if (!selectedId) {
-      setNotebook(null);
+    const ids = mode === "comparaison" ? selectedIds.slice(0, 3) : selectedIds.slice(0, 1);
+    if (ids.length === 0) {
+      setSelectedNotebooks([]);
       setError(null);
       setIsLoading(false);
       return;
@@ -92,12 +112,12 @@ export default function ArtefactsView() {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await getNotebookById(selectedId);
+        const results = await Promise.all(ids.map((id) => getNotebookById(id)));
         if (cancelled) return;
-        setNotebook(data);
-        if (!data) {
-          setError("Notebook introuvable");
-        }
+        const missing = results.some((r) => !r);
+        const notebooks = results.filter(Boolean) as NotebookData[];
+        setSelectedNotebooks(notebooks);
+        if (missing) setError("Un ou plusieurs notebooks sont introuvables");
       } catch (e) {
         if (cancelled) return;
         setError(
@@ -105,7 +125,7 @@ export default function ArtefactsView() {
             ? e.message
             : "Erreur lors du chargement du notebook",
         );
-        setNotebook(null);
+        setSelectedNotebooks([]);
       } finally {
         if (cancelled) return;
         setIsLoading(false);
@@ -115,7 +135,7 @@ export default function ArtefactsView() {
     return () => {
       cancelled = true;
     };
-  }, [selectedId]);
+  }, [mode, selectedIds]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -139,13 +159,14 @@ export default function ArtefactsView() {
             <NotebookSelectorDropdown
               multiple={mode === "comparaison"}
               label="Choisir un notebook"
-              onChange={setSelectedIds}
+              selected={selectedIds}
+              onChange={handleSelectionChange}
             />
           </div>
 
           <ModeSwitchButton mode={mode} onChange={setMode} />
 
-          {selectedId && notebook ? (
+          {selectedId && primaryNotebook ? (
             <div className="w-64">
               <Select
                 options={sectionOptions}
@@ -171,54 +192,68 @@ export default function ArtefactsView() {
             <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-800">
               {error}
             </div>
-          ) : notebook ? (
+          ) : primaryNotebook ? (
             <div>
               <ScrollButtons
                 onScrollTop={scrollToTop}
                 onScrollBottom={scrollToBottom}
               />
-              <div id="section-context" className="mb-6 scroll-mt-40">
-                <NotebookContextProblem notebook={notebook} />
-              </div>
-              <div id="section-performance" className="mb-6 scroll-mt-40">
-                <NotebookPerformanceEvaluation notebook={notebook} />
-              </div>
-              <div
-                id="section-artefacts"
-                className="rounded-2xl border border-slate-200 bg-white p-6 mb-6 scroll-mt-40"
-              >
-                <div className="flex items-start justify-between gap-6">
-                  <div>
-                    <h2 className="text-lg font-semibold text-slate-900">
-                      Artefacts
-                    </h2>
-                    <div className="text-sm text-slate-600 mt-1">
-                      {notebook.student} - {notebook.title}
+
+              {mode === "comparaison" ? (
+                <div
+                  id="section-compare-context-data"
+                  className="mb-6 scroll-mt-40"
+                >
+                  <NotebookContextDataComparison notebooks={selectedNotebooks} />
+                </div>
+              ) : null}
+
+              {mode === "simple" ? (
+                <>
+                  <div id="section-context" className="mb-6 scroll-mt-40">
+                    <NotebookContextProblem notebook={primaryNotebook} />
+                  </div>
+                  <div id="section-performance" className="mb-6 scroll-mt-40">
+                    <NotebookPerformanceEvaluation notebook={primaryNotebook} />
+                  </div>
+                  <div
+                    id="section-artefacts"
+                    className="rounded-2xl border border-slate-200 bg-white p-6 mb-6 scroll-mt-40"
+                  >
+                    <div className="flex items-start justify-between gap-6">
+                      <div>
+                        <h2 className="text-lg font-semibold text-slate-900">
+                          Artefacts
+                        </h2>
+                        <div className="text-sm text-slate-600 mt-1">
+                          {primaryNotebook.student} - {primaryNotebook.title}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <SearchBar
+                          onSearch={setQuery}
+                          placeholder="Rechercher des artefacts..."
+                        />
+                        <ArtefactFilterMenu
+                          value={filterKey}
+                          onChange={setFilterKey}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <ArtefactPipeline
+                        artifacts={filteredArtifacts}
+                        cells={primaryNotebook.cells}
+                      />
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-3">
-                    <SearchBar
-                      onSearch={setQuery}
-                      placeholder="Rechercher des artefacts..."
-                    />
-                    <ArtefactFilterMenu
-                      value={filterKey}
-                      onChange={setFilterKey}
-                    />
+                  <div id="section-pedagogical" className="mb-6 scroll-mt-40">
+                    <NotebookPedagogicalValidation notebook={primaryNotebook} />
                   </div>
-                </div>
-
-                <div className="mt-6">
-                  <ArtefactPipeline
-                    artifacts={filteredArtifacts}
-                    cells={notebook.cells}
-                  />
-                </div>
-              </div>
-              <div id="section-pedagogical" className="mb-6 scroll-mt-40">
-                <NotebookPedagogicalValidation notebook={notebook} />
-              </div>
+                </>
+              ) : null}
             </div>
           ) : null}
         </div>
