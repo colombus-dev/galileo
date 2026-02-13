@@ -10,7 +10,7 @@ export const mockDataPattern: PatternType[] = [
         TypePattern: 'Distribution',
         hierarchy: {
             parent: null,
-            children: null
+            children: ['Iso_Outlier_Detection']
         }
     },
     {
@@ -21,7 +21,7 @@ export const mockDataPattern: PatternType[] = [
         TypeAlgo: 'Isolation Forest',
         TypePattern: 'Outlier',
         hierarchy: {
-            parent: null,
+            parent: 'Iso_Distribution_V1',
             children: null
         }
     },
