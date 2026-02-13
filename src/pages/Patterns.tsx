@@ -51,6 +51,10 @@ export default function Patterns() {
             value: pattern.id
         }))
         : [];
+    
+        const handleRedirection = (patternId: string) => {
+            window.location.href = `/pattern/${patternId}`;
+        };
 
     return (
         <main className="flex flex-col h-screen bg-gray-50 overflow-hidden">
@@ -94,7 +98,7 @@ export default function Patterns() {
                         placeholder="Rechercher..."
                         onSearch={(value) => setSearchQuery(value)}
                         suggestions={searchSuggestions}
-                        onSelectSuggestion={(value) => setSearchQuery(value)}
+                        onSelectSuggestion={handleRedirection}
                     />
                 </div>
             </div>
