@@ -10,7 +10,6 @@ interface HierarchyPatternsProps {
     currentPatternId?: string; 
 }
 
-// ... (Les fonctions calculateAverageScore, getScoreStyle, getSideBarStyle restent inchangées) ...
 const calculateAverageScore = (counts: Counts): number => {
     const intervalValues: Record<string, number> = {
         '[0-0.2[': 0.1,
@@ -42,21 +41,15 @@ const getSideBarStyle = (score: number) => {
     return 'bg-red-500';
 };
 
-// --- NOUVELLE FONCTION UTILITAIRE ---
-// Cette fonction remonte la chaîne des parents jusqu'à trouver celui qui n'a plus de parent (la racine)
 const findRootPattern = (startPattern: PatternType, allPatterns: PatternType[]): PatternType => {
     let current = startPattern;
     
-    // Tant que le pattern a un parent défini...
     while (current.hierarchy.parent) {
-        // ... on essaie de trouver ce parent dans la liste complète
         const parent = allPatterns.find(p => p.id === current.hierarchy.parent);
         
         if (parent) {
-            // On remonte d'un cran
             current = parent;
         } else {
-            // Si le parent est introuvable (donnée manquante), on s'arrête là
             break;
         }
     }
@@ -64,7 +57,6 @@ const findRootPattern = (startPattern: PatternType, allPatterns: PatternType[]):
     return current;
 };
 
-// ... (Le composant PatternNode reste identique à ta version précédente) ...
 const PatternNode = ({ 
     pattern, 
     allPatterns, 
@@ -78,9 +70,6 @@ const PatternNode = ({
     isRoot?: boolean,
     currentPatternId?: string
 }) => {
-    // ... (Logique inchangée : récupération des enfants, calcul du score, rendu JSX) ...
-    // Je ne remets pas tout le code du PatternNode ici pour alléger, 
-    // GARDE LE MÊME CODE QUE TU AVAIS DÉJÀ POUR PatternNode
     const children = pattern.hierarchy.children
         ? pattern.hierarchy.children
             .map(childId => allPatterns.find(p => p.id === childId))
@@ -170,25 +159,20 @@ const PatternNode = ({
     );
 };
 
-// --- MODIFICATION ICI DANS LE COMPOSANT PRINCIPAL ---
 export const HierarchyPatterns = ({ 
     pattern, 
     allPatterns = mockDataPattern,
     currentPatternId
 }: HierarchyPatternsProps) => {
     
-    // Si currentPatternId n'est pas fourni, on utilise l'ID du pattern passé en prop
     const activeId = currentPatternId || pattern?.id;
 
-    // Normalisation de la liste des patterns
     const contextPatterns = useMemo(() => {
         return Array.isArray(allPatterns) ? allPatterns : [allPatterns];
     }, [allPatterns]);
 
-    // CALCUL DE LA VRAIE RACINE
     const trueRootPattern = useMemo(() => {
         if (!pattern) return null;
-        // Au lieu de rendre 'pattern', on cherche son ancêtre le plus lointain
         return findRootPattern(pattern, contextPatterns);
     }, [pattern, contextPatterns]);
 
@@ -208,13 +192,11 @@ export const HierarchyPatterns = ({
             </header>
 
             <div className="pl-1">
-                {/* On démarre l'affichage depuis la VRAIE RACINE (trueRootPattern) */}
                 <PatternNode 
                     pattern={trueRootPattern} 
                     allPatterns={contextPatterns}
                     isLastChild={true}
                     isRoot={true}
-                    // On passe l'ID actif pour qu'il soit bien surligné plus bas dans l'arbre
                     currentPatternId={activeId}
                 />
             </div>
