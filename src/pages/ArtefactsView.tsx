@@ -68,6 +68,10 @@ export default function ArtefactsView() {
         label: "Comparaison — Artefacts",
         value: "section-compare-artefacts",
       },
+      {
+        label: "Comparaison — Code",
+        value: "section-compare-code",
+      },
     ];
   }, [mode]);
 

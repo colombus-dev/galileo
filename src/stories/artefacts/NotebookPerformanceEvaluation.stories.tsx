@@ -5,6 +5,7 @@ import { mockNotebooks } from "@/data/mockData";
 const meta: Meta<typeof NotebookPerformanceEvaluation> = {
   title: "Artefacts/NotebookPerformanceEvaluation",
   component: NotebookPerformanceEvaluation,
+tags: ["autodocs"],
   parameters: {
     layout: "padded",
   },

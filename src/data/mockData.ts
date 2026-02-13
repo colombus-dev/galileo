@@ -38,7 +38,6 @@ export interface NotebookContextProblem {
   taskTypeLabel: string;
   /** Ex: "Médecine", "Histoire", "Botanique" */
   domainLabel: string;
-  /** 2–4 phrases, lisibles, orientées problème */
   description: string;
 }
 
@@ -64,33 +63,25 @@ export interface NotebookContext {
   problem: NotebookContextProblem;
   data: NotebookContextData;
   methodology: NotebookContextMethodology;
-  /** Liste explicite, dans l'ordre souhaité */
   libraries: string[];
 
-	/** Optionnel: métriques de qualité/exécution du notebook */
 	codeQuality?: {
 		executionTimeSeconds?: number;
 	};
 }
 
 export interface NotebookPedagogicalValidationCheckpoint {
-  /** Identifiant stable (sert pour le state des cases à cocher) */
   id: string;
   /** Catégorie (5 grandes sections) */
 	category: "data" | "preprocessing" | "split" | "modeling" | "evaluation";
-  /** Libellé court */
   title: string;
-  /** Explication lisible */
   description: string;
-  /** Résultat issu de l'analyse du notebook (ou de son import) */
   status: "success" | "warning" | "error";
-  /** Détail optionnel pour aider l'enseignant */
   detail?: string;
 }
 
 export interface NotebookPedagogicalValidation {
   checkpoints: NotebookPedagogicalValidationCheckpoint[];
-  /** État initial (ex: validation déjà commencée) */
   initialCheckedCheckpointIds?: string[];
   initialComment?: string;
 }
@@ -101,9 +92,7 @@ export interface NotebookData {
   title: string;
   artifacts: Artifact[];
   cells: CodeCell[];
-  /** Contexte fourni explicitement par le notebook (ou son import) */
   context?: NotebookContext;
-	/** Validation pédagogique fournie par le notebook (ou son import) */
 	pedagogicalValidation?: NotebookPedagogicalValidation;
   issues?: string[];
 }
