@@ -3,10 +3,12 @@ import { PatternType } from "@/PatternType";
 
 interface PatternListNotebookProps {
     pattern: PatternType;
+    onNotebookClick?: (notebookName: string) => void;
 }
 
 export const PatternListNotebook: React.FC<PatternListNotebookProps> = ({ 
     pattern, 
+    onNotebookClick,
 }) => {
     
     const notebookList = Object.entries(pattern.notebooks || {})
@@ -22,7 +24,9 @@ export const PatternListNotebook: React.FC<PatternListNotebookProps> = ({
     }
 
     const handleNotebookClick = (notebookName: string) => {
-        console.log(`Notebook cliqué : ${notebookName}`);
+        if (onNotebookClick) {
+            onNotebookClick(notebookName);
+        }
     };
 
     return (
