@@ -108,5 +108,30 @@ export const mockDataPattern: PatternType[] = [
             parent: null,
             children: null
         }
+    },
+    {
+        id: "Exemple_de_Pattern_Parent",
+        schema: "Data Preparation -> * -> Modeling",
+        counts: { '[0-0.2[': 10, '[0.2-0.4[': 20, '[0.4-0.6[': 30, '[0.6-0.8[': 25, '[0.8-1.0]': 15 },
+        notebooks: { 'example_pattern.ipynb': 0.9 },
+        TypeAlgo: 'ExampleAlgo',
+        TypePattern: 'ExampleType',
+        hierarchy: {
+            parent: null,
+            children: ["Exemple_de_Pattern_Enfant"]
+        }
+    },
+    {
+        id: "Exemple_de_Pattern_Enfant",
+        schema: "Data Preparation -> Cleaning -> Modeling",
+        counts: { '[0-0.2[': 5, '[0.2-0.4[': 15, '[0.4-0.6[': 25, '[0.6-0.8[': 35, '[0.8-1.0]': 20 },
+        notebooks: { 'example_child_pattern.ipynb': 0.85 },
+        TypeAlgo: 'ExampleAlgo',
+        TypePattern: 'ExampleType',
+        hierarchy: {
+            parent: "Exemple_de_Pattern_Parent",
+            children: null
+        }
     }
+    
 ];
