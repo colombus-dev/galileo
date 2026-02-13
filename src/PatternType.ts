@@ -1,5 +1,6 @@
 export interface PatternType {
     id: string;
+    schema: string;
     counts: Counts;
     notebooks: Record<string, number>;
     TypeAlgo: string;
