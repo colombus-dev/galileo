@@ -78,7 +78,7 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
             </div>
 
             <div className="overflow-y-auto p-2 space-y-1">
-                {displayItems.map((item, index) => {
+                {displayItems.map((item) => {
                     
                     if (item === 'SEPARATOR') {
                         return (
