@@ -109,10 +109,21 @@ export const mockDataPattern: PatternType[] = [
         notebooks: { 'example_pattern.ipynb': 0.9 },
         typeAlgo: 'ExampleAlgo',
         typePattern: 'ExampleType',
-        hierarchy: { parent: null, children: ["Exemple_de_Pattern_Enfant"] }
+        hierarchy: { parent: null, children: ['Exemple_de_Pattern_Enfant', 'Exemple_de_Pattern_Enfant_2'] }
     },
     {
         id: "Exemple_de_Pattern_Enfant",
+        schema: "Data Preparation -> Cleaning -> Modeling",
+        score: { '[0-0.2[': 5, '[0.2-0.4[': 15, '[0.4-0.6[': 25, '[0.6-0.8[': 35, '[0.8-1.0]': 20 },
+        ram: [0.2, 0.4, 0.5, 0.6, 0.7],
+        executionTime: [0.1, 0.3, 0.4, 0.5, 0.6],
+        notebooks: { 'example_child_pattern.ipynb': 0.85 },
+        typeAlgo: 'ExampleAlgo',
+        typePattern: 'ExampleType',
+        hierarchy: { parent: "Exemple_de_Pattern_Parent", children: null }
+    },
+    {
+        id: "Exemple_de_Pattern_Enfant_2",
         schema: "Data Preparation -> Cleaning -> Modeling",
         score: { '[0-0.2[': 5, '[0.2-0.4[': 15, '[0.4-0.6[': 25, '[0.6-0.8[': 35, '[0.8-1.0]': 20 },
         ram: [0.2, 0.4, 0.5, 0.6, 0.7],
