@@ -1,7 +1,9 @@
 export interface PatternType {
     id: string;
     schema: string;
-    counts: Counts;
+    score: Counts;
+    ram?: Counts;
+    executionTime?: Counts;
     notebooks: Record<string, number>;
     typeAlgo: string;
     typePattern: string;

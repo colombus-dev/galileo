@@ -76,7 +76,7 @@ const PatternNode = ({
             .filter((p): p is PatternType => !!p)
         : [];
 
-    const score = calculateAverageScore(pattern.counts);
+    const score = calculateAverageScore(pattern.score);
     const scoreClass = getScoreStyle(score);
     const sideBarClass = getSideBarStyle(score);
 

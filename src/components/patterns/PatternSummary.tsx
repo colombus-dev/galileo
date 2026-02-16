@@ -12,10 +12,10 @@ const bucketMidpoints: Record<string, number> = {
 
 export const PatternSummary: React.FC<PatternSummaryProps> = ({ pattern, className = '' }) => {
     
-    const totalFrequency = Object.values(pattern.counts).reduce((sum, count) => sum + count, 0);
+    const totalFrequency = Object.values(pattern.score).reduce((sum, count) => sum + count, 0);
 
     let weightedScoreSum = 0;
-    Object.entries(pattern.counts).forEach(([bucket, count]) => {
+    Object.entries(pattern.score).forEach(([bucket, count]) => {
         const midpoint = bucketMidpoints[bucket] || 0;
         weightedScoreSum += midpoint * count;
     });

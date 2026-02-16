@@ -36,13 +36,13 @@ const PatternHeatmap = ({
         }
 
         const sortedData = [...data].sort((a, b) => {
-            const sumA = Object.values(a.counts).reduce((acc, v) => acc + (v || 0), 0);
-            const sumB = Object.values(b.counts).reduce((acc, v) => acc + (v || 0), 0);
+            const sumA = Object.values(a.score).reduce((acc, v) => acc + (v || 0), 0);
+            const sumB = Object.values(b.score).reduce((acc, v) => acc + (v || 0), 0);
             return sumA - sumB;
         });
 
         const zValues = sortedData.map(pattern => {
-            return DATA_KEYS.map(key => pattern.counts[key] || 0);
+            return DATA_KEYS.map(key => pattern.score[key] || 0);
         });
 
         const trace: Plotly.Data = {
