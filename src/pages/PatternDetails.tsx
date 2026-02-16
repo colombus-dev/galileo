@@ -8,6 +8,7 @@ import PatternRanking from "@/components/patterns/PatternRanking";
 import PatternListNotebook from "@/components/patterns/PatternListNotebook";
 import { CodeNotebookModal } from "@/components/patterns/CodeNotebookModal";
 import HierarchyPatterns from "@/components/patterns/HierarchyPatterns";
+import PatternRadarChart from "@/components/patterns/PatternRadarChart";
 
 export default function PatternDetails() {
     const { id } = useParams();
@@ -57,8 +58,8 @@ export default function PatternDetails() {
                         </div>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-10 text-center">
-                        <p className="text-gray-400 font-medium">Peut-être des schémas ici</p>
+                    <div>
+                        <PatternRadarChart currentPattern={currentPattern} allPatterns={mockDataPattern} />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
