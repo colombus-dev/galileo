@@ -1,10 +1,12 @@
 export interface PatternType {
     id: string;
     schema: string;
-    counts: Counts;
+    score: Counts;
+    ram?: number[];
+    executionTime?: number[];
     notebooks: Record<string, number>;
-    TypeAlgo: string;
-    TypePattern: string;
+    typeAlgo: string;
+    typePattern: string;
     hierarchy: Hierarchy
 }
 

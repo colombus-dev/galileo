@@ -12,10 +12,11 @@ export default function Patterns() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState<string>('');
     const [selectedAlgo, setSelectedAlgo] = useState<string>('');
+    const [selectedMetric, setSelectedMetric] = useState<string>('score');
 
     const typeOptions: Option[] = [
         { label: 'Afficher tous les type', value: '' },
-        ...Array.from(new Set(mockData.map(d => d.TypePattern))).map(type => ({
+        ...Array.from(new Set(mockData.map(d => d.typePattern))).map(type => ({
             label: type,
             value: type
         }))
@@ -23,10 +24,16 @@ export default function Patterns() {
 
     const algoOptions: Option[] = [
         { label: 'Afficher tous les algos', value: '', },
-        ...Array.from(new Set(mockData.map(d => d.TypeAlgo))).map(algo => ({
+        ...Array.from(new Set(mockData.map(d => d.typeAlgo))).map(algo => ({
             label: algo,
             value: algo
         }))
+    ];
+
+    const metricsOptions: Option[] = [
+        { label: 'Score', value: 'score' },
+        { label: 'Mémoire (RAM)', value: 'ram' },
+        { label: 'Temps d’exécution', value: 'executionTime' }
     ];
 
     const filteredData = mockData.filter((pattern) => {
@@ -34,27 +41,28 @@ export default function Patterns() {
 
         const matchSearch = !query || (
             pattern.id.toLowerCase().includes(query) ||
-            pattern.TypePattern.toLowerCase().includes(query) ||
-            pattern.TypeAlgo.toLowerCase().includes(query)
+            pattern.typePattern.toLowerCase().includes(query) ||
+            pattern.typeAlgo.toLowerCase().includes(query)
         );
 
-        const matchType = selectedType === '' || pattern.TypePattern === selectedType;
-        const matchAlgo = selectedAlgo === '' || pattern.TypeAlgo === selectedAlgo;
+        const matchType = selectedType === '' || pattern.typePattern === selectedType;
+        const matchAlgo = selectedAlgo === '' || pattern.typeAlgo === selectedAlgo;
+        const matchMetric = selectedMetric === '' || (pattern[selectedMetric as keyof typeof pattern] !== undefined);
 
-        return matchSearch && matchType && matchAlgo;
+        return matchSearch && matchType && matchAlgo && matchMetric;
     });
 
     const searchSuggestions: SearchSuggestion[] = searchQuery
         ? filteredData.map(pattern => ({
             label: pattern.id,
-            subLabel: `${pattern.TypePattern} • ${pattern.TypeAlgo}`,
+            subLabel: `${pattern.typePattern} • ${pattern.typeAlgo}`,
             value: pattern.id
         }))
         : [];
-    
-        const handleRedirection = (patternId: string) => {
-            window.location.href = `/pattern/${patternId}`;
-        };
+
+    const handleRedirection = (patternId: string) => {
+        window.location.href = `/pattern/${patternId}`;
+    };
 
     return (
         <main className="flex flex-col h-screen bg-gray-50 overflow-hidden">
@@ -91,6 +99,14 @@ export default function Patterns() {
                             onSelect={(option) => setSelectedAlgo(String(option.value))}
                         />
                     </div>
+                    <div className="w-64">
+                        <Select
+                            options={metricsOptions}
+                            placeholder="Filtrer par métriques"
+                            defaultValue={metricsOptions[0]}
+                            onSelect={(option) => setSelectedMetric(String(option.value))}
+                        />
+                    </div>
                 </div>
 
                 <div className="flex-1 max-w-md relative">
@@ -108,6 +124,7 @@ export default function Patterns() {
                     <PatternHeatmap
                         title={`Patterns (${filteredData.length})`}
                         data={filteredData}
+                        activeMetric={selectedMetric}
                         fullWidth
                         className="flex-1"
                     />

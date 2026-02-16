@@ -76,7 +76,7 @@ const PatternNode = ({
             .filter((p): p is PatternType => !!p)
         : [];
 
-    const score = calculateAverageScore(pattern.counts);
+    const score = calculateAverageScore(pattern.score);
     const scoreClass = getScoreStyle(score);
     const sideBarClass = getSideBarStyle(score);
 
@@ -130,7 +130,7 @@ const PatternNode = ({
                             <FileCode size={10} />
                             <span>{Object.keys(pattern.notebooks).length} nb</span>
                             <span className="mx-1">•</span>
-                            <span className="uppercase text-[9px] border px-1 rounded bg-slate-50">{pattern.TypeAlgo}</span>
+                            <span className="uppercase text-[9px] border px-1 rounded bg-slate-50">{pattern.typeAlgo}</span>
                         </div>
                     </div>
                     <div className="flex flex-col items-end gap-0.5 ml-1">

@@ -14,11 +14,11 @@ const getAverageScore = (pattern: PatternType): number => {
         '[0-0.2[': 0.1, '[0.2-0.4[': 0.3, '[0.4-0.6[': 0.5, '[0.6-0.8[': 0.7, '[0.8-1.0]': 0.9
     };
     
-    const totalFreq = Object.values(pattern.counts).reduce((a, b) => a + b, 0);
+    const totalFreq = Object.values(pattern.score).reduce((a, b) => a + b, 0);
     if (totalFreq === 0) return 0;
     
     let weightedSum = 0;
-    Object.entries(pattern.counts).forEach(([bucket, count]) => {
+    Object.entries(pattern.score).forEach(([bucket, count]) => {
         weightedSum += (bucketMidpoints[bucket] || 0) * count;
     });
     
@@ -39,10 +39,10 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
 }) => {
 
     const fullRankingData = useMemo(() => {
-        const groupValue = criteria === 'type' ? currentPattern.TypePattern : currentPattern.TypeAlgo;
+        const groupValue = criteria === 'type' ? currentPattern.typePattern : currentPattern.typeAlgo;
 
         const sameGroupPatterns = allPatterns.filter(p => 
-            (criteria === 'type' ? p.TypePattern : p.TypeAlgo) === groupValue
+            (criteria === 'type' ? p.typePattern : p.typeAlgo) === groupValue
         );
 
         return sameGroupPatterns
@@ -72,7 +72,7 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
                 </h3>
                 <p className="text-xs text-gray-500 mt-1">
                     Groupe : <span className="font-semibold text-gray-900">
-                        {criteria === 'type' ? currentPattern.TypePattern : currentPattern.TypeAlgo}
+                        {criteria === 'type' ? currentPattern.typePattern : currentPattern.typeAlgo}
                     </span>
                 </p>
             </div>
