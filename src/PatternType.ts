@@ -2,8 +2,8 @@ export interface PatternType {
     id: string;
     schema: string;
     score: Counts;
-    ram?: Counts;
-    executionTime?: Counts;
+    ram?: number[];
+    executionTime?: number[];
     notebooks: Record<string, number>;
     typeAlgo: string;
     typePattern: string;

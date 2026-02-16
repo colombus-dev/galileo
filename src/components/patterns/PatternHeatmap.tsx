@@ -5,6 +5,7 @@ import { type PatternType, type Counts } from '@/PatternType';
 interface PatternHeatmapProps {
     title: string;
     data: PatternType[];
+    activeMetric?: string;
     fullWidth?: boolean;
     className?: string;
 }
@@ -12,105 +13,101 @@ interface PatternHeatmapProps {
 const PatternHeatmap = ({
     title,
     data,
+    activeMetric = 'score',
     fullWidth = true,
     className = ''
 }: PatternHeatmapProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
 
-    const DATA_KEYS: (keyof Counts)[] = [
-        '[0-0.2[',
-        '[0.2-0.4[',
-        '[0.4-0.6[',
-        '[0.6-0.8[',
-        '[0.8-1.0]'
-    ];
+    const DATA_KEYS: (keyof Counts)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
 
-    const DISPLAY_LABELS = ['0-0.2', '0.2-0.4', '0.4-0.6', '0.6-0.8', '0.8-1.0'];
+    const getLabels = () => {
+        switch (activeMetric) {
+            case 'ram': return ['0-200MB', '200-400MB', '400-600MB', '600-800MB', '800MB-1GB'];
+            case 'executionTime': return ['0-200ms', '200-400ms', '400-600ms', '600-800ms', '800ms-1s'];
+            default: return ['0-0.2', '0.2-0.4', '0.4-0.6', '0.6-0.8', '0.8-1.0'];
+        }
+    };
+
+    const transformArrayToCounts = (values: number[]): Counts => {
+        const counts: Counts = { '[0-0.2[': 0, '[0.2-0.4[': 0, '[0.4-0.6[': 0, '[0.6-0.8[': 0, '[0.8-1.0]': 0 };
+        values.forEach(v => {
+            if (v < 0.2) counts['[0-0.2[']!++;
+            else if (v < 0.4) counts['[0.2-0.4[']!++;
+            else if (v < 0.6) counts['[0.4-0.6[']!++;
+            else if (v < 0.8) counts['[0.6-0.8[']!++;
+            else counts['[0.8-1.0]']!++;
+        });
+        return counts;
+    };
 
     useEffect(() => {
-        if (!chartRef.current) return;
+        if (!chartRef.current || !data || data.length === 0) return;
 
-        if (!data || data.length === 0) {
-            Plotly.purge(chartRef.current);
-            return;
-        }
+        const metricKey = activeMetric as keyof PatternType;
+        const currentLabels = getLabels();
 
-        const sortedData = [...data].sort((a, b) => {
-            const sumA = Object.values(a.score).reduce((acc, v) => acc + (v || 0), 0);
-            const sumB = Object.values(b.score).reduce((acc, v) => acc + (v || 0), 0);
-            return sumA - sumB;
+        const formattedData = data.map(pattern => {
+            const rawValue = pattern[metricKey];
+            const counts = Array.isArray(rawValue) 
+                ? transformArrayToCounts(rawValue) 
+                : (rawValue as Counts) || {};
+            
+            const total = Object.values(counts).reduce((acc, v) => acc + (v || 0), 0);
+            return { id: pattern.id, counts, total };
         });
 
-        const zValues = sortedData.map(pattern => {
-            return DATA_KEYS.map(key => pattern.score[key] || 0);
-        });
+        formattedData.sort((a, b) => a.total - b.total);
+
+        const zValues = formattedData.map(d => DATA_KEYS.map(key => d.counts[key] || 0));
 
         const trace: Plotly.Data = {
             z: zValues,
-            x: DISPLAY_LABELS,
-            y: sortedData.map(d => d.id),
+            x: currentLabels,
+            y: formattedData.map(d => d.id),
             type: 'heatmap',
             colorscale: [
-                [0.0, '#ef4444'], 
+                [0.0, '#f8fafc'],
+                [0.01, '#ef4444'], 
                 [0.25, '#f97316'],
                 [0.5, '#facc15'], 
                 [0.75, '#84cc16'],
-                [1.0, '#22c55e'] 
+                [1.0, '#22c55e']
             ],
-
             showscale: true,
-            xgap: 1,
-            ygap: 1,
-            hovertemplate:
-                '<b>%{y}</b><br>' +
-                'Intervalle: %{x}<br>' +
-                'Fréquence: %{z}<extra></extra>'
+            xgap: 2,
+            ygap: 2,
+            hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Fréquence: %{z}<extra></extra>'
         };
 
         const layout: Plotly.Layout = {
             autosize: true,
-            margin: { l: 150, r: 20, t: 40, b: 50 },
+            margin: { l: 180, r: 30, t: 40, b: 60 },
             paper_bgcolor: 'transparent',
             plot_bgcolor: 'transparent',
-            font: { family: 'Inter, sans-serif' },
             xaxis: {
-                title: 'Score du pattern',
-                fixedrange: true,
-                tickmode: 'array',
-                tickvals: DISPLAY_LABELS
+                title: { text: `Distribution (${activeMetric})`, font: { size: 12 } },
+                tickangle: -30,
+                fixedrange: true
             },
             yaxis: {
                 automargin: true,
-                fixedrange: true,
-                title: 'ID Pattern'
+                fixedrange: true
             }
         };
 
-        const config: Plotly.Config = {
-            responsive: true,
-            displayModeBar: false
-        };
+        Plotly.newPlot(chartRef.current, [trace], layout, { 
+            responsive: true, 
+            displayModeBar: false 
+        });
 
-        Plotly.newPlot(chartRef.current, [trace], layout, config);
-
-        return () => {
-            if (chartRef.current) Plotly.purge(chartRef.current);
-        };
-    }, [data]);
+        return () => { if (chartRef.current) Plotly.purge(chartRef.current); };
+    }, [data, activeMetric]);
 
     return (
-        <div
-            className={`card ${className}`}
-            style={{
-                padding: '20px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                width: fullWidth ? '100%' : '50%',
-                backgroundColor: 'white'
-            }}
-        >
-            <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', fontWeight: 600 }}>{title}</h2>
-            <div ref={chartRef} style={{ width: '100%', height: '400px', minHeight: '300px' }} />
+        <div className={`bg-white p-5 rounded-lg shadow-md ${className}`} style={{ width: fullWidth ? '100%' : 'auto' }}>
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">{title}</h2>
+            <div ref={chartRef} className="w-full h-[500px]" />
         </div>
     );
 };

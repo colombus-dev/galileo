@@ -12,6 +12,7 @@ export default function Patterns() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState<string>('');
     const [selectedAlgo, setSelectedAlgo] = useState<string>('');
+    const [selectedMetric, setSelectedMetric] = useState<string>('score');
 
     const typeOptions: Option[] = [
         { label: 'Afficher tous les type', value: '' },
@@ -29,6 +30,12 @@ export default function Patterns() {
         }))
     ];
 
+    const metricsOptions: Option[] = [
+        { label: 'Score', value: 'score' },
+        { label: 'Mémoire (RAM)', value: 'ram' },
+        { label: 'Temps d’exécution', value: 'executionTime' }
+    ];
+
     const filteredData = mockData.filter((pattern) => {
         const query = searchQuery.toLowerCase();
 
@@ -40,8 +47,9 @@ export default function Patterns() {
 
         const matchType = selectedType === '' || pattern.typePattern === selectedType;
         const matchAlgo = selectedAlgo === '' || pattern.typeAlgo === selectedAlgo;
+        const matchMetric = selectedMetric === '' || (pattern[selectedMetric as keyof typeof pattern] !== undefined);
 
-        return matchSearch && matchType && matchAlgo;
+        return matchSearch && matchType && matchAlgo && matchMetric;
     });
 
     const searchSuggestions: SearchSuggestion[] = searchQuery
@@ -51,10 +59,10 @@ export default function Patterns() {
             value: pattern.id
         }))
         : [];
-    
-        const handleRedirection = (patternId: string) => {
-            window.location.href = `/pattern/${patternId}`;
-        };
+
+    const handleRedirection = (patternId: string) => {
+        window.location.href = `/pattern/${patternId}`;
+    };
 
     return (
         <main className="flex flex-col h-screen bg-gray-50 overflow-hidden">
@@ -91,6 +99,14 @@ export default function Patterns() {
                             onSelect={(option) => setSelectedAlgo(String(option.value))}
                         />
                     </div>
+                    <div className="w-64">
+                        <Select
+                            options={metricsOptions}
+                            placeholder="Filtrer par métriques"
+                            defaultValue={metricsOptions[0]}
+                            onSelect={(option) => setSelectedMetric(String(option.value))}
+                        />
+                    </div>
                 </div>
 
                 <div className="flex-1 max-w-md relative">
@@ -108,6 +124,7 @@ export default function Patterns() {
                     <PatternHeatmap
                         title={`Patterns (${filteredData.length})`}
                         data={filteredData}
+                        activeMetric={selectedMetric}
                         fullWidth
                         className="flex-1"
                     />
