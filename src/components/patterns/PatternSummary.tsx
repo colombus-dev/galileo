@@ -41,11 +41,11 @@ export const PatternSummary: React.FC<PatternSummaryProps> = ({ pattern, classNa
             
             <div className="flex items-center gap-3">
                 <span className={`px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wide border bg-blue-50 text-blue-700 border-blue-200`}>
-                    {pattern.TypePattern}
+                    {pattern.typePattern}
                 </span>
 
                 <span className="text-sm font-semibold text-gray-800">
-                    {pattern.TypeAlgo}
+                    {pattern.typeAlgo}
                 </span>
             </div>
 

@@ -39,10 +39,10 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
 }) => {
 
     const fullRankingData = useMemo(() => {
-        const groupValue = criteria === 'type' ? currentPattern.TypePattern : currentPattern.TypeAlgo;
+        const groupValue = criteria === 'type' ? currentPattern.typePattern : currentPattern.typeAlgo;
 
         const sameGroupPatterns = allPatterns.filter(p => 
-            (criteria === 'type' ? p.TypePattern : p.TypeAlgo) === groupValue
+            (criteria === 'type' ? p.typePattern : p.typeAlgo) === groupValue
         );
 
         return sameGroupPatterns
@@ -72,7 +72,7 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
                 </h3>
                 <p className="text-xs text-gray-500 mt-1">
                     Groupe : <span className="font-semibold text-gray-900">
-                        {criteria === 'type' ? currentPattern.TypePattern : currentPattern.TypeAlgo}
+                        {criteria === 'type' ? currentPattern.typePattern : currentPattern.typeAlgo}
                     </span>
                 </p>
             </div>

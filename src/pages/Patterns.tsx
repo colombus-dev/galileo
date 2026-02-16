@@ -15,7 +15,7 @@ export default function Patterns() {
 
     const typeOptions: Option[] = [
         { label: 'Afficher tous les type', value: '' },
-        ...Array.from(new Set(mockData.map(d => d.TypePattern))).map(type => ({
+        ...Array.from(new Set(mockData.map(d => d.typePattern))).map(type => ({
             label: type,
             value: type
         }))
@@ -23,7 +23,7 @@ export default function Patterns() {
 
     const algoOptions: Option[] = [
         { label: 'Afficher tous les algos', value: '', },
-        ...Array.from(new Set(mockData.map(d => d.TypeAlgo))).map(algo => ({
+        ...Array.from(new Set(mockData.map(d => d.typeAlgo))).map(algo => ({
             label: algo,
             value: algo
         }))
@@ -34,12 +34,12 @@ export default function Patterns() {
 
         const matchSearch = !query || (
             pattern.id.toLowerCase().includes(query) ||
-            pattern.TypePattern.toLowerCase().includes(query) ||
-            pattern.TypeAlgo.toLowerCase().includes(query)
+            pattern.typePattern.toLowerCase().includes(query) ||
+            pattern.typeAlgo.toLowerCase().includes(query)
         );
 
-        const matchType = selectedType === '' || pattern.TypePattern === selectedType;
-        const matchAlgo = selectedAlgo === '' || pattern.TypeAlgo === selectedAlgo;
+        const matchType = selectedType === '' || pattern.typePattern === selectedType;
+        const matchAlgo = selectedAlgo === '' || pattern.typeAlgo === selectedAlgo;
 
         return matchSearch && matchType && matchAlgo;
     });
@@ -47,7 +47,7 @@ export default function Patterns() {
     const searchSuggestions: SearchSuggestion[] = searchQuery
         ? filteredData.map(pattern => ({
             label: pattern.id,
-            subLabel: `${pattern.TypePattern} • ${pattern.TypeAlgo}`,
+            subLabel: `${pattern.typePattern} • ${pattern.typeAlgo}`,
             value: pattern.id
         }))
         : [];

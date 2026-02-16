@@ -3,8 +3,8 @@ export interface PatternType {
     schema: string;
     counts: Counts;
     notebooks: Record<string, number>;
-    TypeAlgo: string;
-    TypePattern: string;
+    typeAlgo: string;
+    typePattern: string;
     hierarchy: Hierarchy
 }
 
