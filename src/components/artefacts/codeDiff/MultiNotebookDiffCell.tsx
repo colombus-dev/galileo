@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer-continued";
 
 import { CellCardShell } from "./CellCardShell";
-import { getDiffViewerStylesOverride } from "./diffPalette";
-import { countLines, normalizeCode } from "./diffUtils";
+import { getDiffViewerStylesOverride } from "../../../utils/diffPalette";
+import { countLines, normalizeCode } from "../../../utils/diffUtils";
 
 export function MultiNotebookDiffCell({
 	cellIndex,

@@ -4,7 +4,7 @@ import { CodeViewer } from "../CodeViewer";
 
 import { CellCardShell, PlaceholderCell } from "./CellCardShell";
 
-import { countLines, normalizeCode } from "./diffUtils";
+import { countLines, normalizeCode } from "../../../utils/diffUtils";
 
 export function SingleNotebookCell({
 	cellIndex,

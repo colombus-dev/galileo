@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 
 import { CellCardShell } from "./CellCardShell";
-import { getThreeWayCellClass, type ThreeWayNotebookIndex } from "./diffPalette";
+import { getThreeWayCellClass, type ThreeWayNotebookIndex } from "../../../utils/diffPalette";
 import {
 	buildAnchoredAlignment,
 	resolveThreeWayCellStatus,
 	splitLines,
 	type ThreeWayCellStatus,
-} from "./diffUtils";
+} from "../../../utils/diffUtils";
 
 function ThreeWayLineCell({
 	lineNo,

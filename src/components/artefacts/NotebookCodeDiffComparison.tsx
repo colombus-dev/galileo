@@ -15,7 +15,7 @@ import {
 	getCellByIndex,
 	getCellIndexUnionMany,
 	resolveCellTitle,
-} from "./codeDiff/diffUtils";
+} from "../../utils/diffUtils";
 
 export type NotebookCodeDiffComparisonProps = {
 	notebooks: NotebookData[];
