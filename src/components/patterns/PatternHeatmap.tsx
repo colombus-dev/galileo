@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Plotly from 'plotly.js-dist-min';
 import { type PatternType, type Counts } from '@/PatternType';
 
@@ -18,6 +18,7 @@ const PatternHeatmap = ({
     className = ''
 }: PatternHeatmapProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
+    const [filterMode, setFilterMode] = useState<'more' | 'less'>('more');
 
     const DATA_KEYS: (keyof Counts)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
 
@@ -47,7 +48,7 @@ const PatternHeatmap = ({
         const metricKey = activeMetric as keyof PatternType;
         const currentLabels = getLabels();
 
-        const formattedData = data.map(pattern => {
+        let formattedData = data.map(pattern => {
             const rawValue = pattern[metricKey];
             const counts = Array.isArray(rawValue) 
                 ? transformArrayToCounts(rawValue) 
@@ -59,12 +60,28 @@ const PatternHeatmap = ({
 
         formattedData.sort((a, b) => a.total - b.total);
 
-        const zValues = formattedData.map(d => DATA_KEYS.map(key => d.counts[key] || 0));
+        const totalCount = formattedData.length;
+        let limit = 0;
+
+        if (totalCount < 20) {
+            limit = Math.ceil(totalCount / 2);
+        } else {
+            limit = 10;
+        }
+
+        let displayData = [];
+        if (filterMode === 'less') {
+            displayData = formattedData.slice(0, limit);
+        } else {
+            displayData = formattedData.slice(-limit);
+        }
+
+        const zValues = displayData.map(d => DATA_KEYS.map(key => d.counts[key] || 0));
 
         const trace: Plotly.Data = {
             z: zValues,
             x: currentLabels,
-            y: formattedData.map(d => d.id),
+            y: displayData.map(d => d.id),
             type: 'heatmap',
             colorscale: [
                 [0.0, '#f8fafc'],
@@ -92,7 +109,7 @@ const PatternHeatmap = ({
             },
             yaxis: {
                 automargin: true,
-                fixedrange: true
+                fixedrange: true,
             }
         };
 
@@ -102,11 +119,37 @@ const PatternHeatmap = ({
         });
 
         return () => { if (chartRef.current) Plotly.purge(chartRef.current); };
-    }, [data, activeMetric]);
+    }, [data, activeMetric, filterMode]);
 
     return (
         <div className={`bg-white p-5 rounded-lg shadow-md ${className}`} style={{ width: fullWidth ? '100%' : 'auto' }}>
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">{title}</h2>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+                
+                <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                        onClick={() => setFilterMode('less')}
+                        className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                            filterMode === 'less' 
+                                ? 'bg-white text-blue-600 shadow-sm font-medium' 
+                                : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                    >
+                        Less
+                    </button>
+                    <button
+                        onClick={() => setFilterMode('more')}
+                        className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                            filterMode === 'more' 
+                                ? 'bg-white text-blue-600 shadow-sm font-medium' 
+                                : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                    >
+                        More
+                    </button>
+                </div>
+            </div>
+            
             <div ref={chartRef} className="w-full h-[500px]" />
         </div>
     );
