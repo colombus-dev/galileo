@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import BadgePattern from '../components/BagdePattern';
+import { mockDataPattern } from '@/data/patternMockData';
 
 const meta: Meta<typeof BadgePattern> = {
   title: 'Patterns/BadgePattern',
@@ -15,21 +16,18 @@ type Story = StoryObj<typeof BadgePattern>;
 
 export const ValidePattern: Story = {
   args: {
-    label: 'Pattern 1',
-    color: 'green',
+    pattern: mockDataPattern[6],
   },
 };
 
 export const MediumPattern: Story = {
   args: {
-    label: 'Pattern 2',
-    color: 'orange',
+    pattern: mockDataPattern[0],
   },
 };
 
 export const FailedPattern: Story = {
   args: {
-    label: 'Pattern 3',
-    color: 'red', 
+    pattern: mockDataPattern[1],
   },
 };
