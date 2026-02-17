@@ -8,9 +8,9 @@ import { ChevronDown, Code } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NotebookBadge } from "./NotebookBadge";
 
-import { MultiNotebookDiffCell } from "./codeDiff/MultiNotebookDiffCell";
 import { SingleNotebookCell } from "./codeDiff/SingleNotebookCell";
-import { ThreeNotebookUnifiedDiffCell } from "./codeDiff/ThreeNotebookUnifiedDiffCell";
+import { TwoNotebookCenteredDiffCell } from "./codeDiff/TwoNotebookCenteredDiffCell";
+import { ThreeNotebookCenteredDiffCell } from "./codeDiff/ThreeNotebookCenteredDiffCell";
 import {
 	getCellByIndex,
 	getCellIndexUnionMany,
@@ -144,46 +144,33 @@ export function NotebookCodeDiffComparison({ notebooks }: NotebookCodeDiffCompar
 						const title = resolveCellTitle(cells);
 
 						if (isThree) {
-							const labels: [string, string, string] = [
-								orderedNotebooks[0]!.student,
-								orderedNotebooks[1]!.student,
-								orderedNotebooks[2]!.student,
-							];
-							const codes: [string, string, string] = [
-								cells[0]?.code ?? "",
-								cells[1]?.code ?? "",
-								cells[2]?.code ?? "",
-							];
 							return (
-								<ThreeNotebookUnifiedDiffCell
+								<ThreeNotebookCenteredDiffCell
 									key={`diff-3-way-${cellIndex}`}
 									cellIndex={cellIndex}
 									title={title}
-									labels={labels}
-									codes={codes}
+									baseLabel={orderedNotebooks[0]!.student}
+									baseCode={cells[0]?.code ?? ""}
+									leftLabel={orderedNotebooks[1]!.student}
+									leftCode={cells[1]?.code ?? ""}
+									rightLabel={orderedNotebooks[2]!.student}
+									rightCode={cells[2]?.code ?? ""}
 								/>
 							);
 						}
 
 						if (isTwoOrMore) {
-							const baseNotebook = orderedNotebooks[0]!;
-							const baseCell = cells[0];
-							const baseCode = baseCell?.code ?? "";
-
-							const comparisons = orderedNotebooks.slice(1).map((nb, idx) => {
-								const cell = cells[idx + 1];
-								return { label: nb.student, code: cell?.code ?? "", notebookIndex: idx + 1 };
-							});
-
+							// Cohérence avec l'affichage 3 notebooks : la référence est affichée une seule fois,
+							// au milieu.
 							return (
-								<MultiNotebookDiffCell
-									key={`diff-${visibleNotebooks.length}-${cellIndex}`}
+								<TwoNotebookCenteredDiffCell
+									key={`diff-2-centered-${cellIndex}`}
 									cellIndex={cellIndex}
 									title={title}
-									baseLabel={baseNotebook.student}
-									baseCode={baseCode}
-									baseNotebookIndex={0}
-									comparisons={comparisons}
+									baseLabel={orderedNotebooks[0]!.student}
+									baseCode={cells[0]?.code ?? ""}
+									otherLabel={orderedNotebooks[1]!.student}
+									otherCode={cells[1]?.code ?? ""}
 								/>
 							);
 						}

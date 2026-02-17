@@ -6,8 +6,12 @@ import {
   getNonEmptyLineCount,
   getPrimaryMetricArtifact,
 } from "@/utils/notebookPerformanceEvaluation";
-import { getResponsiveNotebookColsClass, getVisibleNotebooks } from "@/utils/notebookComparison";
+import {
+  getResponsiveNotebookColsClass,
+  getVisibleNotebooks,
+} from "@/utils/notebookComparison";
 import { CheckCircle2, TrendingUp } from "lucide-react";
+import PatternPipeline from "../patterns/PatternPipeline";
 
 export type NotebookPerformanceComparisonProps = {
   notebooks: NotebookData[];
@@ -20,9 +24,7 @@ function StatPill({ label, value }: { label: string; value: string }) {
       <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
         {label}
       </div>
-      <div className="mt-0.5 text-sm font-semibold text-slate-900">
-        {value}
-      </div>
+      <div className="mt-0.5 text-sm font-semibold text-slate-900">{value}</div>
     </div>
   );
 }
@@ -48,7 +50,6 @@ function extractPrimaryMetricLabel(notebook: NotebookData): string {
   const primary = getPrimaryMetricArtifact(notebook);
   return primary?.metadata?.metric ?? primary?.name ?? "Performance";
 }
-
 
 function extractPerformancePct(notebook: NotebookData): string {
   const primary = getPrimaryMetricArtifact(notebook);
@@ -83,7 +84,9 @@ function extractCodeCells(notebook: NotebookData): string {
   return String(notebook.cells.length);
 }
 
-function getMetricEntries(notebook: NotebookData): Array<{ label: string; value: string }> {
+function getMetricEntries(
+  notebook: NotebookData,
+): Array<{ label: string; value: string }> {
   const metrics = notebook.artifacts.filter((a) => a.type === "metric");
   if (metrics.length === 0) return [];
 
@@ -122,6 +125,7 @@ export function NotebookPerformanceComparison({
           const metricLabel = extractPrimaryMetricLabel(n);
           const hasConfusionMatrix = Boolean(getConfusionMatrixArtifact(n));
           const metrics = getMetricEntries(n);
+          const notebookName = n.id || `Notebook ${idx + 1}`;
 
           return (
             <div
@@ -134,7 +138,9 @@ export function NotebookPerformanceComparison({
                   <div className="truncate text-sm font-semibold text-slate-900">
                     {n.student}
                   </div>
-                  <div className="truncate text-xs text-slate-500">{n.title}</div>
+                  <div className="truncate text-xs text-slate-500">
+                    {n.title}
+                  </div>
                 </div>
               </div>
 
@@ -144,7 +150,10 @@ export function NotebookPerformanceComparison({
                   <div className="text-3xl font-semibold text-emerald-700">
                     {perf}
                   </div>
-                  <TrendingUp className="h-5 w-5 text-emerald-600" aria-hidden="true" />
+                  <TrendingUp
+                    className="h-5 w-5 text-emerald-600"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div className="mt-1 text-xs text-slate-500">{metricLabel}</div>
               </div>
@@ -166,7 +175,9 @@ export function NotebookPerformanceComparison({
                       <span>Matrice de confusion</span>
                     </div>
                   ) : (
-                    <div className="text-xs text-slate-500">Matrice de confusion: —</div>
+                    <div className="text-xs text-slate-500">
+                      Matrice de confusion: —
+                    </div>
                   )}
                 </div>
               </div>
@@ -176,14 +187,29 @@ export function NotebookPerformanceComparison({
                   Métriques disponibles
                 </div>
                 {metrics.length === 0 ? (
-                  <div className="mt-2 text-sm text-slate-600">Aucune métrique trouvée.</div>
+                  <div className="mt-2 text-sm text-slate-600">
+                    Aucune métrique trouvée.
+                  </div>
                 ) : (
                   <div className="mt-2 grid gap-2 sm:grid-cols-2">
                     {metrics.map((m) => (
-                      <MetricPill key={m.label} label={m.label} value={m.value} />
+                      <MetricPill
+                        key={m.label}
+                        label={m.label}
+                        value={m.value}
+                      />
                     ))}
                   </div>
                 )}
+              </div>
+              <div className="mt-4">
+                <div className="text-sm font-semibold text-slate-800">
+                  Patterns
+                </div>
+                <PatternPipeline
+                  notebookName={`${notebookName}`}
+                  direction="vertical"
+                />
               </div>
             </div>
           );
