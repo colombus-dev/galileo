@@ -4,9 +4,13 @@ import { mockDataPattern } from '@/data/patternMockData';
 
 interface PatternPipelineProps {
   notebookName: string;
+  direction?: 'horizontal' | 'vertical';
 }
 
-const PatternPipeline: React.FC<PatternPipelineProps> = ({ notebookName }) => {
+const PatternPipeline: React.FC<PatternPipelineProps> = ({ 
+  notebookName, 
+  direction = 'horizontal' 
+}) => {
   
   const pipelinePatterns = useMemo(() => {
     const filtered = mockDataPattern.filter((pattern) => 
@@ -24,14 +28,21 @@ const PatternPipeline: React.FC<PatternPipelineProps> = ({ notebookName }) => {
     return <div className="text-gray-400 italic">Aucun pattern détecté pour {notebookName}</div>;
   }
 
+  const isVertical = direction === 'vertical';
+
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div 
+      className={`flex items-center gap-3 ${isVertical ? 'flex-col' : 'flex-wrap'}`}
+    >
       {pipelinePatterns.map((pattern, index) => (
         <React.Fragment key={pattern.id}>
           <BadgePattern pattern={pattern} />
 
+          {/* Séparateur (Flèche) */}
           {index < pipelinePatterns.length - 1 && (
-            <div className="text-gray-400 flex items-center justify-center">
+            <div 
+              className={`text-gray-400 flex items-center justify-center transition-transform ${isVertical ? 'rotate-90' : ''}`}
+            >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
                 width="24" 

@@ -13,9 +13,16 @@ const meta: Meta<typeof PatternPipeline> = {
 export default meta;
 type Story = StoryObj<typeof PatternPipeline>;
 
-export const FraudDetectionPipeline: Story = {
+export const DefautPipeline: Story = {
   args: {
     notebookName: 'notebook-1',
+  },
+};
+
+export const VerticalPipeline: Story = {
+  args: {
+    notebookName: 'notebook-1',
+    direction: 'vertical',
   },
 };
 
