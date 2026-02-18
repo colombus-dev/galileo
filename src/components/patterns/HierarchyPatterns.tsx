@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import { GitCommit, Activity, FileCode } from 'lucide-react';
 
 import { mockDataPattern } from "@/data/patternMockData";
@@ -70,6 +71,8 @@ const PatternNode = ({
     isRoot?: boolean,
     currentPatternId?: string
 }) => {
+    const navigate = useNavigate();
+
     const children = pattern.hierarchy.children
         ? pattern.hierarchy.children
             .map(childId => allPatterns.find(p => p.id === childId))
@@ -81,6 +84,11 @@ const PatternNode = ({
     const sideBarClass = getSideBarStyle(score);
 
     const isSelected = currentPatternId === pattern.id;
+
+    const handleNodeClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); 
+        navigate(`/pattern/${pattern.id}`);
+    };
 
     return (
         <div className={`relative ${isRoot ? 'pl-0' : 'pl-6'}`}>
@@ -94,15 +102,18 @@ const PatternNode = ({
             )}
 
             <div className="mb-2 relative group">
-                <div className={`
-                    flex items-center gap-2 p-2.5 rounded-md 
-                    border transition-all duration-200
-                    w-full relative overflow-hidden
-                    ${isSelected 
-                        ? 'bg-blue-50/60 border-blue-300 shadow-sm ring-1 ring-blue-200'
-                        : 'bg-white border-slate-200 shadow-sm hover:shadow-md'
-                    }
-                `}>
+                <div 
+                    onClick={handleNodeClick}
+                    className={`
+                        flex items-center gap-2 p-2.5 rounded-md 
+                        border transition-all duration-200
+                        w-full relative overflow-hidden cursor-pointer
+                        ${isSelected 
+                            ? 'bg-blue-50/60 border-blue-300 shadow-sm ring-1 ring-blue-200'
+                            : 'bg-white border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200'
+                        }
+                    `}
+                >
                     <div className={`absolute left-0 top-0 bottom-0 w-1 ${sideBarClass}`} />
                     <div className={`
                         ml-2 p-1.5 rounded-md border shrink-0
