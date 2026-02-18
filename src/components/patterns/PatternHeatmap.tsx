@@ -111,7 +111,7 @@ const PatternHeatmap = ({
             },
             yaxis: {
                 automargin: true,
-                fixedrange: true, // Empêche le zoom pour garder les labels stables
+                fixedrange: true,
             }
         };
 
@@ -119,25 +119,19 @@ const PatternHeatmap = ({
             responsive: true, 
             displayModeBar: false 
         }).then((gd: any) => {
-            // 1. Clic sur les cases de la Heatmap (Standard Plotly)
             gd.on('plotly_click', (eventData: any) => {
                 const point = eventData.points[0];
                 const patternId = point.y;
                 if (patternId) navigate(`/pattern/${patternId}`);
             });
 
-            // 2. Clic sur les labels de l'axe Y ("Légende" des noms)
-            // On manipule directement le DOM car Plotly ne supporte pas le clic sur les axes nativement
             const yLabels = chartRef.current?.querySelectorAll('.ytick text');
             
             yLabels?.forEach((label) => {
-                // On force le style pour indiquer que c'est cliquable
                 (label as HTMLElement).style.cursor = 'pointer';
                 (label as HTMLElement).style.fontWeight = '500';
 
-                // On ajoute l'écouteur
                 label.addEventListener('click', () => {
-                    // textContent contient le nom du pattern affiché
                     const patternId = label.textContent;
                     if (patternId) {
                         navigate(`/pattern/${patternId}`);
@@ -163,7 +157,6 @@ const PatternHeatmap = ({
                     <button onClick={() => setFilterMode('more')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'more' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>More</button>
                 </div>
             </div>
-            {/* Ajout d'une classe pour s'assurer que le curseur change au survol */}
             <div ref={chartRef} className="w-full h-[500px]" />
         </div>
     );
