@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
 import { MdBook, MdCode } from 'react-icons/md';
-import type { NotebookModel, NotebookSection } from '@/types/notebook';
+import type { NotebookModel } from '@/types/notebook';
 
 export interface SummarySidebarProps {
   notebook: NotebookModel;
   activeSection?: string;
   onSelectSection?: (sectionId: string) => void;
-  compact?: boolean;
   className?: string;
 }
 
@@ -18,7 +17,6 @@ export const SummarySidebar: React.FC<SummarySidebarProps> = ({
   notebook,
   activeSection,
   onSelectSection,
-  compact = false,
   className = '',
 }) => {
   const sortedSections = useMemo(

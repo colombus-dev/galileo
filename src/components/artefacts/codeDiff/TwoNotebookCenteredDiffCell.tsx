@@ -3,7 +3,13 @@ import { useMemo } from "react";
 import { CodeViewer } from "../CodeViewer";
 import { CellCardShell, PlaceholderCell } from "./CellCardShell";
 
-import { buildAnchoredAlignment, countLines, normalizeCode, splitLines } from "../../../utils/diffUtils";
+import {
+	buildAnchoredAlignment,
+	countLines,
+  getInterleavingSeparatorLineNumbers,
+	normalizeCode,
+	splitLines,
+} from "../../../utils/diffUtils";
 import { getNotebookDiffColor } from "../../../utils/diffPalette";
 
 type HighlightStatus = "insert" | "delete" | "change";
@@ -43,14 +49,23 @@ function computeHighlights(baseCode: string, otherCode: string): Highlights {
 }
 
 function getLineProps(opts: {
-	highlights: Map<number, HighlightStatus>;
-	notebookIndex: number;
-}): (lineNumber: number) => { style?: React.CSSProperties } {
+  highlights: Map<number, HighlightStatus> | null;
+  notebookIndex: number;
+  separatorLines: Set<number>;
+}): (lineNumber: number) => React.HTMLAttributes<HTMLElement> {
 	return (lineNumber) => {
-		const status = opts.highlights.get(lineNumber);
-		if (!status) return {};
+    if (opts.separatorLines.has(lineNumber)) {
+      return {
+        className:
+          "block rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-semibold text-slate-800",
+        style: { display: "block" },
+      };
+    }
 
-		const alpha = status === "insert" ? 0.32 : status === "delete" ? 0.22 : 0.28;
+    const status = opts.highlights?.get(lineNumber);
+    if (!status) return { style: { display: "block" } };
+
+		const alpha = status === "insert" ? 0.52 : status === "delete" ? 0.36 : 0.46;
 		return {
 			style: {
 				background: getNotebookDiffColor(opts.notebookIndex, alpha),
@@ -61,72 +76,100 @@ function getLineProps(opts: {
 }
 
 export function TwoNotebookCenteredDiffCell({
-	cellIndex,
-	title,
-	baseLabel,
-	baseCode,
-	otherLabel,
-	otherCode,
+ 	cellIndex,
+  title,
+  baseLabel,
+  baseCode,
+  otherLabel,
+  otherCode,
 }: {
-	cellIndex: number;
-	title: string;
-	baseLabel: string;
-	baseCode: string;
-	otherLabel: string;
-	otherCode: string;
+  cellIndex: number;
+  title: string;
+  baseLabel: string;
+  baseCode: string | null;
+  otherLabel: string;
+  otherCode: string | null;
 }) {
-	const baseNormalized = useMemo(() => normalizeCode(baseCode), [baseCode]);
-	const otherNormalized = useMemo(() => normalizeCode(otherCode), [otherCode]);
+  const baseNormalized = useMemo(
+    () => normalizeCode(baseCode ?? ""),
+    [baseCode],
+  );
+  const otherNormalized = useMemo(
+    () => normalizeCode(otherCode ?? ""),
+    [otherCode],
+  );
 
-	const lines = useMemo(() => {
-		return Math.max(countLines(baseNormalized), countLines(otherNormalized));
-	}, [baseNormalized, otherNormalized]);
+  const lines = useMemo(() => {
+    return Math.max(countLines(baseNormalized), countLines(otherNormalized));
+  }, [baseNormalized, otherNormalized]);
 
-	const highlights = useMemo(() => computeHighlights(baseNormalized, otherNormalized), [baseNormalized, otherNormalized]);
+  const highlights = useMemo(() => {
+    if (!baseCode || !otherCode) return null;
+    return computeHighlights(baseNormalized, otherNormalized);
+  }, [baseCode, otherCode, baseNormalized, otherNormalized]);
 
-	return (
-		<CellCardShell cellIndex={cellIndex} title={title} lines={lines}>
-			<div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-				<div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-					<div className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800">
-						{otherLabel}
-					</div>
-					<div className="p-2">
-						{otherNormalized ? (
-							<CodeViewer
-								code={otherNormalized}
-								language="python"
-								className="max-w-none w-full shadow-none border-0"
-								wrapLines
-								lineProps={getLineProps({ highlights: highlights.other, notebookIndex: 1 })}
-							/>
-						) : (
-							<PlaceholderCell message="Code indisponible pour ce notebook." />
-						)}
-					</div>
-				</div>
+  const baseSeparatorLines = useMemo(
+    () => getInterleavingSeparatorLineNumbers(baseNormalized),
+    [baseNormalized],
+  );
+  const otherSeparatorLines = useMemo(
+    () => getInterleavingSeparatorLineNumbers(otherNormalized),
+    [otherNormalized],
+  );
 
-				<div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-					<div className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800">
-						{baseLabel} (référence)
-					</div>
-					<div className="p-2">
-						{baseNormalized ? (
-							<CodeViewer
-								code={baseNormalized}
-								language="python"
-								className="max-w-none w-full shadow-none border-0"
-								wrapLines
-								lineProps={getLineProps({ highlights: highlights.base, notebookIndex: 0 })}
-							/>
-						) : (
-							<PlaceholderCell message="Code indisponible pour la référence." />
-						)}
-					</div>
-				</div>
+  return (
+    <CellCardShell cellIndex={cellIndex} title={title} lines={lines}>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800">
+            {baseLabel} (référence)
+          </div>
+          <div className="p-2">
+            {baseNormalized ? (
+              <CodeViewer
+                code={baseNormalized}
+                language="python"
+                className="max-w-none w-full shadow-none border-0"
+                wrapLines
+				lineProps={
+					getLineProps({
+						highlights: highlights ? highlights.base : null,
+						notebookIndex: 0,
+						separatorLines: baseSeparatorLines,
+					})
+				}
+              />
+            ) : (
+              <PlaceholderCell message="Code indisponible pour la référence." />
+            )}
+          </div>
+        </div>
 
-				<div className="hidden lg:block" aria-hidden="true" />
-			</div>
-		</CellCardShell>
-	);
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800">
+            {otherLabel}
+          </div>
+          <div className="p-2">
+            {otherNormalized ? (
+              <CodeViewer
+                code={otherNormalized}
+                language="python"
+                className="max-w-none w-full shadow-none border-0"
+                wrapLines
+				lineProps={
+					getLineProps({
+						highlights: highlights ? highlights.other : null,
+						notebookIndex: 1,
+						separatorLines: otherSeparatorLines,
+					})
+				}
+              />
+            ) : (
+              <PlaceholderCell message="Code indisponible pour ce notebook." />
+            )}
+          </div>
+        </div>
+      </div>
+    </CellCardShell>
+  );
 }

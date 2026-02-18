@@ -17,6 +17,29 @@ export function splitLines(code: string): string[] {
 	return normalized.split("\n");
 }
 
+function stripAccents(input: string): string {
+	return input.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+export function getInterleavingSeparatorLineNumbers(code: string): Set<number> {
+	const lines = splitLines(code);
+	const result = new Set<number>();
+
+	for (let i = 0; i < lines.length; i++) {
+		const raw = lines[i] ?? "";
+		const trimmed = raw.trim();
+		if (!trimmed.startsWith("#")) continue;
+
+		const normalized = stripAccents(trimmed).toLowerCase();
+		const isRule = /^#\s*-{10,}\s*$/.test(trimmed);
+		const isLabel = normalized.startsWith("# cellule intercalee") || normalized.includes("cellule intercalee");
+
+		if (isRule || isLabel) result.add(i + 1);
+	}
+
+	return result;
+}
+
 export function getCellByIndex(notebook: NotebookData, cellIndex: number): CodeCell | null {
 	return notebook.cells.find((c) => c.index === cellIndex) ?? null;
 }
@@ -136,4 +159,74 @@ export function resolveThreeWayCellStatus(opts: {
 	if (opts.otherText == null) return "delete";
 	if (opts.baseText == null) return "insert";
 	return opts.otherText === opts.baseText ? "equal" : "change";
+}
+
+function getCellAlignmentKey(cell: CodeCell): string {
+	const title = cell.description?.trim();
+	if (title) return title.toLowerCase();
+	return `__idx_${cell.index}`;
+}
+
+export type CellAlignmentToBase = {
+	matchByBasePos: Map<number, CodeCell>;
+	insertsAtBasePos: Map<number, CodeCell[]>;
+};
+
+
+export function alignCellsToBase(
+	baseCells: CodeCell[],
+	otherCells: CodeCell[],
+): CellAlignmentToBase {
+	const baseSorted = [...baseCells].sort((a, b) => a.index - b.index);
+	const otherSorted = [...otherCells].sort((a, b) => a.index - b.index);
+
+	const baseKeys = baseSorted.map(getCellAlignmentKey);
+	const otherKeys = otherSorted.map(getCellAlignmentKey);
+
+	const m = baseKeys.length;
+	const n = otherKeys.length;
+	const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+
+	for (let i = 1; i <= m; i++) {
+		for (let j = 1; j <= n; j++) {
+			if (baseKeys[i - 1] === otherKeys[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+			else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+		}
+	}
+
+	const matches: Array<{ basePos: number; otherPos: number }> = [];
+	let i = m;
+	let j = n;
+	while (i > 0 && j > 0) {
+		if (baseKeys[i - 1] === otherKeys[j - 1]) {
+			matches.push({ basePos: i - 1, otherPos: j - 1 });
+			i -= 1;
+			j -= 1;
+			continue;
+		}
+		if (dp[i - 1][j] >= dp[i][j - 1]) i -= 1;
+		else j -= 1;
+	}
+	matches.reverse();
+
+	const matchByBasePos = new Map<number, CodeCell>();
+	const insertsAtBasePos = new Map<number, CodeCell[]>();
+
+	let prevOtherPos = 0;
+	for (const match of matches) {
+		if (prevOtherPos < match.otherPos) {
+			insertsAtBasePos.set(
+				match.basePos,
+				otherSorted.slice(prevOtherPos, match.otherPos),
+			);
+		}
+		matchByBasePos.set(match.basePos, otherSorted[match.otherPos]!);
+		prevOtherPos = match.otherPos + 1;
+	}
+
+	if (prevOtherPos < n) {
+		insertsAtBasePos.set(m, otherSorted.slice(prevOtherPos));
+	}
+
+	return { matchByBasePos, insertsAtBasePos };
 }

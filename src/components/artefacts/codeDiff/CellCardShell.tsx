@@ -12,15 +12,18 @@ export function CellCardShell({
 	children: ReactNode;
 }) {
 	const lineCountLabel = `${lines} ligne${lines === 1 ? "" : "s"}`;
+	const hasTitle = title.trim().length > 0;
 	return (
-		<div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+		<div className="rounded-2xl bg-white shadow-sm">
 			<div className="flex items-start justify-between gap-3 p-4">
 				<div className="flex items-start gap-3 min-w-0">
 					<span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white text-sm font-semibold shrink-0">
 						{cellIndex}
 					</span>
 					<div className="min-w-0">
-						<div className="font-semibold text-slate-900 truncate">{title}</div>
+						{hasTitle ? (
+							<div className="font-semibold text-slate-900 truncate">{title}</div>
+						) : null}
 						<div className="text-xs text-slate-500">{lineCountLabel}</div>
 					</div>
 				</div>
@@ -32,7 +35,7 @@ export function CellCardShell({
 				) : null}
 			</div>
 
-			<div className="mx-4 mb-4 overflow-hidden rounded-xl border border-slate-200">
+			<div className="mx-4 mb-4 overflow-hidden rounded-xl">
 				<div className="max-h-[520px] overflow-auto p-4">{children}</div>
 			</div>
 		</div>

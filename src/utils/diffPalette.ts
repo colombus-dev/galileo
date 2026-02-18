@@ -31,15 +31,15 @@ export function getDiffViewerStylesOverride(opts: {
 	const otherVar = getNotebookColorVar(opts.otherNotebookIndex);
 
 	const variables = {
-		// Un peu plus opaques pour une lecture plus nette
-		removedBackground: hslVar(baseVar, 0.32),
-		removedGutterBackground: hslVar(baseVar, 0.22),
-		wordRemovedBackground: hslVar(baseVar, 0.5),
-		addedBackground: hslVar(otherVar, 0.32),
-		addedGutterBackground: hslVar(otherVar, 0.22),
-		wordAddedBackground: hslVar(otherVar, 0.5),
+		// Plus vives pour une lecture rapide
+		removedBackground: hslVar(baseVar, 0.42),
+		removedGutterBackground: hslVar(baseVar, 0.3),
+		wordRemovedBackground: hslVar(baseVar, 0.62),
+		addedBackground: hslVar(otherVar, 0.42),
+		addedGutterBackground: hslVar(otherVar, 0.3),
+		wordAddedBackground: hslVar(otherVar, 0.62),
 		// CHANGED s'applique aux deux côtés : on utilise un dégradé base/other
-		changedBackground: changedGradient(baseVar, otherVar, 0.28),
+		changedBackground: changedGradient(baseVar, otherVar, 0.38),
 		gutterBackground: "hsl(var(--muted) / 0.15)",
 		diffViewerBackground: "hsl(var(--background))",
 		diffViewerTitleBackground: "hsl(var(--muted) / 0.25)",
@@ -69,13 +69,13 @@ export function getOtherOnlyDiffViewerStylesOverride(opts: {
 	const otherVar = getNotebookColorVar(opts.otherNotebookIndex);
 
 	const variables = {
-		addedBackground: hslVar(otherVar, 0.32),
-		addedGutterBackground: hslVar(otherVar, 0.22),
-		wordAddedBackground: hslVar(otherVar, 0.5),
-		removedBackground: hslVar(otherVar, 0.32),
-		removedGutterBackground: hslVar(otherVar, 0.22),
-		wordRemovedBackground: hslVar(otherVar, 0.5),
-		changedBackground: hslVar(otherVar, 0.28),
+		addedBackground: hslVar(otherVar, 0.42),
+		addedGutterBackground: hslVar(otherVar, 0.3),
+		wordAddedBackground: hslVar(otherVar, 0.62),
+		removedBackground: hslVar(otherVar, 0.42),
+		removedGutterBackground: hslVar(otherVar, 0.3),
+		wordRemovedBackground: hslVar(otherVar, 0.62),
+		changedBackground: hslVar(otherVar, 0.38),
 		gutterBackground: "hsl(var(--muted) / 0.15)",
 		diffViewerBackground: "hsl(var(--background))",
 		diffViewerTitleBackground: "hsl(var(--muted) / 0.25)",

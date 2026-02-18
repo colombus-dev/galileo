@@ -7,6 +7,7 @@ import { getNotebookDiffColor } from "../../../utils/diffPalette";
 import {
 	buildAnchoredAlignment,
 	countLines,
+	getInterleavingSeparatorLineNumbers,
 	normalizeCode,
 	splitLines,
 } from "../../../utils/diffUtils";
@@ -58,13 +59,22 @@ function mergeBaseHighlights(
 }
 
 function getLineProps(opts: {
-	highlights: Map<number, HighlightStatus>;
+	highlights: Map<number, HighlightStatus> | null;
 	notebookIndex: number;
-}): (lineNumber: number) => { style?: React.CSSProperties } {
+	separatorLines: Set<number>;
+}): (lineNumber: number) => React.HTMLAttributes<HTMLElement> {
 	return (lineNumber) => {
-		const status = opts.highlights.get(lineNumber);
-		if (!status) return {};
-		const alpha = status === "insert" ? 0.32 : status === "delete" ? 0.22 : 0.28;
+		if (opts.separatorLines.has(lineNumber)) {
+			return {
+				className:
+					"block rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-semibold text-slate-800",
+				style: { display: "block" },
+			};
+		}
+
+		const status = opts.highlights?.get(lineNumber);
+		if (!status) return { style: { display: "block" } };
+		const alpha = status === "insert" ? 0.52 : status === "delete" ? 0.36 : 0.46;
 		return {
 			style: {
 				background: getNotebookDiffColor(opts.notebookIndex, alpha),
@@ -87,15 +97,24 @@ export function ThreeNotebookCenteredDiffCell({
 	cellIndex: number;
 	title: string;
 	baseLabel: string;
-	baseCode: string;
+	baseCode: string | null;
 	leftLabel: string;
-	leftCode: string;
+	leftCode: string | null;
 	rightLabel: string;
-	rightCode: string;
+	rightCode: string | null;
 }) {
-	const baseNormalized = useMemo(() => normalizeCode(baseCode), [baseCode]);
-	const leftNormalized = useMemo(() => normalizeCode(leftCode), [leftCode]);
-	const rightNormalized = useMemo(() => normalizeCode(rightCode), [rightCode]);
+	const baseNormalized = useMemo(
+		() => normalizeCode(baseCode ?? ""),
+		[baseCode],
+	);
+	const leftNormalized = useMemo(
+		() => normalizeCode(leftCode ?? ""),
+		[leftCode],
+	);
+	const rightNormalized = useMemo(
+		() => normalizeCode(rightCode ?? ""),
+		[rightCode],
+	);
 
 	const lines = useMemo(() => {
 		return Math.max(
@@ -105,17 +124,30 @@ export function ThreeNotebookCenteredDiffCell({
 		);
 	}, [baseNormalized, leftNormalized, rightNormalized]);
 
-	const leftHighlights = useMemo(
-		() => computeHighlights(baseNormalized, leftNormalized),
-		[baseNormalized, leftNormalized],
+	const leftHighlights = useMemo(() => {
+		if (!baseCode || !leftCode) return null;
+		return computeHighlights(baseNormalized, leftNormalized);
+	}, [baseCode, leftCode, baseNormalized, leftNormalized]);
+	const rightHighlights = useMemo(() => {
+		if (!baseCode || !rightCode) return null;
+		return computeHighlights(baseNormalized, rightNormalized);
+	}, [baseCode, rightCode, baseNormalized, rightNormalized]);
+	const baseHighlights = useMemo(() => {
+		if (!leftHighlights || !rightHighlights) return null;
+		return mergeBaseHighlights(leftHighlights.base, rightHighlights.base);
+	}, [leftHighlights, rightHighlights]);
+
+	const leftSeparatorLines = useMemo(
+		() => getInterleavingSeparatorLineNumbers(leftNormalized),
+		[leftNormalized],
 	);
-	const rightHighlights = useMemo(
-		() => computeHighlights(baseNormalized, rightNormalized),
-		[baseNormalized, rightNormalized],
+	const baseSeparatorLines = useMemo(
+		() => getInterleavingSeparatorLineNumbers(baseNormalized),
+		[baseNormalized],
 	);
-	const baseHighlights = useMemo(
-		() => mergeBaseHighlights(leftHighlights.base, rightHighlights.base),
-		[leftHighlights.base, rightHighlights.base],
+	const rightSeparatorLines = useMemo(
+		() => getInterleavingSeparatorLineNumbers(rightNormalized),
+		[rightNormalized],
 	);
 
 	return (
@@ -132,7 +164,13 @@ export function ThreeNotebookCenteredDiffCell({
 								language="python"
 								className="max-w-none w-full shadow-none border-0"
 								wrapLines
-								lineProps={getLineProps({ highlights: leftHighlights.other, notebookIndex: 1 })}
+								lineProps={
+									getLineProps({
+										highlights: leftHighlights ? leftHighlights.other : null,
+										notebookIndex: 1,
+										separatorLines: leftSeparatorLines,
+									})
+								}
 							/>
 						) : (
 							<PlaceholderCell message="Code indisponible pour ce notebook." />
@@ -151,7 +189,13 @@ export function ThreeNotebookCenteredDiffCell({
 								language="python"
 								className="max-w-none w-full shadow-none border-0"
 								wrapLines
-								lineProps={getLineProps({ highlights: baseHighlights, notebookIndex: 0 })}
+								lineProps={
+									getLineProps({
+										highlights: baseHighlights,
+										notebookIndex: 0,
+										separatorLines: baseSeparatorLines,
+									})
+								}
 							/>
 						) : (
 							<PlaceholderCell message="Code indisponible pour la référence." />
@@ -170,7 +214,13 @@ export function ThreeNotebookCenteredDiffCell({
 								language="python"
 								className="max-w-none w-full shadow-none border-0"
 								wrapLines
-								lineProps={getLineProps({ highlights: rightHighlights.other, notebookIndex: 2 })}
+								lineProps={
+									getLineProps({
+										highlights: rightHighlights ? rightHighlights.other : null,
+										notebookIndex: 2,
+										separatorLines: rightSeparatorLines,
+									})
+								}
 							/>
 						) : (
 							<PlaceholderCell message="Code indisponible pour ce notebook." />

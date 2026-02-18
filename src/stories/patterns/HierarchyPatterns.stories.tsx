@@ -24,10 +24,10 @@ const createPattern = (
 ): PatternType => ({
   id,
   schema: `Schema -> ${id}`,
-  TypeAlgo: 'Isolation Forest',
-  TypePattern: 'Distribution',
+  typeAlgo: 'Isolation Forest',
+  typePattern: 'Distribution',
   notebooks: { 'demo.ipynb': 1 },
-  counts: { [scoreKey]: 100 },
+  score: { [scoreKey]: 100 },
   hierarchy: { parent, children }
 });
 
