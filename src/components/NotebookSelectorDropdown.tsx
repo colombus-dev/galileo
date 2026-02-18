@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MdMenuBook, MdExpandMore } from "react-icons/md";
 import { listNotebookOptions, type NotebookOption } from "@/services/notebook";
 import SearchBar from "@/components/SearchBar";
@@ -29,6 +29,7 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
   enableSearch = true,
   enableGrouping = true,
 }) => {
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<NotebookOption[]>(optionsOverride ?? []);
   const [isLoading, setIsLoading] = useState(!optionsOverride);
@@ -49,6 +50,20 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
     }
     onChange?.(next);
   };
+
+  useEffect(() => {
+    if (!open) return;
+    const onMouseDown = (event: MouseEvent) => {
+      const root = rootRef.current;
+      if (!root) return;
+      if (event.target instanceof Node && !root.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [open]);
 
   useEffect(() => {
     if (optionsOverride) {
@@ -157,7 +172,7 @@ export const NotebookSelectorDropdown: React.FC<NotebookSelectorDropdownProps> =
   }, [enableGrouping, filteredOptions, groupBy]);
 
   return (
-    <div className="relative inline-block text-left">
+    <div ref={rootRef} className="relative inline-block text-left">
       <button
         className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-medium shadow-sm hover:bg-blue-50 transition text-lg min-w-[220px]"
         onClick={() => setOpen((o) => !o)}

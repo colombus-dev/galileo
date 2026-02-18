@@ -5,7 +5,8 @@ import { NotebookCodeDiffComparison } from "@/components/artefacts/NotebookCodeD
 import { NotebookPerformanceComparison } from "@/components/artefacts/NotebookPerformanceComparison";
 import type { NotebookData } from "@/data/mockData";
 import { getVisibleNotebooks } from "@/utils/notebookComparison";
-import { Info } from "lucide-react";
+import { ChevronDown, Info } from "lucide-react";
+import { useState } from "react";
 
 export type ArtefactsComparisonModeProps = {
   notebooks: NotebookData[];
@@ -19,6 +20,7 @@ export function ArtefactsComparisonMode({
   scrollToBottom,
 }: ArtefactsComparisonModeProps) {
   const visibleNotebooks = getVisibleNotebooks(notebooks);
+	const [isCodeDiffOpen, setIsCodeDiffOpen] = useState(false);
 
   return (
     <section className="rounded-2xl border border-indigo-200 bg-indigo-50/50 p-6">
@@ -79,12 +81,27 @@ export function ArtefactsComparisonMode({
               </div>
 
               <div id="section-compare-code" className="mt-6 mb-6 scroll-mt-40">
-                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                  Code (diff)
-                </div>
-                <div className="mt-4">
-                  <NotebookCodeDiffComparison notebooks={visibleNotebooks} />
-                </div>
+          <button
+            type="button"
+            onClick={() => setIsCodeDiffOpen((v) => !v)}
+            className="w-full flex items-center justify-between gap-3 rounded-2xl border border-indigo-200 bg-white/70 px-4 py-3 hover:bg-white"
+          >
+            <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+              Code (diff)
+            </div>
+            <ChevronDown
+              className={[
+                "h-5 w-5 text-indigo-700 transition-transform",
+                isCodeDiffOpen ? "rotate-180" : "",
+              ].join(" ")}
+              aria-hidden="true"
+            />
+          </button>
+          {isCodeDiffOpen ? (
+            <div className="mt-4">
+              <NotebookCodeDiffComparison notebooks={visibleNotebooks} />
+            </div>
+          ) : null}
               </div>
             </>
           )}
