@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import Plotly from 'plotly.js-dist-min';
 import { type PatternType, type Counts } from '@/PatternType';
 
@@ -18,6 +19,7 @@ const PatternHeatmap = ({
     className = ''
 }: PatternHeatmapProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
     const [filterMode, setFilterMode] = useState<'more' | 'less'>('more');
 
     const DATA_KEYS: (keyof Counts)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
@@ -109,47 +111,59 @@ const PatternHeatmap = ({
             },
             yaxis: {
                 automargin: true,
-                fixedrange: true,
+                fixedrange: true, // Empêche le zoom pour garder les labels stables
             }
         };
 
         Plotly.newPlot(chartRef.current, [trace], layout, { 
             responsive: true, 
             displayModeBar: false 
+        }).then((gd: any) => {
+            // 1. Clic sur les cases de la Heatmap (Standard Plotly)
+            gd.on('plotly_click', (eventData: any) => {
+                const point = eventData.points[0];
+                const patternId = point.y;
+                if (patternId) navigate(`/pattern/${patternId}`);
+            });
+
+            // 2. Clic sur les labels de l'axe Y ("Légende" des noms)
+            // On manipule directement le DOM car Plotly ne supporte pas le clic sur les axes nativement
+            const yLabels = chartRef.current?.querySelectorAll('.ytick text');
+            
+            yLabels?.forEach((label) => {
+                // On force le style pour indiquer que c'est cliquable
+                (label as HTMLElement).style.cursor = 'pointer';
+                (label as HTMLElement).style.fontWeight = '500';
+
+                // On ajoute l'écouteur
+                label.addEventListener('click', () => {
+                    // textContent contient le nom du pattern affiché
+                    const patternId = label.textContent;
+                    if (patternId) {
+                        navigate(`/pattern/${patternId}`);
+                    }
+                });
+            });
         });
 
-        return () => { if (chartRef.current) Plotly.purge(chartRef.current); };
-    }, [data, activeMetric, filterMode]);
+        return () => { 
+            if (chartRef.current) {
+                (chartRef.current as any).removeAllListeners?.('plotly_click');
+                Plotly.purge(chartRef.current); 
+            }
+        };
+    }, [data, activeMetric, filterMode, navigate]);
 
     return (
         <div className={`bg-white p-5 rounded-lg shadow-md ${className}`} style={{ width: fullWidth ? '100%' : 'auto' }}>
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-                
                 <div className="flex bg-gray-100 rounded-lg p-1">
-                    <button
-                        onClick={() => setFilterMode('less')}
-                        className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                            filterMode === 'less' 
-                                ? 'bg-white text-blue-600 shadow-sm font-medium' 
-                                : 'text-gray-500 hover:text-gray-700'
-                        }`}
-                    >
-                        Less
-                    </button>
-                    <button
-                        onClick={() => setFilterMode('more')}
-                        className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                            filterMode === 'more' 
-                                ? 'bg-white text-blue-600 shadow-sm font-medium' 
-                                : 'text-gray-500 hover:text-gray-700'
-                        }`}
-                    >
-                        More
-                    </button>
+                    <button onClick={() => setFilterMode('less')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'less' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Less</button>
+                    <button onClick={() => setFilterMode('more')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'more' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>More</button>
                 </div>
             </div>
-            
+            {/* Ajout d'une classe pour s'assurer que le curseur change au survol */}
             <div ref={chartRef} className="w-full h-[500px]" />
         </div>
     );
