@@ -91,22 +91,22 @@ import {
 
 ## Composants clés
 
-### NotebookWorkspaceLayout
+### 🎨 NotebookWorkspaceLayout
 Structure 3-colonnes responsive (sidebar | main | docPanel)
 
-### SummarySidebar
+### 📌 SummarySidebar
 Liste des sections avec sélection active et indicateurs
 
-### SectionSummaryView
+### 📖 SectionSummaryView
 Affichage du résumé de section avec fallback mode code
 
-### CodePanel
+### 💻 CodePanel
 Conteneur des cellules de code avec toggle rétraction
 
-### CodeCell
+### 🔧 CodeCell
 Cellule de code avec syntax highlighting + tokens cliquables
 
-### TokenChip
+### ✨ TokenChip
 Badge interactif par librairie (pandas, sklearn, seaborn, etc.)
 
 **Fonctionnalités** :
@@ -115,7 +115,7 @@ Badge interactif par librairie (pandas, sklearn, seaborn, etc.)
 - Hover effects
 - Cliquable pour ouvrir la doc
 
-### DocSidePanel
+### 📚 DocSidePanel
 Panneau latéral pour affichage de documentation
 
 **États** :
@@ -124,10 +124,10 @@ Panneau latéral pour affichage de documentation
 - Data (titre + version + content + examples)
 - Empty (placeholder)
 
-### NotebookWorkspaceLayout
+### 🏗️ NotebookWorkspaceLayout
 Layout responsive 3-colonnes avec sidebars indépendants
 
-### NotebookWorkspacePage
+### 🎭 NotebookWorkspacePage
 Page orchestratrice de tout le scénario
 
 ## Types

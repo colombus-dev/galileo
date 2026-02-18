@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { NotebookWorkspacePage } from '@/pages/storytelling/NotebookWorkspacePage';
 
 /**
@@ -12,5 +13,12 @@ import { NotebookWorkspacePage } from '@/pages/storytelling/NotebookWorkspacePag
  * 6. Affichage de la documentation
  */
 export default function Storytelling() {
-  return <NotebookWorkspacePage />;
+  const navigate = useNavigate();
+
+  const handleImportSuccess = () => {
+    // Navigation vers le workspace après import
+    navigate('/storytelling/workspace');
+  };
+
+  return <NotebookWorkspacePage onImportSuccess={handleImportSuccess} />;
 }
