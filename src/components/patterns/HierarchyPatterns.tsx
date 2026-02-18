@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router'; // Import pour la navigation
+import { useNavigate } from 'react-router';
 import { GitCommit, Activity, FileCode } from 'lucide-react';
 
 import { mockDataPattern } from "@/data/patternMockData";
@@ -71,7 +71,7 @@ const PatternNode = ({
     isRoot?: boolean,
     currentPatternId?: string
 }) => {
-    const navigate = useNavigate(); // Hook de navigation
+    const navigate = useNavigate();
 
     const children = pattern.hierarchy.children
         ? pattern.hierarchy.children
@@ -86,7 +86,7 @@ const PatternNode = ({
     const isSelected = currentPatternId === pattern.id;
 
     const handleNodeClick = (e: React.MouseEvent) => {
-        e.stopPropagation(); // Évite de déclencher des clics sur les parents si imbriqués
+        e.stopPropagation(); 
         navigate(`/pattern/${pattern.id}`);
     };
 
@@ -102,7 +102,6 @@ const PatternNode = ({
             )}
 
             <div className="mb-2 relative group">
-                {/* Ajout de onClick et cursor-pointer */}
                 <div 
                     onClick={handleNodeClick}
                     className={`

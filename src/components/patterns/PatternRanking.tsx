@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import { PatternType } from "@/PatternType";
 import { mockDataPattern } from '@/data/patternMockData';
 
@@ -37,6 +38,7 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
     criteria, 
     className = '' 
 }) => {
+    const navigate = useNavigate();
 
     const fullRankingData = useMemo(() => {
         const groupValue = criteria === 'type' ? currentPattern.typePattern : currentPattern.typeAlgo;
@@ -96,8 +98,9 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
                     return (
                         <div 
                             key={patternItem.id}
+                            onClick={() => navigate(`/pattern/${patternItem.id}`)}
                             className={`
-                                flex items-center justify-between p-2.5 rounded-lg text-sm transition-colors border
+                                flex items-center justify-between p-2.5 rounded-lg text-sm transition-colors border cursor-pointer
                                 ${isCurrent 
                                     ? 'bg-blue-50 border-blue-200 shadow-sm z-10' 
                                     : 'bg-white border-transparent hover:bg-gray-50 hover:border-gray-100'
