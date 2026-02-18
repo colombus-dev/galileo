@@ -40,14 +40,14 @@ export function ArtefactsComparisonMode({
           onScrollBottom={scrollToBottom}
         />
 
-        <div id="section-compare-context-data" className="mb-6 scroll-mt-40">
+        <div className="mb-6">
           {visibleNotebooks.length < 2 ? (
             <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-slate-700">
               Sélectionne au moins 2 notebooks pour activer la comparaison.
             </div>
           ) : (
             <>
-              <div className="mt-5">
+              <div id="section-compare-context-data" className="mt-5 scroll-mt-40">
                 <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
                   Contexte &amp; Données
                 </div>
