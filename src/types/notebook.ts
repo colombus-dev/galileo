@@ -44,5 +44,5 @@ export interface DocEntry {
   version: string;
   content: string;
   libName: string;
-  examples?: string;
+  examples?: string | string[];
 }

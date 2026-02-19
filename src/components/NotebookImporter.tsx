@@ -23,9 +23,6 @@ export type NotebookImporterProps = {
     dependencies: ParsedDependencies | null;
   }) => void;
 
-  /** Appelé au moment où l'utilisateur clique "Aller à Storytelling" */
-  onGoToStorytelling?: () => void;
-
   /** Appelé en cas d'erreur (type invalide / parsing) */
   onError?: (error: { code: string; message: string }) => void;
 
@@ -204,7 +201,6 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   helperText = "Glisse-dépose les fichiers ou clique pour parcourir",
   disabled = false,
   onImport,
-  onGoToStorytelling,
   onError,
   showPreview = true,
   className,
@@ -220,6 +216,8 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   const [dependencies, setDependencies] = useState<ParsedDependencies | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [panelExpanded, setPanelExpanded] = useState(true);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [dontAskAgain, setDontAskAgain] = useState(false);
 
   const isReadyToImport = !!selectedNotebook && !!notebook;
   const hasFiles = selectedNotebook || selectedPyproject;
@@ -379,13 +377,46 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   const onImportClick = useCallback(() => {
     if (!selectedNotebook || !notebook) return;
 
+    // Check if user has previously selected "don't ask again"
+    const skipConfirmation = localStorage.getItem("skipImportConfirmation") === "true";
+    
+    if (skipConfirmation) {
+      // Skip confirmation and import directly
+      onImport?.({
+        notebookFile: selectedNotebook,
+        notebook,
+        pyprojectFile: selectedPyproject,
+        dependencies,
+      });
+    } else {
+      // Show confirmation modal
+      setShowConfirmation(true);
+    }
+  }, [notebook, onImport, selectedNotebook, selectedPyproject, dependencies]);
+
+  const handleConfirmImport = useCallback(() => {
+    if (!selectedNotebook || !notebook) return;
+
+    // Save preference if "don't ask again" is checked
+    if (dontAskAgain) {
+      localStorage.setItem("skipImportConfirmation", "true");
+    }
+
+    setShowConfirmation(false);
+    setDontAskAgain(false);
+
     onImport?.({
       notebookFile: selectedNotebook,
       notebook,
       pyprojectFile: selectedPyproject,
       dependencies,
     });
-  }, [notebook, onImport, selectedNotebook, selectedPyproject, dependencies]);
+  }, [notebook, onImport, selectedNotebook, selectedPyproject, dependencies, dontAskAgain]);
+
+  const handleCancelImport = useCallback(() => {
+    setShowConfirmation(false);
+    setDontAskAgain(false);
+  }, []);
 
   return (
     <div className={className}>
@@ -529,18 +560,10 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
               type="button"
               onClick={onImportClick}
               disabled={disabled || !isReadyToImport}
-              className="flex-1 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 transition"
+              className="flex-1 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 transition flex flex-col items-center gap-1"
             >
-              📥 Importer
-            </button>
-
-            <button
-              type="button"
-              onClick={onGoToStorytelling}
-              disabled={disabled || !isReadyToImport}
-              className="flex-1 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 transition"
-            >
-              🚀 Aller à Storytelling
+              <span>📥 Importer</span>
+              <span className="text-xs font-normal opacity-90">(vous amènera à la partie storytelling)</span>
             </button>
 
             <button
@@ -723,6 +746,57 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-md mx-4 p-6 space-y-4">
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold text-slate-900">
+                📥 Importer le notebook ?
+              </h2>
+              <p className="text-sm text-slate-600">
+                L'import du notebook vous amènera à la partie <span className="font-semibold">storytelling</span> pour explorer les données et créer des analyses.
+              </p>
+            </div>
+
+            {/* Checkbox for "don't ask again" */}
+            <div className="flex items-center gap-2 py-2">
+              <input
+                type="checkbox"
+                id="dontAskAgain"
+                checked={dontAskAgain}
+                onChange={(e) => setDontAskAgain(e.target.checked)}
+                className="w-4 h-4 rounded border-slate-300 cursor-pointer"
+              />
+              <label
+                htmlFor="dontAskAgain"
+                className="text-sm text-slate-700 cursor-pointer"
+              >
+                Ne plus afficher ce message
+              </label>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3 pt-4 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={handleCancelImport}
+                className="flex-1 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 transition"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmImport}
+                className="flex-1 rounded-lg px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
+              >
+                Importer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

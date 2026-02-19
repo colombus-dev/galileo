@@ -13,7 +13,7 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
   language = "python",
   className = "",
 }) => (
-  <div className={`rounded-xl overflow-hidden shadow-md border border-slate-200 bg-slate-900 max-w-xl ${className}`}>
+  <div className={`w-full rounded-xl overflow-hidden shadow-md border border-slate-200 bg-slate-900 ${className}`}>
     <div className="flex items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
       <span className="text-green-400 font-mono text-xs">Python</span>
     </div>

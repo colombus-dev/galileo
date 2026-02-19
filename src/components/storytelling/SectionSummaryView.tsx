@@ -36,7 +36,7 @@ export const SectionSummaryView: React.FC<SectionSummaryViewProps> = ({
   }, [section, notebook.cells]);
 
   return (
-    <div className={`p-8 ${className}`}>
+    <div className={`w-full ${className}`}>
       {/* Header section */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-slate-900 mb-1">{section.title}</h2>

@@ -6,10 +6,11 @@ import { SummarySidebar } from '@/components/storytelling/SummarySidebar';
 import { SectionSummaryView } from '@/components/storytelling/SectionSummaryView';
 import { CodePanel } from '@/components/storytelling/CodePanel';
 import { DocSidePanel } from '@/components/storytelling/DocSidePanel';
-import { fetchNotebookMock, fetchDocMock } from '@/mocks/mockApi';
+import { fetchNotebookMock, fetchDocMock, getTokenDocumentation } from '@/mocks/mockApi';
 import type { NotebookModel, Token, DocEntry } from '@/types/notebook';
 
 export interface StorytellingWorkspaceProps {
+  initialNotebook?: NotebookModel | null;
   initialNotebookId?: string;
   logoUrl?: string;
   onBackToImport?: () => void;
@@ -24,6 +25,7 @@ export interface StorytellingWorkspaceProps {
  * - Affichage de la documentation
  */
 export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
+  initialNotebook = null,
   initialNotebookId = 'notebook-iris-1',
   logoUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10",
   onBackToImport,
@@ -31,7 +33,7 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
   const navigate = useNavigate();
 
   // État notebook
-  const [notebook, setNotebook] = useState<NotebookModel | null>(null);
+  const [notebook, setNotebook] = useState<NotebookModel | null>(initialNotebook);
   const [notebookError, setNotebookError] = useState<string | null>(null);
 
   // État section active
@@ -57,6 +59,14 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
 
   // Charge le notebook au montage
   useEffect(() => {
+    // Si initialNotebook est fourni, l'utiliser directement
+    if (initialNotebook) {
+      setNotebook(initialNotebook);
+      setActiveSectionId(undefined);
+      return;
+    }
+
+    // Sinon, charger depuis les mocks (fallback)
     const loadNotebook = async () => {
       try {
         const response = await fetchNotebookMock(initialNotebookId);
@@ -73,7 +83,7 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
     };
 
     void loadNotebook();
-  }, [initialNotebookId]);
+  }, [initialNotebook, initialNotebookId]);
 
   const handleBackToImport = useCallback(() => {
     // Retour à l'import - utilise le callback si disponible, sinon navigue
@@ -99,12 +109,23 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
     }));
 
     try {
-      const response = await fetchDocMock(token.docKey);
-      setDocState((prev) => ({
-        ...prev,
-        loading: false,
-        docEntry: response.doc,
-      }));
+      // Essayer d'obtenir la documentation depuis nos services
+      const doc = getTokenDocumentation(token.docKey);
+      if (doc) {
+        setDocState((prev) => ({
+          ...prev,
+          loading: false,
+          docEntry: doc,
+        }));
+      } else {
+        // Fallback aux mocks si pas trouvé
+        const response = await fetchDocMock(token.docKey);
+        setDocState((prev) => ({
+          ...prev,
+          loading: false,
+          docEntry: response.doc,
+        }));
+      }
     } catch (error) {
       setDocState((prev) => ({
         ...prev,
@@ -184,7 +205,7 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
         }
         main={
           activeSection ? (
-            <div className="space-y-8">
+            <div className="w-full space-y-8 p-6">
               <SectionSummaryView
                 notebook={notebook}
                 section={activeSection}

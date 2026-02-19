@@ -27,8 +27,10 @@ export const NotebookWorkspaceLayout: React.FC<NotebookWorkspaceLayoutProps> = (
       </aside>
 
       {/* Contenu principal */}
-      <main className="flex-1 overflow-y-auto">
-        {main}
+      <main className="flex-1 w-full overflow-y-auto">
+        <div className="w-full h-full">
+          {main}
+        </div>
       </main>
 
       {/* Panneau doc à droite (optionnel) */}
