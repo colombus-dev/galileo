@@ -9,7 +9,6 @@ const meta: Meta<typeof NotebookImporter> = {
   parameters: { layout: "centered" },
   argTypes: {
     onImport: { action: "import" },
-    onGoToStorytelling: { action: "goToStorytelling" },
     onError: { action: "error" },
     disabled: { control: "boolean" },
     showPreview: { control: "boolean" },
@@ -170,9 +169,6 @@ export const WithEventLogs: Story = {
               showPreview
               onImport={(payload) => {
                 addLog("import", `Importé: ${payload.notebookFile.name}`);
-              }}
-              onGoToStorytelling={() => {
-                addLog("navigation", "Navigation vers Storytelling");
               }}
               onError={({ code, message }) => {
                 addLog("error", `${code}: ${message}`);
