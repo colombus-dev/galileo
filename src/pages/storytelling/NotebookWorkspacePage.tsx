@@ -29,7 +29,6 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
 }) => {
   // État notebook
   const [notebook, setNotebook] = useState<NotebookModel | null>(null);
-  const [notebookLoading, setNotebookLoading] = useState(false);
   const [notebookError, setNotebookError] = useState<string | null>(null);
 
   // État section active
@@ -68,7 +67,6 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
   }, [notebook, activeSectionId]);
 
   const handleLoadNotebook = useCallback(async (notebookId: string) => {
-    setNotebookLoading(true);
     setNotebookError(null);
 
     try {
@@ -84,7 +82,6 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
       setNotebookError('Erreur lors du chargement du notebook');
       console.error(error);
     } finally {
-      setNotebookLoading(false);
     }
   }, []);
 
@@ -193,7 +190,7 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
         sidebar={
           <SummarySidebar
             notebook={notebook}
-            activeSection={activeSectionId}
+            activeSection={activeSectionId ?? undefined}
             onSelectSection={handleSelectSection}
           />
         }

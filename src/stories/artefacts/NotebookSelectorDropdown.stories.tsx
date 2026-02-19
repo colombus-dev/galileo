@@ -5,6 +5,8 @@ import { NotebookSelectorDropdown } from "../../components/NotebookSelectorDropd
 const meta: Meta<typeof NotebookSelectorDropdown> = {
   title: "Artefacts/NotebookSelectorDropdown",
   component: NotebookSelectorDropdown,
+tags: ["autodocs"],
+parameters: { layout: "padded", },
 };
 
 export default meta;

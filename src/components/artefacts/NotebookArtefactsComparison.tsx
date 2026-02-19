@@ -37,8 +37,51 @@ function buildArtifactNameIndex(notebooks: NotebookData[], type: ArtifactType) {
   return Array.from(names).sort((a, b) => a.localeCompare(b));
 }
 
-function findArtifactByName(notebook: NotebookData, type: ArtifactType, name: string) {
-  return notebook.artifacts.find((a) => a.type === type && a.name === name) ?? null;
+function findArtifactsByName(notebook: NotebookData, type: ArtifactType, name: string) {
+  return notebook.artifacts
+    .filter((a) => a.type === type && a.name === name)
+    .sort((a, b) => a.cellIndex - b.cellIndex);
+}
+
+type TimelineEvent =
+  | { kind: "artifact"; cellIndex: number; label: string }
+  | { kind: "code"; cellIndex: number; label: string };
+
+function buildBetweenLabel(notebook: NotebookData, startCellIndex: number, endCellIndex: number): string | null {
+  const min = Math.min(startCellIndex, endCellIndex);
+  const max = Math.max(startCellIndex, endCellIndex);
+  if (max - min <= 1) return null;
+
+  const events: TimelineEvent[] = [];
+
+  for (const a of notebook.artifacts) {
+    if (a.cellIndex > min && a.cellIndex < max) {
+      events.push({ kind: "artifact", cellIndex: a.cellIndex, label: a.name });
+    }
+  }
+  for (const c of notebook.cells) {
+    if (c.index > min && c.index < max) {
+      const label = c.description?.trim() || `Cellule ${c.index}`;
+      events.push({ kind: "code", cellIndex: c.index, label });
+    }
+  }
+
+  if (events.length === 0) return null;
+	
+  events.sort((a, b) => a.cellIndex - b.cellIndex);
+  const first = events[0]!;
+  const restCount = events.length - 1;
+  return restCount > 0 ? `${first.label} (+${restCount})` : first.label;
+}
+
+function SeparatorPill({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-center">
+      <div className="max-w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700">
+        <span className="block truncate">{label}</span>
+      </div>
+    </div>
+  );
 }
 
 function MissingArtefact() {
@@ -167,11 +210,24 @@ export function NotebookArtefactsComparison({
                           </div>
                           <div className={`grid ${notebookCols} gap-6`}>
                             {visibleNotebooks.map((nb) => {
-                              const artifact = findArtifactByName(nb, type, name);
+                              const artifacts = findArtifactsByName(nb, type, name);
                               return (
                                 <div key={nb.id} className="min-h-[260px]">
-                                  {artifact ? (
-                                    <ArtefactItem artifact={artifact} />
+                                  {artifacts.length > 0 ? (
+                                    <div className="space-y-3">
+                                      {artifacts.map((a, idx) => {
+                                        const next = artifacts[idx + 1] ?? null;
+                                        const between = next
+                                          ? buildBetweenLabel(nb, a.cellIndex, next.cellIndex)
+                                          : null;
+                                        return (
+                                          <div key={a.id} className="space-y-3">
+                                            <ArtefactItem artifact={a} />
+                                            {between ? <SeparatorPill label={between} /> : null}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
                                   ) : (
                                     <MissingArtefact />
                                   )}

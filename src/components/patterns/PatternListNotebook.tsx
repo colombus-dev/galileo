@@ -36,7 +36,7 @@ export const PatternListNotebook: React.FC<PatternListNotebookProps> = ({
             </h3>
 
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                {notebookList.map((nb, index) => (
+                {notebookList.map((nb) => (
                     <div 
                         key={nb.name} 
                         onClick={() => handleNotebookClick(nb.name)}

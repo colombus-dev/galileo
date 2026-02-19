@@ -1,6 +1,7 @@
 import { ScrollButtons } from "@/components/ScrollButtons";
 import { NotebookContextDataComparison } from "@/components/artefacts/NotebookContextDataComparison.tsx";
 import { NotebookArtefactsComparison } from "@/components/artefacts/NotebookArtefactsComparison";
+import { NotebookCodeDiffComparison } from "@/components/artefacts/NotebookCodeDiffComparison";
 import { NotebookPerformanceComparison } from "@/components/artefacts/NotebookPerformanceComparison";
 import type { NotebookData } from "@/data/mockData";
 import { getVisibleNotebooks } from "@/utils/notebookComparison";
@@ -65,12 +66,24 @@ export function ArtefactsComparisonMode({
                 </div>
               </div>
 
-              <div id="section-compare-artefacts" className="mt-6 mb-6 scroll-mt-40">
+              <div
+                id="section-compare-artefacts"
+                className="mt-6 mb-6 scroll-mt-40"
+              >
                 <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
                   Artefacts
                 </div>
                 <div className="mt-4">
                   <NotebookArtefactsComparison notebooks={visibleNotebooks} />
+                </div>
+              </div>
+
+              <div id="section-compare-code" className="mt-6 mb-6 scroll-mt-40">
+                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+                  Code (diff)
+                </div>
+                <div className="mt-4">
+                  <NotebookCodeDiffComparison notebooks={visibleNotebooks} />
                 </div>
               </div>
             </>
