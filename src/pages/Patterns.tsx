@@ -1,13 +1,17 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { NavBar } from "@/components/NavBar";
 import Select, { Option } from '@/components/Select';
 import SearchBar, { SearchSuggestion } from "@/components/SearchBar";
 import PatternHeatmap from "@/components/patterns/PatternHeatmap";
+import PatternsList from '@/components/patterns/PatternsList';
 import { mockDataPattern } from "@/data/patternMockData";
 
 const mockData = mockDataPattern;
 
 export default function Patterns() {
+
+    const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState<string>('');
@@ -61,7 +65,7 @@ export default function Patterns() {
         : [];
 
     const handleRedirection = (patternId: string) => {
-        window.location.href = `/pattern/${patternId}`;
+        navigate(`/pattern/${patternId}`);
     };
 
     return (
@@ -70,15 +74,15 @@ export default function Patterns() {
                 logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
                 title="Galileo - Patterns"
             >
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    <a href="/storytelling">Storytelling</a>
-                </button>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    <a href="/artefact">Artefact</a>
-                </button>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-                    <a href="/patterns">Patterns</a>
-                </button>
+				<button type="button" onClick={() => navigate('/storytelling')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+					Storytelling
+				</button>
+				<button type="button" onClick={() => navigate('/artefact')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+					Artefact
+				</button>
+				<button type="button" onClick={() => navigate('/patterns')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+					Patterns
+				</button>
             </NavBar>
 
             <div className="p-4 flex flex-row items-center justify-between gap-4 bg-white border-b shadow-sm">
@@ -119,17 +123,20 @@ export default function Patterns() {
                 </div>
             </div>
 
-            <section className="flex-1 p-6 flex flex-col min-h-0">
-                <div className="bg-white rounded-xl shadow-lg p-4 flex-1 flex flex-col">
+            <section className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto min-h-0">
+                <div className="bg-white rounded-xl shadow-lg p-4 shrink-0">
                     <PatternHeatmap
                         title={`Patterns (${filteredData.length})`}
                         data={filteredData}
                         activeMetric={selectedMetric}
                         fullWidth
-                        className="flex-1"
                     />
                 </div>
+                <div className="shrink-0">
+                    <PatternsList data={mockData} />
+                </div>
             </section>
+
         </main>
     );
 }

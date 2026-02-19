@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { NavBar } from '@/components/NavBar';
 import { NotebookImporter } from '@/components/NotebookImporter';
 import { useNotebookImport } from '@/hooks/useNotebookImport';
@@ -20,6 +21,7 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
   logoUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10",
   onImportSuccess,
 }) => {
+	const navigate = useNavigate();
   const [importError, setImportError] = useState<string | null>(null);
   const { importNotebook, loading } = useNotebookImport({
     onSuccess: (notebook) => {
@@ -53,12 +55,20 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
         logoUrl={logoUrl}
         title="Galileo - Import Notebook"
       >
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/artefact">Artefact</a>
-        </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/patterns">Patterns</a>
-        </button>
+    <button
+      type="button"
+      onClick={() => navigate('/artefact')}
+      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    >
+      Artefact
+    </button>
+    <button
+      type="button"
+      onClick={() => navigate('/patterns')}
+      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    >
+      Patterns
+    </button>
       </NavBar>
       <div className="w-full h-[calc(100vh-80px)] bg-gradient-to-br from-slate-50 to-slate-100">
         <NotebookImporter

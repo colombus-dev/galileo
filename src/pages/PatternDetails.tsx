@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { NavBar } from "@/components/NavBar";
 import { mockDataPattern } from "@/data/patternMockData";
 import PatternTitle from "@/components/patterns/PatternTitle";
@@ -12,6 +12,7 @@ import PatternRadarChart from "@/components/patterns/PatternRadarChart";
 
 export default function PatternDetails() {
     const { id } = useParams();
+	const navigate = useNavigate();
     const [selectedNotebook, setSelectedNotebook] = useState<string | null>(null);
     const currentPattern = mockDataPattern.find(pattern => String(pattern.id) === id);
 
@@ -37,14 +38,26 @@ export default function PatternDetails() {
                 logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
                 title="Galileo - Patterns"
             >
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    <a href="/storytelling">Storytelling</a>
+                <button
+                    type="button"
+                    onClick={() => navigate("/storytelling")}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                    Storytelling
                 </button>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    <a href="/artefact">Artefact</a>
+                <button
+                    type="button"
+                    onClick={() => navigate("/artefact")}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                    Artefact
                 </button>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-                    <a href="/patterns">Patterns</a>
+                <button
+                    type="button"
+                    onClick={() => navigate("/patterns")}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                >
+                    Patterns
                 </button>
             </NavBar>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">

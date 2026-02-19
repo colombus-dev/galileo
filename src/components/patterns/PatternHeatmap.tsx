@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router';
 import Plotly from 'plotly.js-dist-min';
 import { type PatternType, type Counts } from '@/PatternType';
 
-// J'ai rendu 'title' optionnel car on le génère maintenant dynamiquement,
-// tu pourras l'enlever de tes props si tu n'en as plus besoin ailleurs.
 interface PatternHeatmapProps {
     title?: string;
     data: PatternType[];
@@ -25,8 +23,6 @@ const PatternHeatmap = ({
 
     const DATA_KEYS: (keyof Counts)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
 
-    // --- CALCULS GLOBAUX ---
-    // On les fait ici pour pouvoir les utiliser dans l'UI et dans le graphique
     const totalCount = data?.length || 0;
     const limit = totalCount < 20 ? Math.ceil(totalCount / 2) : 10;
     const displayCount = Math.min(limit, totalCount);

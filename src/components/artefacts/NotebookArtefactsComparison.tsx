@@ -100,7 +100,7 @@ export function NotebookArtefactsComparison({
   const notebookCols = getNotebookColsClass(visibleNotebooks.length);
 
   const [openTypes, setOpenTypes] = useState<Record<ArtifactType, boolean>>({
-    dataset: true,
+    dataset: false,
     model: false,
     visualization: false,
     metric: false,

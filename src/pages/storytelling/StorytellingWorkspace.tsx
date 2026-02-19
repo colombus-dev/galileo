@@ -223,20 +223,33 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
         title="Galileo - Storytelling"
       >
         <button
+          type="button"
           onClick={handleBackToImport}
           className="px-4 py-2 bg-slate-600 text-white rounded hover:bg-slate-700 transition"
         >
           ← Retour à l'import
         </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/storytelling">Storytelling</a>
-        </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/artefact">Artefact</a>
-        </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/patterns">Patterns</a>
-        </button>
+		<button
+			type="button"
+			onClick={() => navigate('/storytelling')}
+			className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+		>
+			Storytelling
+		</button>
+		<button
+			type="button"
+			onClick={() => navigate('/artefact')}
+			className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+		>
+			Artefact
+		</button>
+		<button
+			type="button"
+			onClick={() => navigate('/patterns')}
+			className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+		>
+			Patterns
+		</button>
       </NavBar>
       <NotebookWorkspaceLayout
         sidebar={
