@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router';
 import Plotly from 'plotly.js-dist-min';
 import { type PatternType, type Counts } from '@/PatternType';
 
+// J'ai rendu 'title' optionnel car on le génère maintenant dynamiquement,
+// tu pourras l'enlever de tes props si tu n'en as plus besoin ailleurs.
 interface PatternHeatmapProps {
-    title: string;
+    title?: string;
     data: PatternType[];
     activeMetric?: string;
     fullWidth?: boolean;
@@ -12,7 +14,6 @@ interface PatternHeatmapProps {
 }
 
 const PatternHeatmap = ({
-    title,
     data,
     activeMetric = 'score',
     fullWidth = true,
@@ -23,6 +24,15 @@ const PatternHeatmap = ({
     const [filterMode, setFilterMode] = useState<'more' | 'less'>('more');
 
     const DATA_KEYS: (keyof Counts)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
+
+    // --- CALCULS GLOBAUX ---
+    // On les fait ici pour pouvoir les utiliser dans l'UI et dans le graphique
+    const totalCount = data?.length || 0;
+    const limit = totalCount < 20 ? Math.ceil(totalCount / 2) : 10;
+    const displayCount = Math.min(limit, totalCount);
+
+    const dynamicTitle = `Les ${displayCount} patterns les ${filterMode === 'more' ? 'plus' : 'moins'} fréquents`;
+    const subtitle = `${displayCount} patterns affichés sur les ${totalCount}`;
 
     const getLabels = () => {
         switch (activeMetric) {
@@ -61,15 +71,6 @@ const PatternHeatmap = ({
         });
 
         formattedData.sort((a, b) => a.total - b.total);
-
-        const totalCount = formattedData.length;
-        let limit = 0;
-
-        if (totalCount < 20) {
-            limit = Math.ceil(totalCount / 2);
-        } else {
-            limit = 10;
-        }
 
         let displayData = [];
         if (filterMode === 'less') {
@@ -146,15 +147,18 @@ const PatternHeatmap = ({
                 Plotly.purge(chartRef.current); 
             }
         };
-    }, [data, activeMetric, filterMode, navigate]);
+    }, [data, activeMetric, filterMode, navigate, limit]);
 
     return (
         <div className={`bg-white p-5 rounded-lg shadow-md ${className}`} style={{ width: fullWidth ? '100%' : 'auto' }}>
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+            <div className="flex justify-between items-start mb-4">
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-800">{dynamicTitle}</h2>
+                    <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+                </div>
                 <div className="flex bg-gray-100 rounded-lg p-1">
-                    <button onClick={() => setFilterMode('less')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'less' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Less</button>
-                    <button onClick={() => setFilterMode('more')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'more' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>More</button>
+                    <button onClick={() => setFilterMode('less')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'less' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Moins</button>
+                    <button onClick={() => setFilterMode('more')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'more' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Plus</button>
                 </div>
             </div>
             <div ref={chartRef} className="w-full h-[500px]" />
