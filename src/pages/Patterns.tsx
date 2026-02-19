@@ -121,7 +121,6 @@ export default function Patterns() {
             </div>
 
             <section className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto min-h-0">
-                {/* Conteneur de la Heatmap */}
                 <div className="bg-white rounded-xl shadow-lg p-4 shrink-0">
                     <PatternHeatmap
                         title={`Patterns (${filteredData.length})`}

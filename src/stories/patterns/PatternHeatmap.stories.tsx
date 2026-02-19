@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 import PatternHeatmap from '@/components/patterns/PatternHeatmap'; 
 import { mockDataPattern } from '@/data/patternMockData';
 
-// Mock Data adapté à la nouvelle interface
 const mockData = mockDataPattern
 
 const meta: Meta<typeof PatternHeatmap> = {
