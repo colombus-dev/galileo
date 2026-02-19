@@ -32,9 +32,9 @@ export const CodePanel: React.FC<CodePanelProps> = ({
   }, [notebook.cells, section.cellIds]);
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`w-full space-y-4 ${className}`}>
       {/* Header avec toggle */}
-      <div className="flex items-center justify-between gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+      <div className="w-full flex items-center justify-between gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
         <div className="flex items-center gap-2">
           <MdCode className="text-lg text-slate-600" />
           <h3 className="font-semibold text-slate-900">Code source</h3>
@@ -51,10 +51,10 @@ export const CodePanel: React.FC<CodePanelProps> = ({
 
       {/* Content */}
       {!collapsed && (
-        <div className="space-y-6">
+        <div className="w-full space-y-6">
           {codeCells.length > 0 ? (
             codeCells.map((cell, idx) => (
-              <div key={cell.id} className="p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+              <div key={cell.id} className="w-full p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
                 <div className="text-xs text-slate-500 mb-3">Cellule {idx + 1}</div>
                 <CodeCell
                   cell={cell}
@@ -63,7 +63,7 @@ export const CodePanel: React.FC<CodePanelProps> = ({
               </div>
             ))
           ) : (
-            <div className="p-6 text-center bg-white rounded-lg border border-dashed border-slate-300">
+            <div className="w-full p-6 text-center bg-white rounded-lg border border-dashed border-slate-300">
               <p className="text-sm text-slate-600">Aucune cellule de code dans cette section</p>
             </div>
           )}
