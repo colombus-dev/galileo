@@ -17,6 +17,7 @@ export interface CodeCellProps {
 export const CodeCell: React.FC<CodeCellProps> = ({
   cell,
   onTokenClick,
+	showLineNumbers = true,
   className = '',
 }) => {
   if (cell.type !== 'code') {
@@ -33,7 +34,7 @@ export const CodeCell: React.FC<CodeCellProps> = ({
           code={cell.content}
           language="python"
           className="max-w-none w-full"
-			showLineNumbers={showLineNumbers}
+          showLineNumbers={showLineNumbers}
         />
       </div>
 

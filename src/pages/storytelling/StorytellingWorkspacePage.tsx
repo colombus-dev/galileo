@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import { StorytellingWorkspace } from '@/pages/storytelling/StorytellingWorkspace';
 import { getCachedNotebook } from '@/services/notebookProcessor';
 import type { NotebookModel } from '@/types/notebook';

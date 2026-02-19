@@ -1213,6 +1213,7 @@ predictions = pipeline.predict(X_test)
     ],
   },
 
+
   // ===== SKLEARN - MODEL SELECTION =====
   'sklearn.model_selection.train_test_split': {
     docKey: 'sklearn.model_selection.train_test_split',
@@ -1220,7 +1221,7 @@ predictions = pipeline.predict(X_test)
     version: '1.3.0',
     libName: 'sklearn',
     content: `# sklearn.model_selection.train_test_split()
-
+  
 Divise les données en ensembles d'entraînement et de test.
 
 ## Signature:
