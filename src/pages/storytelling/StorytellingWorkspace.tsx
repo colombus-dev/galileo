@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { NavBar } from '@/components/NavBar';
 import { NotebookWorkspaceLayout } from '@/components/storytelling/NotebookWorkspaceLayout';
 import { SummarySidebar } from '@/components/storytelling/SummarySidebar';

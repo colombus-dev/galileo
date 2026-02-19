@@ -17,6 +17,7 @@ export interface CodeCellProps {
 export const CodeCell: React.FC<CodeCellProps> = ({
   cell,
   onTokenClick,
+  showLineNumbers,
   className = '',
 }) => {
   if (cell.type !== 'code') {
