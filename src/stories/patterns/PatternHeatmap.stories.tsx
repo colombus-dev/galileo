@@ -15,7 +15,8 @@ const meta: Meta<typeof PatternHeatmap> = {
     },
     parameters: {
         layout: 'padded', 
-    }
+    },
+    tags: ['autodocs'],
 };
 
 export default meta;
