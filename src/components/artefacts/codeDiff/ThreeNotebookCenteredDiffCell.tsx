@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 
 import { CodeViewer } from "../CodeViewer";
+import { DocModal } from "@/components/DocModal";
+import { useArtefactDocumentation } from "@/hooks/useArtefactDocumentation";
 import { CellCardShell, PlaceholderCell } from "./CellCardShell";
 
 import { getNotebookDiffColor } from "../../../utils/diffPalette";
@@ -84,7 +86,7 @@ function getLineProps(opts: {
 	};
 }
 
-export function ThreeNotebookCenteredDiffCell({
+function ThreeNotebookCenteredDiffCellComponent({
 	cellIndex,
 	title,
 	baseLabel,
@@ -93,6 +95,7 @@ export function ThreeNotebookCenteredDiffCell({
 	leftCode,
 	rightLabel,
 	rightCode,
+	onDocKeyClick,
 }: {
 	cellIndex: number;
 	title: string;
@@ -102,6 +105,7 @@ export function ThreeNotebookCenteredDiffCell({
 	leftCode: string | null;
 	rightLabel: string;
 	rightCode: string | null;
+	onDocKeyClick?: (docKey: string) => void;
 }) {
 	const baseNormalized = useMemo(
 		() => normalizeCode(baseCode ?? ""),
@@ -164,6 +168,8 @@ export function ThreeNotebookCenteredDiffCell({
 								language="python"
 								className="max-w-none w-full shadow-none border-0"
 								wrapLines
+								enableDocLinks={true}
+								onDocKeyClick={onDocKeyClick}
 								lineProps={
 									getLineProps({
 										highlights: leftHighlights ? leftHighlights.other : null,
@@ -189,6 +195,8 @@ export function ThreeNotebookCenteredDiffCell({
 								language="python"
 								className="max-w-none w-full shadow-none border-0"
 								wrapLines
+								enableDocLinks={true}
+								onDocKeyClick={onDocKeyClick}
 								lineProps={
 									getLineProps({
 										highlights: baseHighlights,
@@ -214,6 +222,8 @@ export function ThreeNotebookCenteredDiffCell({
 								language="python"
 								className="max-w-none w-full shadow-none border-0"
 								wrapLines
+								enableDocLinks={true}
+								onDocKeyClick={onDocKeyClick}
 								lineProps={
 									getLineProps({
 										highlights: rightHighlights ? rightHighlights.other : null,
@@ -229,5 +239,31 @@ export function ThreeNotebookCenteredDiffCell({
 				</div>
 			</div>
 		</CellCardShell>
+	);
+}
+
+export function ThreeNotebookCenteredDiffCell(props: {
+	cellIndex: number;
+	title: string;
+	baseLabel: string;
+	baseCode: string | null;
+	leftLabel: string;
+	leftCode: string | null;
+	rightLabel: string;
+	rightCode: string | null;
+}) {
+	const { handleDocKeyClick, isDocModalOpen, docEntry, loading, error, closeDocModal } = useArtefactDocumentation();
+
+	return (
+		<>
+			<ThreeNotebookCenteredDiffCellComponent {...props} onDocKeyClick={handleDocKeyClick} />
+			<DocModal
+				isOpen={isDocModalOpen}
+				docEntry={docEntry}
+				loading={loading}
+				error={error}
+				onClose={closeDocModal}
+			/>
+		</>
 	);
 }

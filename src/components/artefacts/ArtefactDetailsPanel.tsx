@@ -3,7 +3,9 @@ import { MdCode } from "react-icons/md";
 
 import type { Artifact, CodeCell } from "@/data/mockData";
 import { CodeViewer } from "@/components/artefacts/CodeViewer";
+import { DocModal } from "@/components/DocModal";
 import { CommentBox } from "@/components/artefacts/CommentBox";
+import { useArtefactDocumentation } from "@/hooks/useArtefactDocumentation";
 
 export interface ArtefactDetailsPanelProps {
 	artifact: Artifact | null;
@@ -14,6 +16,14 @@ export interface ArtefactDetailsPanelProps {
 export function ArtefactDetailsPanel({ artifact, cells, onClose }: ArtefactDetailsPanelProps) {
 	const [showComments] = useState(true);
 	const [comment, setComment] = useState("");
+	const {
+		isDocModalOpen,
+		docEntry,
+		loading,
+		error,
+		handleDocKeyClick,
+		closeDocModal,
+	} = useArtefactDocumentation();
 
 	const cell = useMemo(() => {
 		if (!artifact) return null;
@@ -50,24 +60,24 @@ export function ArtefactDetailsPanel({ artifact, cells, onClose }: ArtefactDetai
 						<p className="mt-3 text-slate-600">{artifact.description}</p>
 					) : null}
 
-					{cell?.code ? (
-						<div className="mt-5">
-							<CodeViewer code={cell.code} language="python" className="max-w-none w-full" />
-						</div>
-					) : (
-						<div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-							Code indisponible pour cette cellule.
-						</div>
-					)}
-
-					<div className="mt-6 border-t border-slate-200" />
-
+				{cell?.code ? (
 					<div className="mt-5">
+						<CodeViewer code={cell.code} language="python" className="max-w-none w-full" enableDocLinks={true} onDocKeyClick={handleDocKeyClick} />
+					</div>
+				) : (
+					<div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+						Code indisponible pour cette cellule.
+					</div>
+				)}
 
-						{showComments ? (
-							<div className="mt-4">
-								<CommentBox
-									value={comment}
+				<div className="mt-6 border-t border-slate-200" />
+
+				<div className="mt-5">
+
+					{showComments ? (
+						<div className="mt-4">
+							<CommentBox
+								value={comment}
 									onChange={setComment}
 									label="Commentaires sur cet artefact"
 									className="max-w-none"
@@ -79,6 +89,13 @@ export function ArtefactDetailsPanel({ artifact, cells, onClose }: ArtefactDetai
 			) : (
 				<div className="px-6 pb-6 text-sm text-slate-600">Sélectionne un artefact pour afficher son code et ses commentaires.</div>
 			)}
+			<DocModal
+				isOpen={isDocModalOpen}
+				docEntry={docEntry}
+				loading={loading}
+				error={error}
+				onClose={closeDocModal}
+			/>
 		</div>
 	);
 }
