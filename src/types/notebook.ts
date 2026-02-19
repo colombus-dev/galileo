@@ -45,4 +45,5 @@ export interface DocEntry {
   content: string;
   libName: string;
   examples?: string | string[];
+  related?: string[];
 }

@@ -21,6 +21,7 @@ function matchesFilter(type: string, filter: ArtefactFilterKey) {
 
 export default function ArtefactsView() {
 	const navigate = useNavigate();
+  const [isNavCollapsed, setIsNavCollapsed] = useState(false);
 
   const [mode, setMode] = useState<ModeType>("simple");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -264,32 +265,34 @@ export default function ArtefactsView() {
   return (
     <div className="flex flex-col h-screen">
       <div ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-white">
-        <NavBar
-          logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
-          title="Galileo - Artefacts"
+    {!isNavCollapsed ? (
+      <NavBar
+        logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
+        title="Galileo - Artefacts"
+      >
+        <button
+          type="button"
+          onClick={() => navigate("/storytelling")}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-      <button
-        type="button"
-        onClick={() => navigate("/storytelling")}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Storytelling
-      </button>
-      <button
-        type="button"
-        onClick={() => navigate("/artefact")}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Artefact
-      </button>
-      <button
-        type="button"
-        onClick={() => navigate("/patterns")}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Patterns
-      </button>
-        </NavBar>
+          Storytelling
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/artefact")}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Artefact
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/patterns")}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Patterns
+        </button>
+      </NavBar>
+    ) : null}
         <div className="p-4 flex flex-row flex-wrap items-center justify-between gap-4 bg-white border-b shadow-sm">
           <div className="w-64">
             <NotebookSelectorDropdown
@@ -300,9 +303,18 @@ export default function ArtefactsView() {
             />
           </div>
 
-          <ModeSwitchButton mode={mode} onChange={setMode} />
+      <div className="flex items-center gap-3">
+        <ModeSwitchButton mode={mode} onChange={setMode} />
+        <button
+          type="button"
+          onClick={() => setIsNavCollapsed((v) => !v)}
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+        >
+          {isNavCollapsed ? "Afficher navigation" : "Masquer navigation"}
+        </button>
+      </div>
         </div>
-			{selectedId && primaryNotebook ? (
+      {!isNavCollapsed && selectedId && primaryNotebook ? (
 				<div className="border-b bg-white/95">
 					<div className="p-4">
 						<div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
@@ -350,7 +362,7 @@ export default function ArtefactsView() {
 						</div>
 					</div>
 				</div>
-			) : null}
+      ) : null}
       </div>
 		<div
 			className="flex flex-col gap-2 p-6 mb-4"
@@ -385,6 +397,7 @@ export default function ArtefactsView() {
                 onSearch={setQuery}
                 scrollToTop={scrollToTop}
                 scrollToBottom={scrollToBottom}
+					detailsTopOffsetPx={headerHeight + 24}
               />
             )
           ) : null}

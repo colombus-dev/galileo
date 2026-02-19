@@ -1,1192 +1,1252 @@
 /**
- * Documentation complète pour tous les tokens supportés
- * Couvre: pandas, numpy, sklearn, matplotlib, seaborn, jupyter, IPython
+ * Documentation complète pour tous les tokens documentables
+ * Mocks complets pour les documentations des librairies
  */
 
 import type { DocEntry } from '@/types/notebook';
 
 export const completeMockDocs: Record<string, DocEntry> = {
-  // ===== PANDAS =====
+  // ============ PANDAS ============
   'pandas': {
     docKey: 'pandas',
-    title: 'pandas',
+    title: 'Pandas - Data Analysis Library',
     version: '2.1.3',
     libName: 'pandas',
-    content: `# Pandas - Python Data Analysis Library
+    content: `# Pandas - Data Manipulation & Analysis
 
-Pandas est une bibliothèque Python pour la manipulation et l'analyse de données. Elle fournit des structures de données flexibles et performantes pour rendre le travail avec les données relationnelles et non-structurées simple et intuitif.
+Pandas est une librairie Python open-source pour la manipulation et l'analyse de données.
 
-## Caractéristiques principales:
-- DataFrame: structure 2D pour représenter des données tabulaires
-- Series: tableau 1D avec index
-- Opérations de lecture/écriture pour plusieurs formats (CSV, Excel, SQL, JSON)
-- Agrégation, transformation, nettoyage de données
-- Manipulation des données temporelles
+## Caractéristiques principales
 
-## Installation:
-\`\`\`bash
-pip install pandas
-\`\`\`
+- **DataFrame** : Structure tabulaire 2D avec colonnes nommées et indexage flexible
+- **Series** : Structure 1D pour manipuler des colonnes isolées
+- **Groupby** : Opérations d'agrégation et transformation en groupe
+- **Merge/Join** : Fusion entre plusieurs DataFrames
+- **Time series** : Manipulation de données temporelles avec indexage temporel
 
-## Usage basique:
-\`\`\`python
-import pandas as pd
-df = pd.read_csv('data.csv')
-df.describe()
-\`\`\``,
-    examples: [
-      'import pandas as pd',
-      'df = pd.read_csv("file.csv")',
-      'df.head()',
-      'df.describe()',
-    ],
+## Cas d'usage
+
+Pandas est particulièrement utile pour :
+- Nettoyage et préparation de données (data cleaning)
+- Exploration exploratoire (EDA)
+- Transformation de formats (CSV, Excel, JSON, SQL, etc.)
+- Fusion et agrégation de données
+- Détection d'anomalies`,
+    examples: `import pandas as pd
+
+# Lire un CSV
+df = pd.read_csv("data.csv")
+
+# Manipulation basique
+df.head(10)
+df.describe()`,
   },
   'pandas.read_csv': {
     docKey: 'pandas.read_csv',
     title: 'pandas.read_csv()',
     version: '2.1.3',
     libName: 'pandas',
-    content: `# pandas.read_csv()
+    content: `# pd.read_csv() - Lire des fichiers CSV
 
-Lit un fichier CSV dans un DataFrame pandas.
+Charge un fichier CSV dans un DataFrame pandas.
 
-## Signature:
-\`\`\`python
-pd.read_csv(
-    filepath_or_buffer,
-    sep=',',
-    delimiter=None,
-    header='infer',
-    names=None,
-    index_col=None,
-    usecols=None,
-    dtype=None,
-    ...
-)
-\`\`\`
+## Paramètres principaux
 
-## Paramètres principaux:
-- **filepath_or_buffer**: URL, chemin fichier ou objet fichier
-- **sep**: Séparateur à utiliser (par défaut ',')
-- **header**: Ligne numéro à utiliser comme noms de colonnes
-- **names**: Liste des noms de colonnes
-- **index_col**: Colonne(s) à utiliser comme index
-- **usecols**: Sous-ensemble de colonnes à charger
-- **dtype**: Type de données pour les colonnes
-
-## Exemples:
-\`\`\`python
-# Lecture basique
-df = pd.read_csv('data.csv')
-
-# Spécifier le séparateur
-df = pd.read_csv('data.tsv', sep='\t')
-
-# Définir l'index
-df = pd.read_csv('data.csv', index_col='id')
-
-# Charger colonnes spécifiques
-df = pd.read_csv('data.csv', usecols=['col1', 'col2'])
-\`\`\``,
-    examples: [
-      'pd.read_csv("data.csv")',
-      'pd.read_csv("data.tsv", sep="\\t")',
-      'pd.read_csv("data.csv", usecols=["col1", "col2"])',
-    ],
+- **filepath_or_buffer** : Chemin du fichier ou URL
+- **sep** : Délimiteur (défaut: ',')
+- **header** : Ligne à utiliser comme noms (défaut: 0)
+- **dtype** : Types des colonnes
+- **skiprows** : Nombre de lignes à ignorer
+- **nrows** : Nombre de lignes à lire`,
+    examples: `df = pd.read_csv("iris.csv")
+df = pd.read_csv("data.csv", sep=';', encoding='utf-8')
+df = pd.read_csv("large.csv", nrows=1000)`,
   },
   'pandas.DataFrame': {
     docKey: 'pandas.DataFrame',
     title: 'pandas.DataFrame',
     version: '2.1.3',
     libName: 'pandas',
-    content: `# pandas.DataFrame
+    content: `# DataFrame - Structure tabulaire principale
 
-Structure 2D mutable, hétérogène avec axes étiquetés (lignes et colonnes).
+Un DataFrame est une structure 2D composée de lignes et colonnes, similaire à un tableur.
 
-## Création:
-\`\`\`python
-# À partir d'un dictionnaire
-df = pd.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
+## Attributs principaux
 
-# À partir d'une liste de listes
-df = pd.DataFrame([[1, 2], [3, 4]], columns=['col1', 'col2'])
+- **shape** : Dimensions (lignes, colonnes)
+- **columns** : Noms des colonnes
+- **index** : Indices des lignes
+- **dtypes** : Types de données
 
-# À partir d'un array NumPy
-df = pd.DataFrame(np.array([[1, 2], [3, 4]]))
-\`\`\`
+## Méthodes courantes
 
-## Attributs principaux:
-- **shape**: Dimensions (rows, columns)
-- **columns**: Noms des colonnes
-- **index**: Index des lignes
-- **values**: Valeurs sous forme d'array NumPy
-
-## Méthodes principales:
-- **head()**: Premiers N lignes
-- **tail()**: Derniers N lignes
-- **describe()**: Statistiques descriptives
-- **info()**: Informations générales
-- **drop()**: Supprimer lignes/colonnes
-- **loc[]**: Accès par étiquette
-- **iloc[]**: Accès par position`,
-    examples: [
-      'df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})',
-      'df.head()',
-      'df.describe()',
-      'df.loc[0]',
-    ],
+- **head()** : Voir les premières lignes
+- **tail()** : Voir les dernières lignes
+- **describe()** : Statistiques descriptives
+- **info()** : Informations sur les colonnes`,
+    examples: `df.shape  # (100, 5)
+df.head()
+df.describe()
+df.info()`,
   },
-  'pandas.drop': {
-    docKey: 'pandas.drop',
+  'pandas.DataFrame.drop': {
+    docKey: 'pandas.DataFrame.drop',
     title: 'DataFrame.drop()',
     version: '2.1.3',
     libName: 'pandas',
-    content: `# DataFrame.drop()
+    content: `# DataFrame.drop() - Supprimer lignes/colonnes
 
-Supprime les lignes ou colonnes spécifiées.
+Supprime des lignes ou colonnes du DataFrame.
 
-## Signature:
-\`\`\`python
-DataFrame.drop(
-    labels=None,
-    axis=0,
-    index=None,
-    columns=None,
-    level=None,
-    inplace=False,
-    errors='raise'
-)
-\`\`\`
+## Paramètres
 
-## Paramètres:
-- **labels**: Index ou nom de colonne à supprimer
-- **axis**: 0 pour lignes, 1 pour colonnes
-- **index**: Lignes à supprimer (alternative à labels avec axis=0)
-- **columns**: Colonnes à supprimer (alternative à labels avec axis=1)
-- **inplace**: Modifier le DataFrame original
-- **errors**: 'raise' ou 'ignore'
-
-## Exemples:
-\`\`\`python
-# Supprimer une colonne
-df.drop('col_name', axis=1)
-df.drop(columns=['col1', 'col2'])
-
-# Supprimer une ligne
-df.drop(0, axis=0)
-df.drop(index=[0, 1, 2])
-
-# Modifier sur place
-df.drop('col_name', axis=1, inplace=True)
-\`\`\``,
-    examples: [
-      'df.drop("col_name", axis=1)',
-      'df.drop(columns=["col1", "col2"])',
-      'df.drop(0)',
-    ],
+- **labels** : Indices ou noms à supprimer
+- **axis** : 0 pour lignes, 1 pour colonnes
+- **inplace** : Modifier le DataFrame original`,
+    examples: `df.drop('column_name', axis=1)
+df.drop([0, 1, 2], axis=0)
+df.drop(columns=['col1', 'col2'])`,
   },
   'pandas.Series': {
     docKey: 'pandas.Series',
     title: 'pandas.Series',
     version: '2.1.3',
     libName: 'pandas',
-    content: `# pandas.Series
+    content: `# Series - Structure 1D
 
-Tableau 1D mutable avec index, capable de contenir plusieurs types de données.
-
-## Création:
-\`\`\`python
-# À partir d'une liste
-s = pd.Series([1, 2, 3])
-
-# À partir d'un dictionnaire
-s = pd.Series({'a': 1, 'b': 2, 'c': 3})
-
-# Avec index personnalisé
-s = pd.Series([1, 2, 3], index=['a', 'b', 'c'])
-\`\`\`
-
-## Attributs:
-- **values**: Valeurs sous-jacentes
-- **index**: Index de la série
-- **dtype**: Type de données
-- **name**: Nom de la série
-
-## Méthodes courantes:
-- **mean()**: Moyenne
-- **sum()**: Somme
-- **value_counts()**: Compte occurrences
-- **sort_values()**: Trie les valeurs
-- **apply()**: Applique une fonction`,
-    examples: [
-      's = pd.Series([1, 2, 3])',
-      's = pd.Series({"a": 1, "b": 2})',
-      's.mean()',
-      's.value_counts()',
-    ],
+Une Series est une structure 1D composée d'index et de valeurs.`,
+    examples: `s = pd.Series([1, 2, 3], index=['a', 'b', 'c'])
+df['column_name']  # Accéder à une colonne`,
   },
   'pandas.concat': {
     docKey: 'pandas.concat',
     title: 'pandas.concat()',
     version: '2.1.3',
     libName: 'pandas',
-    content: `# pandas.concat()
+    content: `# concat() - Concaténer DataFrames
 
-Concatène objets pandas (DataFrames ou Series).
-
-## Signature:
-\`\`\`python
-pd.concat(
-    objs,
-    axis=0,
-    ignore_index=False,
-    join='outer',
-    keys=None,
-    levels=None,
-    names=None,
-    verify_integrity=False,
-    copy=None
-)
-\`\`\`
-
-## Paramètres:
-- **objs**: Sequence de DataFrames/Series
-- **axis**: 0 pour lignes, 1 pour colonnes
-- **ignore_index**: Ignore index et crée nouveau
-- **join**: 'outer' (union) ou 'inner' (intersection)
-- **keys**: Pour créer index hiérarchique
-
-## Exemples:
-\`\`\`python
-# Concatener verticalement
-df_result = pd.concat([df1, df2])
-
-# Concatener horizontalement
-df_result = pd.concat([df1, df2], axis=1)
-
-# Ignorer l'index
-df_result = pd.concat([df1, df2], ignore_index=True)
-\`\`\``,
-    examples: [
-      'pd.concat([df1, df2])',
-      'pd.concat([df1, df2], axis=1)',
-      'pd.concat([s1, s2], ignore_index=True)',
-    ],
+Combine plusieurs DataFrames verticalement ou horizontalement.`,
+    examples: `pd.concat([df1, df2])
+pd.concat([df1, df2], axis=1)`,
   },
   'pandas.merge': {
     docKey: 'pandas.merge',
     title: 'pandas.merge()',
     version: '2.1.3',
     libName: 'pandas',
-    content: `# pandas.merge()
+    content: `# merge() - Fusionner DataFrames
 
-Fusionne deux DataFrames sur les colonnes ou index.
-
-## Signature:
-\`\`\`python
-pd.merge(
-    left,
-    right,
-    how='inner',
-    on=None,
-    left_on=None,
-    right_on=None,
-    left_index=False,
-    right_index=False,
-    suffixes=('_x', '_y'),
-    indicator=False,
-    validate=None
-)
-\`\`\`
-
-## Paramètres:
-- **how**: 'inner', 'outer', 'left', 'right'
-- **on**: Colonne commune pour la fusion
-- **left_on/right_on**: Colonnes spécifiques
-- **suffixes**: Suffixes pour colonnes dupliquées
-
-## Exemples:
-\`\`\`python
-# Fusion interne
-merged = pd.merge(df1, df2, on='key')
-
-# Fusion externe
-merged = pd.merge(df1, df2, how='outer', on='id')
-
-# Fusion sur colonnes différentes
-merged = pd.merge(df1, df2, left_on='id_1', right_on='id_2')
-\`\`\``,
-    examples: [
-      'pd.merge(df1, df2, on="key")',
-      'pd.merge(df1, df2, how="left", on="id")',
-    ],
+Fusionne deux DataFrames basé sur des clés communes (JOIN).`,
+    examples: `pd.merge(df1, df2, on='key')
+pd.merge(df1, df2, left_on='key1', right_on='key2')`,
   },
 
-  // ===== NUMPY =====
+  // ============ NUMPY ============
   'numpy': {
     docKey: 'numpy',
-    title: 'NumPy',
+    title: 'NumPy - Numerical Computing',
     version: '1.24.3',
     libName: 'numpy',
-    content: `# NumPy - Numerical Computing Library
+    content: `# NumPy - Calcul numérique
 
-NumPy est la bibliothèque de base pour le calcul scientifique en Python. Elle fournit:
-- N-dimensional arrays
-- Opérations mathématiques et statistiques
-- Algèbre linéaire
-- Génération de nombres aléatoires
+NumPy est la librairie fondamentale pour le calcul scientifique en Python.
 
-## Installation:
-\`\`\`bash
-pip install numpy
-\`\`\`
+## Caractéristiques
 
-## Usage basique:
-\`\`\`python
-import numpy as np
+- **ndarray** : Structure de tableau n-dimensionnel
+- **Opérations vectorisées** : Opérations rapides sur tableaux
+- **Algèbre linéaire** : Operations matricielles`,
+    examples: `import numpy as np
+
 arr = np.array([1, 2, 3])
-arr2d = np.array([[1, 2], [3, 4]])
-\`\`\``,
-    examples: ['import numpy as np', 'np.array([1, 2, 3])', 'np.zeros(10)'],
+matrix = np.array([[1, 2], [3, 4]])`,
   },
   'numpy.array': {
     docKey: 'numpy.array',
     title: 'numpy.array()',
     version: '1.24.3',
     libName: 'numpy',
-    content: `# numpy.array()
+    content: `# array() - Créer un ndarray
 
-Crée un array NumPy à partir d'une liste ou d'autres données.
-
-## Signature:
-\`\`\`python
-numpy.array(
-    object,
-    dtype=None,
-    *,
-    copy=True,
-    order='K',
-    subok=False,
-    ndmin=0,
-    like=None
-)
-\`\`\`
-
-## Paramètres:
-- **object**: Données sources (liste, tuple, array)
-- **dtype**: Type de données (int32, float64, etc)
-- **copy**: Copier ou référencer les données
-
-## Exemples:
-\`\`\`python
-# 1D array
-arr = np.array([1, 2, 3])
-
-# 2D array
-arr2d = np.array([[1, 2], [3, 4]])
-
-# Spécifier le dtype
-arr = np.array([1, 2, 3], dtype=float)
-\`\`\``,
-    examples: ['np.array([1, 2, 3])', 'np.array([[1, 2], [3, 4]])', 'np.array([1, 2], dtype=float)'],
+Crée un tableau NumPy à partir d'une liste ou tuple.`,
+    examples: `np.array([1, 2, 3])
+np.array([[1, 2], [3, 4]])`,
   },
   'numpy.unique': {
     docKey: 'numpy.unique',
     title: 'numpy.unique()',
     version: '1.24.3',
     libName: 'numpy',
-    content: `# numpy.unique()
+    content: `# unique() - Valeurs uniques
 
-Retourne les éléments uniques d'un array.
-
-## Signature:
-\`\`\`python
-numpy.unique(ar, return_index=False, return_inverse=False, return_counts=False, axis=None, *, equal_nan=False)
-\`\`\`
-
-## Paramètres:
-- **ar**: Array d'entrée
-- **return_index**: Retourner les index des premiers occurrences
-- **return_inverse**: Retourner les index pour reconstruire l'array original
-- **return_counts**: Retourner le nombre d'occurrences
-
-## Exemples:
-\`\`\`python
-# Éléments uniques
-np.unique([1, 2, 2, 3, 3, 3])
-# Output: array([1, 2, 3])
-
-# Avec comptages
-unique_vals, counts = np.unique([1, 2, 2, 3], return_counts=True)
-\`\`\``,
-    examples: ['np.unique([1, 2, 2, 3])', 'np.unique(arr, return_counts=True)'],
+Retourne les valeurs uniques d'un tableau.`,
+    examples: `np.unique([1, 2, 2, 3])  # [1, 2, 3]`,
   },
   'numpy.zeros': {
     docKey: 'numpy.zeros',
     title: 'numpy.zeros()',
     version: '1.24.3',
     libName: 'numpy',
-    content: `# numpy.zeros()
-
-Crée un array rempli de zéros.
-
-## Signature:
-\`\`\`python
-numpy.zeros(shape, dtype=None, order='C', *, like=None)
-\`\`\`
-
-## Paramètres:
-- **shape**: Forme du nouvel array (int ou tuple d'ints)
-- **dtype**: Type de données
-- **order**: 'C' (row-major) ou 'F' (column-major)
-
-## Exemples:
-\`\`\`python
-# 1D array de 5 zéros
-np.zeros(5)
-
-# 2D array 3x4 de zéros
-np.zeros((3, 4))
-
-# Avec type spécifique
-np.zeros(5, dtype=int)
-\`\`\``,
-    examples: ['np.zeros(5)', 'np.zeros((3, 4))', 'np.zeros(10, dtype=int)'],
+    content: `# zeros() - Créer tableau de zéros`,
+    examples: `np.zeros((3, 3))`,
   },
   'numpy.ones': {
     docKey: 'numpy.ones',
     title: 'numpy.ones()',
     version: '1.24.3',
     libName: 'numpy',
-    content: `# numpy.ones()
-
-Crée un array rempli de uns.
-
-## Signature:
-\`\`\`python
-numpy.ones(shape, dtype=None, order='C', *, like=None)
-\`\`\`
-
-## Exemples:
-\`\`\`python
-# Array 1D de 5 uns
-np.ones(5)
-
-# Array 2D 3x3 de uns
-np.ones((3, 3))
-
-# Avec type float
-np.ones(5, dtype=float)
-\`\`\``,
-    examples: ['np.ones(5)', 'np.ones((3, 3))', 'np.ones(5, dtype=float)'],
+    content: `# ones() - Créer tableau de uns`,
+    examples: `np.ones((2, 2))`,
   },
 
-  // ===== SKLEARN =====
+  // ============ SCIKIT-LEARN ============
   'sklearn': {
     docKey: 'sklearn',
-    title: 'scikit-learn',
+    title: 'Scikit-learn - Machine Learning',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# scikit-learn - Machine Learning Library
+    content: `# Scikit-learn - Machine Learning Library
 
-scikit-learn est une bibliothèque pour le machine learning en Python. Elle propose:
-- Classification, regression, clustering
-- Extraction de features, sélection
-- Pré-traitement et normalisation
-- Évaluation de modèles
-- Pipelines d'apprentissage
+Scikit-learn est la librairie standard pour le machine learning en Python.
 
-## Installation:
-\`\`\`bash
-pip install scikit-learn
-\`\`\`
+## Modules principaux
 
-## Modules principaux:
-- \`sklearn.datasets\`: Datasets d'exemple
-- \`sklearn.model_selection\`: Division train/test, cross-validation
-- \`sklearn.preprocessing\`: Normalisation, scaling
-- \`sklearn.svm\`: Support Vector Machines
-- \`sklearn.ensemble\`: Random Forests, Gradient Boosting
-- \`sklearn.metrics\`: Évaluation`,
-    examples: [
-      'from sklearn import datasets',
-      'from sklearn.model_selection import train_test_split',
-      'from sklearn.preprocessing import StandardScaler',
-    ],
+- **datasets** : Chargement de datasets
+- **preprocessing** : Normalisation et scaling
+- **model_selection** : Train/test split et cross-validation
+- **ensemble** : Modèles d'ensemble (Random Forest, etc.)
+- **metrics** : Métriques d'évaluation
+- **svm** : Support Vector Machines`,
+    examples: `from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC`,
   },
   'sklearn.datasets.load_iris': {
     docKey: 'sklearn.datasets.load_iris',
     title: 'sklearn.datasets.load_iris()',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# sklearn.datasets.load_iris()
+    content: `# load_iris() - Dataset Iris
 
-Charge le dataset Iris (150 échantillons de 3 espèces d'iris).
+Charge le célèbre dataset Iris avec 150 fleurs.
 
-## Signature:
-\`\`\`python
-sklearn.datasets.load_iris(*, return_X_y=False, as_frame=False)
-\`\`\`
+## Contenu
 
-## Paramètres:
-- **return_X_y**: Si True, retourne (X, y) sinon un Bunch
-- **as_frame**: Si True, retourne pandas DataFrame/Series
+- **X** : 4 features morphologiques
+- **y** : 3 classes (espèces)
+- **feature_names** : Noms des features
+- **target_names** : Noms des classes`,
+    examples: `iris = load_iris()
+X = iris.data
+y = iris.target`,
+  },
+  'sklearn.datasets.load_digits': {
+    docKey: 'sklearn.datasets.load_digits',
+    title: 'sklearn.datasets.load_digits()',
+    version: '1.3.0',
+    libName: 'sklearn',
+    content: `# load_digits() - Dataset Handwritten Digits
 
-## Retour:
-- Dataset Iris avec 150 échantillons, 4 features, 3 classes
-
-## Exemples:
-\`\`\`python
-from sklearn.datasets import load_iris
-
-# Charger le dataset
-iris = load_iris()
-X, y = iris.data, iris.target
-
-# Ou avec DataFrames
-iris_df = load_iris(as_frame=True)
-df = iris_df.frame
-\`\`\``,
-    examples: [
-      'from sklearn.datasets import load_iris',
-      'iris = load_iris()',
-      'X, y = load_iris(return_X_y=True)',
-    ],
+Charge le dataset de chiffres manuscrits (8x8 images).`,
+    examples: `digits = load_digits()
+X = digits.data`,
   },
   'sklearn.model_selection.train_test_split': {
     docKey: 'sklearn.model_selection.train_test_split',
     title: 'sklearn.model_selection.train_test_split()',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# sklearn.model_selection.train_test_split()
+    content: `# train_test_split() - Split train/test
 
 Divise les données en ensembles d'entraînement et de test.
 
-## Signature:
-\`\`\`python
-sklearn.model_selection.train_test_split(
-    *arrays,
-    test_size=None,
-    train_size=None,
-    random_state=None,
-    shuffle=True,
-    stratify=None
-)
-\`\`\`
+## Paramètres
 
-## Paramètres:
-- **test_size**: Fraction des données pour le test (défaut 0.25)
-- **random_state**: Seed pour la reproductibilité
-- **shuffle**: Mélanger les données
-- **stratify**: Stratifier par cette colonne
-
-## Exemples:
-\`\`\`python
-from sklearn.model_selection import train_test_split
-
-# Division 80/20
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-
-# Stratification pour classification
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, stratify=y, random_state=42
-)
-\`\`\``,
-    examples: [
-      'X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)',
-      'train_test_split(X, y, random_state=42)',
-      'train_test_split(X, y, stratify=y)',
-    ],
+- **test_size** : Proportion du test (0.2 par défaut)
+- **random_state** : Seed pour reproductibilité
+- **stratify** : Stratification pour preservez les proportions de classes`,
+    examples: `X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)`,
   },
   'sklearn.preprocessing.StandardScaler': {
     docKey: 'sklearn.preprocessing.StandardScaler',
     title: 'sklearn.preprocessing.StandardScaler',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# sklearn.preprocessing.StandardScaler
+    content: `# StandardScaler - Normalisation Z-score
 
-Normalise les features à moyenne 0 et variance 1.
+Normalise les features en (X - mean) / std.
 
-## Usage:
-\`\`\`python
-from sklearn.preprocessing import StandardScaler
+## Processus
 
-scaler = StandardScaler()
+1. Fit : Calcule mean et std sur les données
+2. Transform : Applique la normalisation
+3. Fit_transform : Combine fit + transform`,
+    examples: `scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-\`\`\`
+X_test_scaled = scaler.transform(X_test)`,
+  },
+  'sklearn.preprocessing.MinMaxScaler': {
+    docKey: 'sklearn.preprocessing.MinMaxScaler',
+    title: 'sklearn.preprocessing.MinMaxScaler',
+    version: '1.3.0',
+    libName: 'sklearn',
+    content: `# MinMaxScaler - Normalisation Min-Max
 
-## Méthodes:
-- **fit()**: Apprendre la moyenne et l'écart-type
-- **transform()**: Appliquer la normalisation
-- **fit_transform()**: Apprendre et transformer en une étape`,
-    examples: [
-      'scaler = StandardScaler()',
-      'X_scaled = scaler.fit_transform(X)',
-      'X_test_scaled = scaler.transform(X_test)',
-    ],
+Scale les features entre 0 et 1.`,
+    examples: `scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)`,
   },
   'sklearn.svm.SVC': {
     docKey: 'sklearn.svm.SVC',
     title: 'sklearn.svm.SVC',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# sklearn.svm.SVC
+    content: `# SVC - Support Vector Classifier
 
-Support Vector Machine pour la classification.
+Classifieur basé sur les Support Vector Machines.
 
-## Usage:
-\`\`\`python
-from sklearn.svm import SVC
+## Paramètres
 
-model = SVC(kernel='rbf', C=1.0, gamma='scale')
+- **kernel** : 'linear', 'rbf', 'poly', 'sigmoid'
+- **C** : Paramètre de régularisation
+- **gamma** : Coefficient pour noyau RBF`,
+    examples: `model = SVC(kernel='rbf', C=1.0)
 model.fit(X_train, y_train)
-predictions = model.predict(X_test)
-\`\`\`
-
-## Paramètres:
-- **kernel**: 'linear', 'poly', 'rbf', 'sigmoid'
-- **C**: Paramètre de régularisation
-- **gamma**: Coefficient du kernel
-
-## Méthodes:
-- **fit()**: Entraîner le modèle
-- **predict()**: Prédictions
-- **score()**: Exactitude`,
-    examples: [
-      'model = SVC(kernel="rbf")',
-      'model.fit(X_train, y_train)',
-      'predictions = model.predict(X_test)',
-    ],
+predictions = model.predict(X_test)`,
   },
   'sklearn.ensemble.RandomForestClassifier': {
     docKey: 'sklearn.ensemble.RandomForestClassifier',
     title: 'sklearn.ensemble.RandomForestClassifier',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# sklearn.ensemble.RandomForestClassifier
+    content: `# RandomForestClassifier - Ensemble method
 
-Random Forest pour la classification.
-
-## Usage:
-\`\`\`python
-from sklearn.ensemble import RandomForestClassifier
-
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
-predictions = model.predict(X_test)
-\`\`\`
-
-## Paramètres:
-- **n_estimators**: Nombre d'arbres
-- **max_depth**: Profondeur maximale
-- **random_state**: Seed pour reproductibilité
-
-## Méthodes:
-- **fit()**: Entraîner
-- **predict()**: Prédictions
-- **predict_proba()**: Probabilités`,
-    examples: [
-      'model = RandomForestClassifier(n_estimators=100)',
-      'model.fit(X_train, y_train)',
-      'predictions = model.predict(X_test)',
-    ],
+Classifieur basé sur une forêt aléatoire d'arbres de décision.`,
+    examples: `model = RandomForestClassifier(n_estimators=100)
+model.fit(X_train, y_train)`,
   },
   'sklearn.metrics.accuracy_score': {
     docKey: 'sklearn.metrics.accuracy_score',
     title: 'sklearn.metrics.accuracy_score()',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# sklearn.metrics.accuracy_score()
+    content: `# accuracy_score() - Exactitude
 
-Calcule la précision (exactitude) de la classification.
+Calcule le pourcentage de prédictions correctes.
 
-## Signature:
-\`\`\`python
-sklearn.metrics.accuracy_score(y_true, y_pred, normalize=True)
-\`\`\`
+## Formule
 
-## Paramètres:
-- **y_true**: Labels vrais
-- **y_pred**: Labels prédits
-- **normalize**: Si True, retourne une fraction; sinon le nombre correct
-
-## Exemples:
-\`\`\`python
-from sklearn.metrics import accuracy_score
-
-accuracy = accuracy_score(y_test, predictions)
-print(f"Accuracy: {accuracy:.2%}")
-\`\`\``,
-    examples: [
-      'accuracy_score(y_test, predictions)',
-      'accuracy = accuracy_score(y_true, y_pred)',
-    ],
+accuracy = (correct predictions) / (total predictions)`,
+    examples: `accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.2%}")`,
   },
   'sklearn.metrics.confusion_matrix': {
     docKey: 'sklearn.metrics.confusion_matrix',
     title: 'sklearn.metrics.confusion_matrix()',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# sklearn.metrics.confusion_matrix()
+    content: `# confusion_matrix() - Matrice de confusion
 
-Calcule la matrice de confusion pour l'évaluation.
-
-## Signature:
-\`\`\`python
-sklearn.metrics.confusion_matrix(y_true, y_pred, labels=None)
-\`\`\`
-
-## Retour:
-Matrice C où C[i, j] est le nombre d'observations prédites comme j mais de classe i.
-
-## Exemples:
-\`\`\`python
-from sklearn.metrics import confusion_matrix
-
-cm = confusion_matrix(y_test, predictions)
-print(cm)
-\`\`\``,
-    examples: ['confusion_matrix(y_test, predictions)', 'cm = confusion_matrix(y_true, y_pred)'],
+Affiche les vrais/faux positifs et vrais/faux négatifs.`,
+    examples: `cm = confusion_matrix(y_test, y_pred)`,
   },
   'sklearn.metrics.classification_report': {
     docKey: 'sklearn.metrics.classification_report',
     title: 'sklearn.metrics.classification_report()',
     version: '1.3.0',
     libName: 'sklearn',
-    content: `# sklearn.metrics.classification_report()
+    content: `# classification_report() - Rapport de classification
 
-Génère un rapport de classification texte.
+Affiche precision, recall, f1-score pour chaque classe.`,
+    examples: `print(classification_report(y_test, y_pred))`,
+  },
+  'sklearn.metrics.f1_score': {
+    docKey: 'sklearn.metrics.f1_score',
+    title: 'sklearn.metrics.f1_score()',
+    version: '1.3.0',
+    libName: 'sklearn',
+    content: `# f1_score() - Score F1
 
-## Signature:
-\`\`\`python
-sklearn.metrics.classification_report(y_true, y_pred, target_names=None, digits=2)
-\`\`\`
-
-## Retour:
-Chaîne texte avec precision, recall, f1-score pour chaque classe.
-
-## Exemples:
-\`\`\`python
-from sklearn.metrics import classification_report
-
-report = classification_report(y_test, predictions)
-print(report)
-\`\`\``,
-    examples: [
-      'classification_report(y_test, predictions)',
-      'print(classification_report(y_true, y_pred))',
-    ],
+Moyenne harmonique entre precision et recall.`,
+    examples: `f1 = f1_score(y_test, y_pred, average='weighted')`,
   },
 
-  // ===== MATPLOTLIB =====
+  // ============ MATPLOTLIB ============
   'matplotlib': {
     docKey: 'matplotlib',
-    title: 'Matplotlib',
-    version: '3.7.2',
+    title: 'Matplotlib - Visualization',
+    version: '3.7.1',
     libName: 'matplotlib',
-    content: `# Matplotlib - Plotting Library
+    content: `# Matplotlib - Visualization Library
 
-Matplotlib est une bibliothèque pour créer des visualisations statiques, animées et interactives en Python.
+Matplotlib est la librairie standard pour créer des graphiques en Python.`,
+    examples: `import matplotlib.pyplot as plt
 
-## Installation:
-\`\`\`bash
-pip install matplotlib
-\`\`\`
+plt.plot([1, 2, 3], [1, 2, 3])
+plt.show()`,
+  },
+  'matplotlib.pyplot': {
+    docKey: 'matplotlib.pyplot',
+    title: 'matplotlib.pyplot',
+    version: '3.7.1',
+    libName: 'matplotlib',
+    content: `# pyplot - Interface MATLAB-like
 
-## Modules principaux:
-- \`matplotlib.pyplot\`: Interface MATLAB-like
-- \`matplotlib.figure\`: Figure et axes
-- \`matplotlib.patches\`: Éléments graphiques
-
-## Exemple basique:
-\`\`\`python
-import matplotlib.pyplot as plt
-
-plt.plot([1, 2, 3], [1, 4, 9])
-plt.show()
-\`\`\``,
-    examples: ['import matplotlib.pyplot as plt', 'plt.plot([1, 2, 3])', 'plt.show()'],
+Module pyplot pour créer des graphiques facilement.`,
+    examples: `import matplotlib.pyplot as plt`,
   },
   'matplotlib.pyplot.figure': {
     docKey: 'matplotlib.pyplot.figure',
     title: 'matplotlib.pyplot.figure()',
-    version: '3.7.2',
+    version: '3.7.1',
     libName: 'matplotlib',
-    content: `# matplotlib.pyplot.figure()
+    content: `# figure() - Créer une figure
 
-Crée une nouvelle figure.
-
-## Signature:
-\`\`\`python
-matplotlib.pyplot.figure(
-    figsize=None,
-    dpi=None,
-    facecolor=None,
-    edgecolor=None,
-    frameon=True,
-    FigureClass=Figure,
-    clear=False
-)
-\`\`\`
-
-## Paramètres:
-- **figsize**: Taille en pouces (width, height)
-- **dpi**: Résolution
-- **facecolor**: Couleur de fond
-
-## Exemples:
-\`\`\`python
-fig = plt.figure(figsize=(10, 6))
-fig, ax = plt.subplots(figsize=(12, 8))
-\`\`\``,
-    examples: ['fig = plt.figure(figsize=(10, 6))', 'fig, ax = plt.subplots()'],
+Crée une nouvelle figure pour le graphique.`,
+    examples: `fig = plt.figure(figsize=(10, 6))`,
   },
   'matplotlib.pyplot.plot': {
     docKey: 'matplotlib.pyplot.plot',
     title: 'matplotlib.pyplot.plot()',
-    version: '3.7.2',
+    version: '3.7.1',
     libName: 'matplotlib',
-    content: `# matplotlib.pyplot.plot()
+    content: `# plot() - Tracer une ligne
 
-Trace une ligne ou des markers.
-
-## Signature:
-\`\`\`python
-matplotlib.pyplot.plot(*args, scalex=True, scaley=True, data=None, **kwargs)
-\`\`\`
-
-## Paramètres courants:
-- **color**: Couleur ('r', 'b', 'g', etc.)
-- **linestyle**: Style de ligne ('-', '--', '-.', ':')
-- **marker**: Marqueur ('o', 's', '^', etc.)
-- **label**: Étiquette pour la légende
-
-## Exemples:
-\`\`\`python
-plt.plot([1, 2, 3], [1, 4, 9], label='y=x²')
-plt.plot(x, y, 'r--o', label='Data')
-plt.legend()
-\`\`\``,
-    examples: [
-      'plt.plot([1, 2, 3], [1, 4, 9])',
-      'plt.plot(x, y, "r--o")',
-      'plt.plot(x, y, label="data")',
-    ],
+Trace une ligne 2D.`,
+    examples: `plt.plot([1, 2, 3], [1, 4, 9])`,
   },
   'matplotlib.pyplot.show': {
     docKey: 'matplotlib.pyplot.show',
     title: 'matplotlib.pyplot.show()',
-    version: '3.7.2',
+    version: '3.7.1',
     libName: 'matplotlib',
-    content: `# matplotlib.pyplot.show()
+    content: `# show() - Afficher la figure
 
-Affiche la figure.
-
-## Usage:
-\`\`\`python
-import matplotlib.pyplot as plt
-
-plt.plot([1, 2, 3], [1, 4, 9])
-plt.show()
-\`\`\``,
-    examples: ['plt.show()', 'plt.plot(...); plt.show()'],
+Affiche la figure.`,
+    examples: `plt.show()`,
   },
   'matplotlib.pyplot.scatter': {
     docKey: 'matplotlib.pyplot.scatter',
     title: 'matplotlib.pyplot.scatter()',
-    version: '3.7.2',
+    version: '3.7.1',
     libName: 'matplotlib',
-    content: `# matplotlib.pyplot.scatter()
+    content: `# scatter() - Scatter plot
 
-Trace un scatter plot (nuage de points).
-
-## Signature:
-\`\`\`python
-matplotlib.pyplot.scatter(x, y, s=None, c=None, marker='o', cmap=None, **kwargs)
-\`\`\`
-
-## Paramètres:
-- **x, y**: Coordonnées
-- **s**: Taille des points
-- **c**: Couleur (scalaire, array, ou colormap)
-- **marker**: Style de marqueur
-- **cmap**: Colormap
-
-## Exemples:
-\`\`\`python
-plt.scatter(X[:, 0], X[:, 1], c=y, cmap='viridis')
-plt.scatter(x, y, s=100, alpha=0.5)
-\`\`\``,
-    examples: [
-      'plt.scatter([1, 2, 3], [1, 2, 3])',
-      'plt.scatter(X[:, 0], X[:, 1], c=y)',
-    ],
+Crée un nuage de points.`,
+    examples: `plt.scatter(X[:, 0], X[:, 1], c=y)`,
   },
 
-  // ===== SEABORN =====
+  // ============ SEABORN ============
   'seaborn': {
     docKey: 'seaborn',
-    title: 'Seaborn',
-    version: '0.13.0',
+    title: 'Seaborn - Statistical Visualization',
+    version: '0.12.2',
     libName: 'seaborn',
     content: `# Seaborn - Statistical Data Visualization
 
-Seaborn est une bibliothèque de visualisation de données basée sur Matplotlib. Elle simplifie la création de graphiques statistiques.
+Seaborn est construite sur Matplotlib pour créer des visualisations statistiques attrayantes.`,
+    examples: `import seaborn as sns
 
-## Installation:
-\`\`\`bash
-pip install seaborn
-\`\`\`
-
-## Caractéristiques:
-- Interface DataFrame-compatible
-- Palettes de couleurs par défaut attractives
-- Visualisations multivariées
-- Intégration avec pandas
-
-## Exemple:
-\`\`\`python
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-sns.scatterplot(data=df, x='x', y='y', hue='class')
-plt.show()
-\`\`\``,
-    examples: [
-      'import seaborn as sns',
-      'sns.scatterplot(data=df, x="x", y="y")',
-      'sns.heatmap(data)',
-    ],
+sns.heatmap(data)
+plt.show()`,
   },
   'seaborn.heatmap': {
     docKey: 'seaborn.heatmap',
     title: 'seaborn.heatmap()',
-    version: '0.13.0',
+    version: '0.12.2',
     libName: 'seaborn',
-    content: `# seaborn.heatmap()
+    content: `# heatmap() - Heatmap visualization
 
-Trace une heatmap (carte de chaleur).
+Visualise une matrice comme une heatmap avec couleurs.
 
-## Signature:
-\`\`\`python
-seaborn.heatmap(
-    data,
-    vmin=None,
-    vmax=None,
-    cmap=None,
-    center=None,
-    annot=False,
-    fmt='.2g',
-    linewidths=0,
-    cbar_kws=None,
-    **kwargs
-)
-\`\`\`
+## Paramètres
 
-## Paramètres:
-- **data**: Array 2D
-- **cmap**: Colormap
-- **annot**: Afficher les valeurs
-- **fmt**: Format des annotations
-- **linewidths**: Largeur des lignes
-
-## Exemples:
-\`\`\`python
-sns.heatmap(confusion_matrix, annot=True, cmap='Blues')
-sns.heatmap(df.corr(), cmap='coolwarm', center=0)
-\`\`\``,
-    examples: [
-      'sns.heatmap(data)',
-      'sns.heatmap(data, annot=True, cmap="Blues")',
-      'sns.heatmap(df.corr())',
-    ],
+- **data** : Matrice 2D
+- **cmap** : Colormap
+- **annot** : Afficher les valeurs`,
+    examples: `sns.heatmap(confusion_matrix)
+sns.heatmap(data, cmap='coolwarm', annot=True)`,
   },
   'seaborn.scatterplot': {
     docKey: 'seaborn.scatterplot',
     title: 'seaborn.scatterplot()',
-    version: '0.13.0',
+    version: '0.12.2',
     libName: 'seaborn',
-    content: `# seaborn.scatterplot()
+    content: `# scatterplot() - Scatter plot amélioré
 
-Trace un scatter plot amélioré avec seaborn.
-
-## Signature:
-\`\`\`python
-seaborn.scatterplot(
-    data=None,
-    x=None,
-    y=None,
-    hue=None,
-    size=None,
-    style=None,
-    palette=None,
-    hue_order=None,
-    size_order=None,
-    sizes=(20, 200),
-    **kwargs
-)
-\`\`\`
-
-## Paramètres:
-- **data**: DataFrame
-- **x, y**: Noms de colonnes
-- **hue**: Colorer par colonne
-- **size**: Taille par colonne
-- **style**: Style par colonne
-
-## Exemples:
-\`\`\`python
-sns.scatterplot(data=iris, x='sepal_length', y='sepal_width', hue='species')
-sns.scatterplot(data=df, x='A', y='B', size='C', hue='D')
-\`\`\``,
-    examples: [
-      'sns.scatterplot(data=df, x="A", y="B")',
-      'sns.scatterplot(data=iris, x="sepal_length", y="sepal_width", hue="species")',
-    ],
+Scatter plot avec support des groupes et couleurs.`,
+    examples: `sns.scatterplot(x='col1', y='col2', hue='target', data=df)`,
   },
   'seaborn.boxplot': {
     docKey: 'seaborn.boxplot',
     title: 'seaborn.boxplot()',
-    version: '0.13.0',
+    version: '0.12.2',
     libName: 'seaborn',
-    content: `# seaborn.boxplot()
+    content: `# boxplot() - Box plot
 
-Trace un box plot.
-
-## Signature:
-\`\`\`python
-seaborn.boxplot(
-    data=None,
-    x=None,
-    y=None,
-    hue=None,
-    palette=None,
-    **kwargs
-)
-\`\`\`
-
-## Exemples:
-\`\`\`python
-sns.boxplot(data=iris, x='species', y='sepal_length')
-sns.boxplot(data=df, y='values')
-\`\`\``,
-    examples: ['sns.boxplot(data=df, x="cat", y="val")', 'sns.boxplot(data=iris, x="species", y="sepal_length")'],
+Visualise la distribution des données avec quartiles.`,
+    examples: `sns.boxplot(data=df, x='category', y='value')`,
   },
   'seaborn.barplot': {
     docKey: 'seaborn.barplot',
     title: 'seaborn.barplot()',
-    version: '0.13.0',
+    version: '0.12.2',
     libName: 'seaborn',
-    content: `# seaborn.barplot()
+    content: `# barplot() - Bar plot
 
-Trace un bar plot.
-
-## Signature:
-\`\`\`python
-seaborn.barplot(
-    data=None,
-    x=None,
-    y=None,
-    hue=None,
-    palette=None,
-    estimator=mean,
-    **kwargs
-)
-\`\`\`
-
-## Exemples:
-\`\`\`python
-sns.barplot(data=iris, x='species', y='sepal_length')
-sns.barplot(data=df, x='category', y='value', hue='group')
-\`\`\``,
-    examples: [
-      'sns.barplot(data=df, x="cat", y="val")',
-      'sns.barplot(data=iris, x="species", y="sepal_length")',
-    ],
+Crée un graphique en barres avec estimations.`,
+    examples: `sns.barplot(data=df, x='category', y='value')`,
   },
 
-  // ===== JUPYTER & IPYTHON =====
+  // ============ JUPYTER/IPYTHON ============
   'jupyter': {
     docKey: 'jupyter',
-    title: 'Jupyter',
+    title: 'Jupyter - Interactive Computing',
     version: '1.0.0',
     libName: 'jupyter',
     content: `# Jupyter - Interactive Computing
 
-Jupyter est une application open-source pour créer et partager des documents contenant du code, des équations, des visualisations et du texte narratif.
-
-## Installation:
-\`\`\`bash
-pip install jupyter
-\`\`\`
-
-## Lancement:
-\`\`\`bash
-jupyter notebook
-jupyter lab
-\`\`\``,
-    examples: ['jupyter notebook', 'jupyter lab'],
-  },
-  'IPython': {
-    docKey: 'IPython',
-    title: 'IPython',
-    version: '8.16.0',
-    libName: 'IPython',
-    content: `# IPython - Interactive Shell
-
-IPython est un shell Python interactif amélioré.
-
-## Installation:
-\`\`\`bash
-pip install ipython
-\`\`\`
-
-## Usage:
-\`\`\`bash
-ipython
-\`\`\``,
-    examples: ['ipython', 'from IPython.display import display'],
+Jupyter fournit l'environnement notebook pour le calcul interactif.`,
+    examples: `# Les cellules sont exécutées de manière interactive`,
   },
   'IPython.display': {
     docKey: 'IPython.display',
     title: 'IPython.display',
-    version: '8.16.0',
+    version: '8.14.0',
     libName: 'IPython',
-    content: `# IPython.display
-
-Module pour afficher des contenus riches dans Jupyter.
-
-## Fonctions courantes:
-- **display()**: Affiche un objet
-- **HTML()**: Affiche du HTML
-- **Image()**: Affiche une image
-- **Markdown()**: Affiche du Markdown
-- **Code()**: Affiche du code avec surlignage
-
-## Exemples:
-\`\`\`python
-from IPython.display import display, HTML, Image
-
-display(HTML("<h1>Title</h1>"))
-display(Image('image.png'))
-\`\`\``,
-    examples: ['from IPython.display import display', 'display(HTML("<h1>Title</h1>"))'],
+    content: `# IPython.display - Rich output`,
+    examples: `from IPython.display import display, HTML`,
   },
+  'IPython.display.display': {
+    docKey: 'IPython.display.display',
+    title: 'display()',
+    version: '8.14.0',
+    libName: 'IPython',
+    content: `# display() - Afficher un objet
 
-  // ===== SKLEARN - PIPELINE =====
-  'sklearn.pipeline.Pipeline': {
-    docKey: 'sklearn.pipeline.Pipeline',
-    title: 'sklearn.pipeline.Pipeline',
-    version: '1.3.0',
+Affiche un objet de manière riche dans Jupyter.`,
+    examples: `display(df)`,
+  },
+  // ============ ALIASES ============
+  'pd': {
+    docKey: 'pd',
+    title: 'Pandas (alias: pd)',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# Pandas - Data Manipulation & Analysis (alias: pd)
+
+Alias pour accéder à pandas: import pandas as pd
+
+Pandas est une librairie Python open-source pour la manipulation et l'analyse de données.
+
+## Caractéristiques principales
+
+- **DataFrame** : Structure tabulaire 2D avec colonnes nommées et indexage flexible
+- **Series** : Structure 1D pour manipuler des colonnes isolées
+- **Groupby** : Opérations d'agrégation et transformation en groupe
+- **Merge/Join** : Fusion entre plusieurs DataFrames`,
+    examples: `import pandas as pd
+
+df = pd.read_csv("data.csv")
+df.head()`,
+  },
+  'np': {
+    docKey: 'np',
+    title: 'NumPy (alias: np)',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# NumPy - Numerical Computing (alias: np)
+
+Alias pour accéder à numpy: import numpy as np
+
+NumPy est la librairie fondamentale pour le calcul scientifique en Python.
+
+## Caractéristiques principales
+
+- **ndarray** : Tableaux multidimensionnels efficients
+- **Opérations mathématiques** : Opérations vectorisées
+- **Algèbre linéaire** : Décompositions matricielles
+- **Nombres aléatoires** : Générateurs pseudo-aléatoires`,
+    examples: `import numpy as np
+
+arr = np.array([1, 2, 3])
+np.mean(arr)`,
+  },
+  'plt': {
+    docKey: 'plt',
+    title: 'Matplotlib.pyplot (alias: plt)',
+    version: '3.7.1',
+    libName: 'matplotlib',
+    content: `# Matplotlib.pyplot - Visualization (alias: plt)
+
+Alias pour matplotlib.pyplot: import matplotlib.pyplot as plt
+
+Pyplot est l'interface MATLAB-like pour la visualisation avec Matplotlib.
+
+## Fonctionnalités
+
+- **figure()** : Crée une nouvelle figure
+- **plot()** : Trace des lignes et des marqueurs
+- **scatter()** : Nuage de points
+- **show()** : Affiche la figure`,
+    examples: `import matplotlib.pyplot as plt
+
+plt.figure()
+plt.plot([1, 2, 3])
+plt.show()`,
+  },
+  'sns': {
+    docKey: 'sns',
+    title: 'Seaborn (alias: sns)',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# Seaborn - Statistical Visualization (alias: sns)
+
+Alias pour seaborn: import seaborn as sns
+
+Seaborn est basée sur matplotlib et fournit une interface pour tracer des graphiques statistiques.
+
+## Fonctionnalités
+
+- **heatmap()** : Heatmaps avec annotation
+- **scatterplot()** : Nuages de points avec hue
+- **boxplot()** : Boîtes à moustaches
+- **barplot()** : Diagrammes en barres statistiques`,
+    examples: `import seaborn as sns
+
+sns.scatterplot(data=df, x="x", y="y")
+sns.heatmap(data=df, annot=True)`,
+  },
+  // ============ PANDAS METHODS - MANQUANTS DU NOTEBOOK ============
+  'fillna': {
+    docKey: 'fillna',
+    title: 'DataFrame.fillna() - Remplir les valeurs manquantes',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# fillna() - Imputer les valeurs manquantes
+
+Remplace les NaN par des valeurs spécifiées.
+
+## Exemple
+
+\`\`\`python
+df['Age'].fillna(df['Age'].median(), inplace=True)
+df.fillna(method='ffill')  # Forward fill
+df.fillna(value=0)
+\`\`\``,
+    examples: `df['Age'].fillna(df['Age'].median())
+df.fillna(0)
+df.fillna(method='ffill')`,
+  },
+  'groupby': {
+    docKey: 'groupby',
+    title: 'DataFrame.groupby() - Grouper et agréger',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# groupby() - Grouper par catégorie
+
+Groupe les données par colonne(s) et applique une fonction d'agrégation.
+
+## Exemple
+
+\`\`\`python
+df.groupby('Sex')['Survived'].mean()
+df.groupby(['Sex', 'Pclass'])['Survived'].sum()
+df.groupby('Category').agg({'Amount': 'sum', 'Count': 'mean'})
+\`\`\``,
+    examples: `df.groupby('Sex')['Survived'].mean()
+df.groupby(['Sex', 'Pclass']).sum()
+train_df.groupby('Embarked').size()`,
+  },
+  'head': {
+    docKey: 'head',
+    title: 'DataFrame.head() - Afficher les premières lignes',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# head() - Premiers enregistrements
+
+Retourne les n premières lignes du DataFrame (défaut: 5).
+
+## Exemple
+
+\`\`\`python
+df.head()      # Premiers 5
+df.head(10)    # Premiers 10
+df.head(1)     # Premier
+\`\`\``,
+    examples: `df.head()
+train_df.head(5)
+test_data.head()`,
+  },
+  'describe': {
+    docKey: 'describe',
+    title: 'DataFrame.describe() - Statistiques descriptives',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# describe() - Résumé statistique
+
+Calcule les statistiques (count, mean, std, min, max, quartiles).
+
+## Exemple
+
+\`\`\`python
+df.describe()
+df.describe(include='all')
+\`\`\``,
+    examples: `df.describe()
+train_df.describe()
+df[['Age', 'Fare']].describe()`,
+  },
+  'value_counts': {
+    docKey: 'value_counts',
+    title: 'Series.value_counts() - Compter les occurrences',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# value_counts() - Compteur d'occurrences
+
+Compte les occurrences uniques avec support du normalisé.
+
+## Exemple
+
+\`\`\`python
+df['Survived'].value_counts()
+df['Survived'].value_counts(normalize=True)  # Proportions
+\`\`\``,
+    examples: `df['Survived'].value_counts()
+df['Sex'].value_counts(normalize=True)
+train_df['Embarked'].value_counts()`,
+  },
+  'isnull': {
+    docKey: 'isnull',
+    title: 'DataFrame.isnull() - Détecter NaN',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# isnull() - Détecte les valeurs manquantes
+
+Retourne un DataFrame booléen indiquant les NaN.
+
+## Exemple
+
+\`\`\`python
+df.isnull()          # DataFrame booléen
+df.isnull().sum()    # Compte par colonne
+df.isnull().any()    # Existe-t-il des NaN ?
+\`\`\``,
+    examples: `df.isnull().sum()
+train_df.isnull()
+df['Age'].isnull().sum()`,
+  },
+  'shape': {
+    docKey: 'shape',
+    title: 'DataFrame.shape - Dimensions',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# shape - Dimensions du DataFrame
+
+Retourne un tuple (nombre de lignes, nombre de colonnes).
+
+## Exemple
+
+\`\`\`python
+df.shape           # (891, 12)
+df.shape[0]        # Nombre de lignes
+df.shape[1]        # Nombre de colonnes
+\`\`\``,
+    examples: `df.shape
+train_df.shape
+print(df.shape[0], df.shape[1])`,
+  },
+  'info': {
+    docKey: 'info',
+    title: 'DataFrame.info() - Informations du DataFrame',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# info() - Affiche les infos du DataFrame
+
+Montre le nombre de colonnes, types, mémoire utilisée, valeurs non-nulles.
+
+## Exemple
+
+\`\`\`python
+df.info()
+\`\`\``,
+    examples: `df.info()
+train_df.info()`,
+  },
+  'replace': {
+    docKey: 'replace',
+    title: 'DataFrame.replace() - Remplacer des valeurs',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# replace() - Remplacer des valeurs
+
+Remplace les valeurs spécifiées par d'autres.
+
+## Exemple
+
+\`\`\`python
+df.replace([np.inf, -np.inf], np.nan)
+df.replace({'Old': 'New'})
+\`\`\``,
+    examples: `df.replace([np.inf, -np.inf], np.nan)
+df.replace(to_replace, value)`,
+  },
+  'get_dummies': {
+    docKey: 'get_dummies',
+    title: 'pandas.get_dummies() - One-hot encoding',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# get_dummies() - Encodage one-hot
+
+Convertit les variables catégoriques en variables indicatrices.
+
+## Exemple
+
+\`\`\`python
+pd.get_dummies(df, columns=['Sex', 'Embarked'], drop_first=True)
+\`\`\``,
+    examples: `pd.get_dummies(df, columns=['Sex'])
+df = pd.get_dummies(df, columns=['Sex', 'Embarked'], drop_first=True)`,
+  },
+  'reindex': {
+    docKey: 'reindex',
+    title: 'DataFrame.reindex() - Réindexer',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# reindex() - Réindexer les colonnes
+
+Aligne les colonnes du DataFrame sur une liste de colonnes.
+
+## Exemple
+
+\`\`\`python
+df.reindex(columns=X.columns, fill_value=0)
+\`\`\``,
+    examples: `df.reindex(columns=reference_columns)
+test_df.reindex(columns=X.columns, fill_value=0)`,
+  },
+  'median': {
+    docKey: 'median',
+    title: 'Series.median() - Médiane',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# median() - Calculer la médiane
+
+Retourne la médiane (50e percentile).
+
+## Exemple
+
+\`\`\`python
+df['Age'].median()
+df.median()
+\`\`\``,
+    examples: `df['Age'].median()
+train_df['Fare'].median()`,
+  },
+  'mode': {
+    docKey: 'mode',
+    title: 'Series.mode() - Mode (valeur la plus fréquente)',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# mode() - Valeur la plus fréquente
+
+Retourne le mode (valeur qui apparaît le plus souvent).
+
+## Exemple
+
+\`\`\`python
+df['Sex'].mode()[0]
+\`\`\``,
+    examples: `df['Embarked'].mode()[0]
+df['Cabin'].mode()`,
+  },
+  'transform': {
+    docKey: 'transform',
+    title: 'GroupBy.transform() - Appliquer une fonction',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# transform() - Appliquer une fonction à chaque groupe
+
+Applique une fonction et retourne un objet de même shape.
+
+## Exemple
+
+\`\`\`python
+df['Age'] = df.groupby(['Sex', 'Pclass'])['Age'].transform(lambda x: x.fillna(x.median()))
+\`\`\``,
+    examples: `df.groupby('Sex')['Age'].transform(lambda x: x.fillna(x.median()))`,
+  },
+  'astype': {
+    docKey: 'astype',
+    title: 'DataFrame.astype() - Convertir type',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# astype() - Convertir les types
+
+Convertit les types de données.
+
+## Exemple
+
+\`\`\`python
+df['column'].astype(int)
+df.astype({'col1': int, 'col2': float})
+\`\`\``,
+    examples: `df['PassengerId'].astype(int)
+df.astype(float)`,
+  },
+  // ============ NUMPY METHODS ============
+  'bincount': {
+    docKey: 'bincount',
+    title: 'numpy.bincount() - Compter occurrences',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# bincount() - Compte les occurrences d'entiers
+
+Compte le nombre de fois que chaque entier apparaît.
+
+## Exemple
+
+\`\`\`python
+np.bincount([0, 1, 1, 1, 2, 2])  # [1, 3, 2]
+\`\`\``,
+    examples: `np.bincount(y)
+np.bincount(train_df['Survived'])`,
+  },
+  'sum': {
+    docKey: 'sum',
+    title: 'numpy.sum() - Somme',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# sum() - Calcule la somme
+
+Retourne la somme des éléments du tableau.
+
+## Exemple
+
+\`\`\`python
+np.sum([1, 2, 3])     # 6
+arr.sum()
+\`\`\``,
+    examples: `np.sum(arr)
+np.isnull(df).sum()`,
+  },
+  'mean': {
+    docKey: 'mean',
+    title: 'numpy.mean() / Series.mean() - Moyenne',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# mean() - Moyenne arithmétique
+
+Calcule la moyenne.
+
+## Exemple
+
+\`\`\`python
+np.mean([1, 2, 3, 4])
+df['Age'].mean()
+\`\`\``,
+    examples: `np.mean(arr)
+df['Age'].mean()`,
+  },
+  'std': {
+    docKey: 'std',
+    title: 'numpy.std() / Series.std() - Écart-type',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# std() - Écart-type
+
+Calcule l'écart-type (standard deviation).
+
+## Exemple
+
+\`\`\`python
+np.std(arr)
+df['Age'].std()
+\`\`\``,
+    examples: `np.std(arr)
+df.std()`,
+  },
+  // ============ SKLEARN ADDITIONAL ============
+  'fit': {
+    docKey: 'fit',
+    title: 'Model.fit() - Entraîner le modèle',
+    version: '1.3.2',
     libName: 'sklearn',
-    content: `# sklearn.pipeline.Pipeline
+    content: `# fit() - Entraîner un modèle
 
-Construit un pipeline pour enchaîner plusieurs étapes de prétraitement et d'estimation.
+Entraîne le modèle sur les données d'entraînement.
 
-## Usage:
+## Exemple
+
+\`\`\`python
+model.fit(X_train, y_train)
+pipeline.fit(X_train, y_train)
+\`\`\``,
+    examples: `model.fit(X_train, y_train)
+rf.fit(X_train, y_train)`,
+  },
+  'predict': {
+    docKey: 'predict',
+    title: 'Model.predict() - Faire des prédictions',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# predict() - Prédictions
+
+Fait des prédictions sur de nouvelles données.
+
+## Exemple
+
+\`\`\`python
+y_pred = model.predict(X_test)
+predictions = pipeline.predict(X_new)
+\`\`\``,
+    examples: `y_pred = model.predict(X_test)
+rf_pred = rf.predict(X_val)`,
+  },
+  'feature_importances_': {
+    docKey: 'feature_importances_',
+    title: 'RandomForest.feature_importances_ - Importance des features',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# feature_importances_ - Importance de chaque feature
+
+Retourne l'importance relative de chaque feature.
+
+## Exemple
+
+\`\`\`python
+importance = model.feature_importances_
+importances = pd.Series(rf.feature_importances_, index=X_train.columns)
+\`\`\``,
+    examples: `rf.feature_importances_
+importances = pd.Series(rf.feature_importances_, index=X.columns)`,
+  },
+  'fit_transform': {
+    docKey: 'fit_transform',
+    title: 'Transformer.fit_transform() - Fit et transform',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# fit_transform() - Entraîner et transformer
+
+Entraîne le transformateur et applique la transformation.
+
+## Exemple
+
+\`\`\`python
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)  # Seulement transform !
+\`\`\``,
+    examples: `X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)`,
+  },
+  'Series': {
+    docKey: 'Series',
+    title: 'pandas.Series - Structure 1D',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# Series - Objet 1D avec index
+
+Une Series est une structure de données 1D avec un index.
+
+## Exemple
+
+\`\`\`python
+s = pd.Series([1, 2, 3], index=['a', 'b', 'c'])
+feature_importance = pd.Series(rf.feature_importances_, index=X.columns)
+\`\`\``,
+    examples: `pd.Series(rf.feature_importances_, index=X_train.columns)`,
+  },
+  // ============ PANDAS ADDITIONAL ============
+  'isna': {
+    docKey: 'isna',
+    title: 'DataFrame.isna() / Series.isna() - Vérifier NaN',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# isna() - Détecte les valeurs manquantes
+
+Alias pour isnull(). Retourne un booléen pour chaque élément.
+
+## Exemple
+
+\`\`\`python
+df.isna()
+df['Age'].isna().sum()
+train_df.isna().sum()
+\`\`\``,
+    examples: `train_df.isna().sum()
+df.isna()
+test_df.isna().sum()`,
+  },
+  'copy': {
+    docKey: 'copy',
+    title: 'DataFrame.copy() - Copie profonde',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# copy() - Crée une copie indépendante
+
+Crée une copie complète du DataFrame pour éviter les modifications en cascade.
+
+## Exemple
+
+\`\`\`python
+df_copy = df.copy()
+test_df = test_data.copy()
+\`\`\``,
+    examples: `test_df = test_data.copy()
+df_copy = df.copy()`,
+  },
+  'sort_values': {
+    docKey: 'sort_values',
+    title: 'DataFrame.sort_values() - Trier les données',
+    version: '2.1.3',
+    libName: 'pandas',
+    content: `# sort_values() - Trie par colonne
+
+Trie le DataFrame selon une ou plusieurs colonnes.
+
+## Paramètres
+
+- **by** : Colonne(s) à trier
+- **ascending** : Ordre ascendant (True) ou descendant (False)
+- **inplace** : Modifie sur place si True
+
+## Exemple
+
+\`\`\`python
+df.sort_values('Age', ascending=False)
+df.sort_values(by=['Sex', 'Age'])
+\`\`\``,
+    examples: `df.sort_values('Age')
+feature_importance.sort_values(ascending=False)`,
+  },
+  // ============ NUMPY ADDITIONAL ============
+  'inf': {
+    docKey: 'inf',
+    title: 'numpy.inf - Infini',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# np.inf - Représente l'infini
+
+Constante représentant l'infini positif en virgule flottante.
+
+## Exemple
+
+\`\`\`python
+np.inf
+float('inf')
+-np.inf
+\`\`\``,
+    examples: `np.inf, -np.inf
+test_df = test_df.replace([np.inf, -np.inf], np.nan)`,
+  },
+  'nan': {
+    docKey: 'nan',
+    title: 'numpy.nan - Pas un nombre (NaN)',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# np.nan - Valeur manquante
+
+Représente une valeur non numérique ou manquante.
+
+## Exemple
+
+\`\`\`python
+np.nan
+pd.isna(np.nan)  # True
+df = df.fillna(np.nan)
+\`\`\``,
+    examples: `np.nan
+train_df = train_df.replace([np.inf, -np.inf], np.nan)`,
+  },
+  // ============ SKLEARN MODELS ============
+  'LogisticRegression': {
+    docKey: 'LogisticRegression',
+    title: 'sklearn.linear_model.LogisticRegression',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# LogisticRegression - Classification binaire/multi-classe
+
+Modèle de régression logistique pour la classification supervisée.
+
+## Paramètres
+
+- **max_iter** : Nombre maximum d'itérations
+- **random_state** : Seed pour la reproductibilité
+- **C** : Inverse de la force de régularisation
+
+## Exemple
+
+\`\`\`python
+from sklearn.linear_model import LogisticRegression
+
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+\`\`\``,
+    examples: `LogisticRegression(max_iter=1000)
+pipeline = Pipeline([('model', LogisticRegression(max_iter=1000))])`,
+  },
+  'RandomForestClassifier': {
+    docKey: 'RandomForestClassifier',
+    title: 'sklearn.ensemble.RandomForestClassifier',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# RandomForestClassifier - Ensemble tree-based
+
+Classificateur basé sur une forêt d'arbres de décision aléatoires.
+
+## Paramètres
+
+- **n_estimators** : Nombre d'arbres (défaut: 100)
+- **random_state** : Seed pour la reproductibilité
+- **max_depth** : Profondeur maximale des arbres
+- **min_samples_split** : Minimum de samples pour splitter
+
+## Exemple
+
+\`\`\`python
+from sklearn.ensemble import RandomForestClassifier
+
+rf = RandomForestClassifier(n_estimators=500, random_state=25)
+rf.fit(X_train, y_train)
+rf_pred = rf.predict(X_val)
+\`\`\``,
+    examples: `RandomForestClassifier(n_estimators=500, random_state=25)
+rf = RandomForestClassifier(n_estimators=500, random_state=25)`,
+  },
+  'StandardScaler': {
+    docKey: 'StandardScaler',
+    title: 'sklearn.preprocessing.StandardScaler',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# StandardScaler - Normaliser les features
+
+Transforme les features en standardisant (moyenne=0, écart-type=1).
+
+## Exemple
+
+\`\`\`python
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)  # Important: fit_transform seulement sur train
+\`\`\``,
+    examples: `StandardScaler()
+scaler = StandardScaler()`,
+  },
+  'Pipeline': {
+    docKey: 'Pipeline',
+    title: 'sklearn.pipeline.Pipeline',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# Pipeline - Enchaîner transformations et modèle
+
+Pipeline automatise la séquence de transformations et de modélisation.
+
+## Exemple
+
 \`\`\`python
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -1194,468 +1254,592 @@ from sklearn.linear_model import LogisticRegression
 
 pipeline = Pipeline([
     ('scaler', StandardScaler()),
-    ('model', LogisticRegression())
+    ('model', LogisticRegression(max_iter=1000))
 ])
-
 pipeline.fit(X_train, y_train)
-predictions = pipeline.predict(X_test)
-\`\`\`
-
-## Avantages:
-- Encapsule le preprocessing et la modélisation
-- Évite les fuites de données
-- Simplifie le code
-- Améliore la reproductibilité`,
-    examples: [
-      'from sklearn.pipeline import Pipeline',
-      'pipeline = Pipeline([(\'scaler\', StandardScaler()), (\'model\', LogisticRegression())])',
-      'pipeline.fit(X_train, y_train)',
-    ],
+\`\`\``,
+    examples: `Pipeline([('scaler', StandardScaler()), ('model', LogisticRegression())])
+pipeline = Pipeline([('scaler', StandardScaler()), ('model', LogisticRegression(max_iter=1000))])`,
   },
-
-
-  // ===== SKLEARN - MODEL SELECTION =====
-  'sklearn.model_selection.train_test_split': {
-    docKey: 'sklearn.model_selection.train_test_split',
-    title: 'sklearn.model_selection.train_test_split()',
-    version: '1.3.0',
+  'train_test_split': {
+    docKey: 'train_test_split',
+    title: 'sklearn.model_selection.train_test_split',
+    version: '1.3.2',
     libName: 'sklearn',
-    content: `# sklearn.model_selection.train_test_split()
-  
+    content: `# train_test_split - Diviser données train/test
+
 Divise les données en ensembles d'entraînement et de test.
 
-## Signature:
-\`\`\`python
-sklearn.model_selection.train_test_split(
-    *arrays,
-    test_size=None,
-    train_size=None,
-    random_state=None,
-    shuffle=True,
-    stratify=None
-)
-\`\`\`
+## Paramètres
 
-## Paramètres:
-- **test_size**: Fraction des données pour le test (défaut 0.25)
-- **random_state**: Seed pour la reproductibilité
-- **shuffle**: Mélanger les données
-- **stratify**: Stratifier par cette colonne (utile pour classification déséquilibrée)
+- **test_size** : Proportion du test set (défaut: 0.25)
+- **random_state** : Seed pour la reproductibilité
+- **stratify** : Stratifier selon une variable (important pour les données déséquilibrées)
 
-## Exemples:
+## Exemple
+
 \`\`\`python
 from sklearn.model_selection import train_test_split
 
-# Division 80/20 avec stratification
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, stratify=y, random_state=42
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
 \`\`\``,
-    examples: [
-      'X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)',
-      'train_test_split(X, y, random_state=42, stratify=y)',
-    ],
+    examples: `train_test_split(X, y, test_size=0.2, stratify=y, random_state=25)
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, stratify=y, random_state=25)`,
   },
+  'accuracy_score': {
+    docKey: 'accuracy_score',
+    title: 'sklearn.metrics.accuracy_score',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# accuracy_score - Accuracy de classification
 
-  // ===== WARNINGS =====
-  'warnings': {
-    docKey: 'warnings',
-    title: 'warnings',
-    version: '3.11',
-    libName: 'warnings',
-    content: `# warnings - Gestion des avertissements
+Calcule la précision globale d'un modèle de classification.
 
-Le module warnings contrôle l'affichage des avertissements Python.
+## Exemple
 
-## Usage:
 \`\`\`python
-import warnings
+from sklearn.metrics import accuracy_score
 
-# Supprimer tous les avertissements
-warnings.filterwarnings('ignore')
-
-# Supprimer des avertissements spécifiques
-warnings.filterwarnings('ignore', category=FutureWarning)
-warnings.filterwarnings('ignore', category=DeprecationWarning)
-
-# Afficher les avertissements
-warnings.filterwarnings('default')
-
-# Lancer une erreur sur les avertissements
-warnings.filterwarnings('error')
-\`\`\`
-
-## Catégories communes:
-- **DeprecationWarning**: Fonctionnalité dépréciée
-- **FutureWarning**: Changement futur prévu
-- **UserWarning**: Avertissement générique utilisateur`,
-    examples: [
-      'import warnings',
-      'warnings.filterwarnings("ignore")',
-      'warnings.filterwarnings("ignore", category=FutureWarning)',
-    ],
+accuracy = accuracy_score(y_true, y_pred)
+print("Accuracy:", accuracy_score(y_val, y_pred))
+\`\`\``,
+    examples: `accuracy_score(y_val, y_pred)
+print("Accuracy:", accuracy_score(y_val, y_pred))`,
   },
+  'classification_report': {
+    docKey: 'classification_report',
+    title: 'sklearn.metrics.classification_report',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# classification_report - Rapport détaillé
 
-  // ===== OS =====
-  'os': {
-    docKey: 'os',
-    title: 'os',
-    version: '3.11',
-    libName: 'os',
-    content: `# os - Interface système d'exploitation
+Retourne un rapport texte avec precision, recall, f1-score pour chaque classe.
 
-Le module os fournit une interface pour interagir avec le système d'exploitation, notamment pour naviguer dans le système de fichiers.
+## Exemple
 
-## Usage courant:
 \`\`\`python
-import os
+from sklearn.metrics import classification_report
 
-# Obtenir le répertoire courant
-current_dir = os.getcwd()
-
-# Changer de répertoire
-os.chdir('/path/to/directory')
-
-# Lister les fichiers
-files = os.listdir('.')
-
-# Vérifier l'existence d'un chemin
-if os.path.exists('file.txt'):
-    print('Le fichier existe')
-
-# Obtenir le chemin complet
-full_path = os.path.abspath('file.txt')
-
-# Joindre des chemins
-path = os.path.join('folder', 'subfolder', 'file.txt')
-\`\`\`
-
-## Fonctions principales:
-- **getcwd()**: Répertoire courant
-- **listdir()**: Lister les fichiers
-- **walk()**: Parcourir arborescence
-- **path.exists()**: Vérifier existence
-- **path.join()**: Joindre chemins`,
-    examples: [
-      'import os',
-      'for dirname, _, filenames in os.walk(\'/path\'): ...',
-      'os.listdir(\'.\')',
-    ],
+print(classification_report(y_true, y_pred))
+\`\`\``,
+    examples: `classification_report(y_val, y_pred)
+print(classification_report(y_val, y_pred))`,
   },
+  // ============ SEABORN ============
+  'sns.heatmap': {
+    docKey: 'sns.heatmap',
+    title: 'seaborn.heatmap() - Carte de chaleur',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.heatmap() - Visualiser matrice sous forme de couleurs
 
-  // ===== OS.PATH.WALK =====
+Crée une carte de chaleur annotée pour visualiser des données matricielles.
+
+## Paramètres
+
+- **data** : Données 2D (DataFrame ou array)
+- **annot** : Afficher les valeurs (True/False)
+- **cmap** : Palette de couleurs
+- **cbar** : Afficher la barre de couleur (True/False)
+- **fmt** : Format des annotations
+
+## Exemple
+
+\`\`\`python
+sns.heatmap(df.corr(), annot=True)
+sns.heatmap(train_df.isna(), cbar=False)
+\`\`\``,
+    examples: `sns.heatmap(train_df.isna(), cbar=False)
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm')`,
+  },
+  'sns.histplot': {
+    docKey: 'sns.histplot',
+    title: 'seaborn.histplot() - Histogramme',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.histplot() - Visualiser distribution univariée
+
+Crée un histogramme avec kde (kernel density estimation) optionnel.
+
+## Paramètres
+
+- **data** : DataFrame ou données
+- **x** ou **y** : Colonne à visualiser
+- **bins** : Nombre de bins (défaut: auto)
+- **hue** : Colonne pour grouper par couleur
+- **kde** : Ajouter une courbe de densité
+
+## Exemple
+
+\`\`\`python
+sns.histplot(train_df['Age'], bins=30)
+sns.histplot(data=train_df, x='Age', hue='Survived', kde=True)
+\`\`\``,
+    examples: `sns.histplot(train_df['Age'], bins=30)
+sns.histplot(data=train_df, x='Age', hue='Survived', hue_order=[0, 1], bins=30, kde=True)`,
+  },
+  'sns.countplot': {
+    docKey: 'sns.countplot',
+    title: 'seaborn.countplot() - Comptage catégorique',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.countplot() - Compter les catégories
+
+Crée un diagramme en barres montrant le nombre d'observations par catégorie.
+
+## Exemple
+
+\`\`\`python
+sns.countplot(x='Sex', data=df)
+sns.countplot(x='Embarked', data=train_df)
+\`\`\``,
+    examples: `sns.countplot(x='Embarked', data=train_df)
+sns.countplot(x='Sex', data=train_df)`,
+  },
+  'sns.boxplot': {
+    docKey: 'sns.boxplot',
+    title: 'seaborn.boxplot() - Boîte à moustaches',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.boxplot() - Visualiser distribution par boîte
+
+Affiche min, Q1, médiane, Q3, max et outliers.
+
+## Paramètres
+
+- **data** : DataFrame
+- **x** / **y** : Variables à visualiser
+- **hue** : Grouper par couleur
+- **palette** : Couleurs
+- **dodge** : Éviter le chevauchement
+
+## Exemple
+
+\`\`\`python
+sns.boxplot(data=df, x='Survived', y='Age')
+sns.boxplot(x='Pclass', y='Age', hue='Survived', data=train_df)
+\`\`\``,
+    examples: `sns.boxplot(data=train_df, x='Survived', y='Age', hue='Survived', palette=['red', 'green'], dodge=False)
+sns.boxplot(x='Pclass', y='Age', hue='Survived', data=train_df)`,
+  },
+  'sns.barplot': {
+    docKey: 'sns.barplot',
+    title: 'seaborn.barplot() - Diagramme en barres',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.barplot() - Barplot avec estimation
+
+Crée un diagramme en barres avec intervalles de confiance.
+
+## Exemple
+
+\`\`\`python
+sns.barplot(x='Sex', y='Survived', data=df)
+sns.barplot(x='Pclass', y='Survived', hue='Sex', data=train_df)
+\`\`\``,
+    examples: `sns.barplot(x='Sex', y='Survived', data=train_df)
+sns.barplot(x='Pclass', y='Survived', hue='Sex', data=train_df)`,
+  },
+  // ============ MATPLOTLIB ============
+  'plt.bar': {
+    docKey: 'plt.bar',
+    title: 'matplotlib.pyplot.bar() - Diagramme en barres',
+    version: '3.8.1',
+    libName: 'matplotlib',
+    content: `# plt.bar() - Créer un diagramme en barres
+
+Crée un diagramme en barres avec hauteurs spécifiées.
+
+## Exemple
+
+\`\`\`python
+plt.bar(['A', 'B', 'C'], [1, 2, 3])
+plt.bar(['Died', 'Survived'], counts, color=['red', 'green'])
+\`\`\``,
+    examples: `plt.bar(['Died', 'Survived'], counts, color=['red', 'green'])`,
+  },
+  'plt.xlabel': {
+    docKey: 'plt.xlabel',
+    title: 'matplotlib.pyplot.xlabel()',
+    version: '3.8.1',
+    libName: 'matplotlib',
+    content: `# plt.xlabel() - Label de l'axe X
+
+Défini le texte du label pour l'axe X.
+
+## Exemple
+
+\`\`\`python
+plt.xlabel('Survival Status')
+plt.ylabel('Passenger Count')
+\`\`\``,
+    examples: `plt.xlabel('Survival Status')
+plt.xlabel('Age')`,
+  },
+  'plt.ylabel': {
+    docKey: 'plt.ylabel',
+    title: 'matplotlib.pyplot.ylabel()',
+    version: '3.8.1',
+    libName: 'matplotlib',
+    content: `# plt.ylabel() - Label de l'axe Y
+
+Défini le texte du label pour l'axe Y.
+
+## Exemple
+
+\`\`\`python
+plt.ylabel('Passenger Count')
+plt.ylabel('Fare')
+\`\`\``,
+    examples: `plt.ylabel('Passenger Count')
+plt.ylabel('Age')`,
+  },
+  'plt.title': {
+    docKey: 'plt.title',
+    title: 'matplotlib.pyplot.title()',
+    version: '3.8.1',
+    libName: 'matplotlib',
+    content: `# plt.title() - Titre du graphique
+
+Défini le titre du graphique actuel.
+
+## Exemple
+
+\`\`\`python
+plt.title('Survival Distribution')
+plt.title('Age by Class and Survival (Females)')
+\`\`\``,
+    examples: `plt.title('Survival Distribution')
+plt.title('Age Distribution by Survival Status')`,
+  },
+  'plt.show': {
+    docKey: 'plt.show',
+    title: 'matplotlib.pyplot.show()',
+    version: '3.8.1',
+    libName: 'matplotlib',
+    content: `# plt.show() - Afficher le graphique
+
+Affiche la figure et ses axes.
+
+## Exemple
+
+\`\`\`python
+plt.plot([1, 2, 3])
+plt.show()
+\`\`\``,
+    examples: `plt.show()`,
+  },
+  'plt.figure': {
+    docKey: 'plt.figure',
+    title: 'matplotlib.pyplot.figure()',
+    version: '3.8.1',
+    libName: 'matplotlib',
+    content: `# plt.figure() - Créer une nouvelle figure
+
+Crée une nouvelle figure avec les dimensions spécifiées.
+
+## Paramètres
+
+- **figsize** : Tuple (largeur, hauteur) en pouces
+- **dpi** : Résolution en points par pouce
+- **facecolor** : Couleur de fond
+
+## Exemple
+
+\`\`\`python
+plt.figure(figsize=(10, 6))
+plt.figure(figsize=(8, 4))
+\`\`\``,
+    examples: `plt.figure(figsize=(6, 4))
+plt.figure(figsize=(8, 4))`,
+  },
+  'plt.yscale': {
+    docKey: 'plt.yscale',
+    title: 'matplotlib.pyplot.yscale()',
+    version: '3.8.1',
+    libName: 'matplotlib',
+    content: `# plt.yscale() - Échelle de l'axe Y
+
+Définit l'échelle de l'axe Y (linear, log, symlog, logit).
+
+## Exemple
+
+\`\`\`python
+plt.yscale('log')
+plt.yscale('linear')
+\`\`\``,
+    examples: `plt.yscale('log')`,
+  },
+  // ============ PYTHON BUILTINS ============
+  'print': {
+    docKey: 'print',
+    title: 'print() - Afficher dans la console',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# print() - Affiche des objets
+
+Affiche les objets dans la sortie standard.
+
+## Exemple
+
+\`\`\`python
+print("Hello")
+print("Accuracy:", accuracy_score(y_val, y_pred))
+\`\`\``,
+    examples: `print("Accuracy:", accuracy_score(y_val, y_pred))
+print(os.path.join(dirname, filename))`,
+  },
+  'len': {
+    docKey: 'len',
+    title: 'len() - Longueur d\'une séquence',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# len() - Retourne la longueur
+
+Retourne le nombre d'éléments dans une séquence.
+
+## Exemple
+
+\`\`\`python
+len([1, 2, 3])  # 3
+len(df)  # Nombre de lignes
+\`\`\``,
+    examples: `len(df)
+len(X_train)`,
+  },
+  'enumerate': {
+    docKey: 'enumerate',
+    title: 'enumerate() - Énumérer avec index',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# enumerate() - Index et élément
+
+Retourne des tuples (index, élément) pour itérer.
+
+## Exemple
+
+\`\`\`python
+for i, val in enumerate(list):
+    print(i, val)
+\`\`\``,
+    examples: `for i, val in enumerate(data)`,
+  },
+  'range': {
+    docKey: 'range',
+    title: 'range() - Génère une séquence',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# range() - Génère une séquence d'entiers
+
+Retourne une séquence de nombres.
+
+## Exemple
+
+\`\`\`python
+range(5)  # 0, 1, 2, 3, 4
+list(range(3, 10, 2))  # [3, 5, 7, 9]
+\`\`\``,
+    examples: `range(len(data))
+range(5)`,
+  },
+  'dict': {
+    docKey: 'dict',
+    title: 'dict() - Créer un dictionnaire',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# dict() - Dictionnaire clé-valeur
+
+Crée un dictionnaire vide ou à partir d'un mapping.
+
+## Exemple
+
+\`\`\`python
+d = {}
+d = dict(zip(keys, values))
+mapping = {'0': 'Died', '1': 'Survived'}
+\`\`\``,
+    examples: `dict()
+{'0': 'Died', '1': 'Survived'}`,
+  },
+  'list': {
+    docKey: 'list',
+    title: 'list() - Créer une liste',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# list() - Objet liste
+
+Crée une liste vide ou convertit une séquence.
+
+## Exemple
+
+\`\`\`python
+l = []
+l = list(range(10))
+list(df.columns)
+\`\`\``,
+    examples: `list(range(10))
+list(df.columns)`,
+  },
+  'zip': {
+    docKey: 'zip',
+    title: 'zip() - Zipper les séquences',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# zip() - Combine plusieurs séquences
+
+Agrège les éléments de plusieurs séquences.
+
+## Exemple
+
+\`\`\`python
+for x, y in zip(list1, list2):
+    print(x, y)
+dict(zip(keys, values))
+\`\`\``,
+    examples: `zip(keys, values)`,
+  },
+  'int': {
+    docKey: 'int',
+    title: 'int() - Convertir en entier',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# int() - Type entier
+
+Convertit une valeur en entier.
+
+## Exemple
+
+\`\`\`python
+int(3.14)  # 3
+int("42")  # 42
+\`\`\``,
+    examples: `int()`,
+  },
+  'float': {
+    docKey: 'float',
+    title: 'float() - Convertir en flottant',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# float() - Type flottant
+
+Convertit une valeur en nombre flottant.
+
+## Exemple
+
+\`\`\`python
+float(3)  # 3.0
+float("3.14")  # 3.14
+\`\`\``,
+    examples: `float()`,
+  },
+  'str': {
+    docKey: 'str',
+    title: 'str() - Convertir en chaîne',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# str() - Type chaîne de caractères
+
+Convertit une valeur en chaîne.
+
+## Exemple
+
+\`\`\`python
+str(42)  # "42"
+str([1, 2, 3])  # "[1, 2, 3]"
+\`\`\``,
+    examples: `str()`,
+  },
+  'sorted': {
+    docKey: 'sorted',
+    title: 'sorted() - Trier une séquence',
+    version: '3.9+',
+    libName: 'builtin',
+    content: `# sorted() - Retourne une liste triée
+
+Trie une séquence et retourne une nouvelle liste.
+
+## Exemple
+
+\`\`\`python
+sorted([3, 1, 2])  # [1, 2, 3]
+sorted(items, reverse=True)
+\`\`\``,
+    examples: `sorted([3, 1, 2])`,
+  },
+  // ============ OS MODULE ============
   'os.walk': {
     docKey: 'os.walk',
-    title: 'os.walk()',
-    version: '3.11',
+    title: 'os.walk() - Parcourir répertoires',
+    version: '3.9+',
     libName: 'os',
-    content: `# os.walk()
+    content: `# os.walk() - Itérer récursivement sur les répertoires
 
-Parcourt récursivement l'arborescence du répertoire.
+Parcourt l'arborescence des répertoires en profondeur.
 
-## Signature:
-\`\`\`python
-os.walk(top, topdown=True, onerror=None, followlinks=False)
-\`\`\`
+## Retour
 
-## Retour:
-Générateur de tuples (dirpath, dirnames, filenames) pour chaque répertoire.
+Tuples de (dirpath, dirnames, filenames)
 
-## Exemple:
+## Exemple
+
 \`\`\`python
 import os
-
-for dirname, dirnames, filenames in os.walk('/kaggle/input'):
+for dirname, _, filenames in os.walk('/path'):
     for filename in filenames:
         print(os.path.join(dirname, filename))
 \`\`\``,
-    examples: [
-      'for dirname, _, filenames in os.walk(\'/path\'): ...',
-      'for root, dirs, files in os.walk("."): pass',
-    ],
+    examples: `os.walk('/kaggle/input')
+for dirname, _, filenames in os.walk('/kaggle/input'):`,
   },
+  'os.path.join': {
+    docKey: 'os.path.join',
+    title: 'os.path.join() - Joindre chemins',
+    version: '3.9+',
+    libName: 'os',
+    content: `# os.path.join() - Combine les chemins
 
-  // ===== SKLEARN METRICS - F1_SCORE =====
-  'sklearn.metrics.f1_score': {
-    docKey: 'sklearn.metrics.f1_score',
-    title: 'sklearn.metrics.f1_score()',
-    version: '1.3.0',
-    libName: 'sklearn',
-    content: `# sklearn.metrics.f1_score()
+Combine intelligemment les composants de chemin.
 
-Calcule le score F1 (moyenne harmonique de la précision et du rappel).
+## Exemple
 
-## Signature:
 \`\`\`python
-sklearn.metrics.f1_score(y_true, y_pred, average='binary')
-\`\`\`
-
-## Paramètres:
-- **y_true**: Labels vrais
-- **y_pred**: Labels prédits
-- **average**: 'binary', 'micro', 'macro', 'weighted'
-
-## Exemple:
-\`\`\`python
-from sklearn.metrics import f1_score
-
-f1 = f1_score(y_test, predictions)
-print(f"F1 Score: {f1:.4f}")
+import os
+path = os.path.join('/home', 'user', 'file.txt')
+os.path.join(dirname, filename)
 \`\`\``,
-    examples: [
-      'from sklearn.metrics import f1_score',
-      'f1_score(y_test, predictions)',
-    ],
+    examples: `os.path.join(dirname, filename)
+os.path.join('/path/to', 'file')`,
   },
+  // ============ WARNINGS MODULE ============
+  'warnings.filterwarnings': {
+    docKey: 'warnings.filterwarnings',
+    title: 'warnings.filterwarnings() - Filtrer avertissements',
+    version: '3.9+',
+    libName: 'warnings',
+    content: `# warnings.filterwarnings() - Contrôler les avertissements
 
-  // ===== PANDAS GET_DUMMIES =====
-  'pandas.get_dummies': {
-    docKey: 'pandas.get_dummies',
-    title: 'pandas.get_dummies()',
-    version: '2.1.3',
-    libName: 'pandas',
-    content: `# pandas.get_dummies()
+Contrôle quels avertissements sont affichés.
 
-Convertit les variables catégoriques en variables dummy (one-hot encoding).
+## Paramètres
 
-## Signature:
+- **action** : 'ignore', 'always', 'error', 'default'
+- **category** : Type d'avertissement (ex: FutureWarning)
+
+## Exemple
+
 \`\`\`python
-pd.get_dummies(data, columns=None, drop_first=False, prefix=None)
-\`\`\`
-
-## Paramètres:
-- **data**: DataFrame ou Series à traiter
-- **columns**: Colonnes à encoder (toutes si None)
-- **drop_first**: Supprimer la première catégorie (utile pour éviter la multicolinéarité)
-- **prefix**: Préfixe pour les nouvelles colonnes
-
-## Exemple:
-\`\`\`python
-df = pd.get_dummies(
-    df,
-    columns=['Sex', 'Embarked'],
-    drop_first=True
-)
+import warnings
+warnings.filterwarnings('ignore', category=FutureWarning)
 \`\`\``,
-    examples: [
-      'pd.get_dummies(df, columns=["categorical"])',
-      'pd.get_dummies(df, columns=["Sex", "Embarked"], drop_first=True)',
-    ],
-  },
-
-  // ===== PANDAS FILLNA =====
-  'pandas.fillna': {
-    docKey: 'pandas.fillna',
-    title: 'DataFrame.fillna()',
-    version: '2.1.3',
-    libName: 'pandas',
-    content: `# DataFrame.fillna()
-
-Remplit les valeurs manquantes (NaN) avec une valeur spécifiée.
-
-## Signature:
-\`\`\`python
-DataFrame.fillna(value=None, method=None, inplace=False)
-\`\`\`
-
-## Paramètres:
-- **value**: Valeur pour remplir les NaN
-- **method**: 'ffill' (forward fill) ou 'bfill' (backward fill)
-- **inplace**: Modifier le DataFrame original
-
-## Exemple:
-\`\`\`python
-# Remplir avec une constante
-df['Age'].fillna(df['Age'].median(), inplace=True)
-
-# Forward fill
-df.fillna(method='ffill', inplace=True)
-\`\`\``,
-    examples: [
-      'df.fillna(df.mean())',
-      'df["Age"].fillna(df["Age"].median(), inplace=True)',
-      'df.fillna(method="ffill")',
-    ],
-  },
-
-  // ===== PANDAS GROUPBY =====
-  'pandas.groupby': {
-    docKey: 'pandas.groupby',
-    title: 'DataFrame.groupby()',
-    version: '2.1.3',
-    libName: 'pandas',
-    content: `# DataFrame.groupby()
-
-Groupe les données par une ou plusieurs colonnes et applique une fonction d'agrégation.
-
-## Signature:
-\`\`\`python
-DataFrame.groupby(by, as_index=True, sort=True)
-\`\`\`
-
-## Paramètres:
-- **by**: Colonne(s) de regroupement
-- **as_index**: Utiliser les groupes comme index
-- **sort**: Trier les groupes
-
-## Exemple:
-\`\`\`python
-# Calcul de statistiques par groupe
-df.groupby('Sex')['Survived'].mean()
-df.groupby(['Sex', 'Pclass'])['Survived'].mean()
-
-# Agrégation personnalisée
-df.groupby('Category')['Value'].agg(['mean', 'sum', 'count'])
-\`\`\``,
-    examples: [
-      'df.groupby("column").mean()',
-      'df.groupby(["Sex", "Pclass"])["Survived"].mean()',
-      'df.groupby("category").agg(["sum", "mean"])',
-    ],
-  },
-
-  // ===== PANDAS ISNULL =====
-  'pandas.isnull': {
-    docKey: 'pandas.isnull',
-    title: 'DataFrame.isnull()',
-    version: '2.1.3',
-    libName: 'pandas',
-    content: `# DataFrame.isnull()
-
-Détecte les valeurs manquantes (NaN) et retourne un booléen.
-
-## Signature:
-\`\`\`python
-DataFrame.isnull()  # Alias: DataFrame.isna()
-\`\`\`
-
-## Retour:
-DataFrame de booléens avec True pour NaN et False sinon.
-
-## Exemple:
-\`\`\`python
-# Compter les valeurs manquantes par colonne
-df.isnull().sum()
-
-# Afficher les lignes avec valeurs manquantes
-df[df.isnull().any(axis=1)]
-
-# Visualiser avec heatmap
-import seaborn as sns
-sns.heatmap(df.isnull(), cbar=False)
-\`\`\``,
-    examples: [
-      'df.isnull().sum()',
-      'df[df.isnull().any(axis=1)]',
-      'sns.heatmap(df.isnull(), cbar=False)',
-    ],
-  },
-
-  // ===== PANDAS REINDEX =====
-  'pandas.reindex': {
-    docKey: 'pandas.reindex',
-    title: 'DataFrame.reindex()',
-    version: '2.1.3',
-    libName: 'pandas',
-    content: `# DataFrame.reindex()
-
-Réindexe le DataFrame en utilisant les étiquettes fournies.
-
-## Signature:
-\`\`\`python
-DataFrame.reindex(labels=None, fill_value=0, method=None)
-\`\`\`
-
-## Paramètres:
-- **labels**: Nouvelles étiquettes (index ou colonnes)
-- **fill_value**: Valeur à utiliser pour les positions nouvelles
-- **method**: 'ffill' ou 'bfill' pour interpolation
-
-## Exemple:
-\`\`\`python
-# Aligner les colonnes du test set avec l'entraînement
-test_df = test_df.reindex(columns=X.columns, fill_value=0)
-\`\`\``,
-    examples: [
-      'df.reindex(columns=X.columns, fill_value=0)',
-      'df.reindex([0, 1, 2, 5, 10], fill_value=0)',
-    ],
-  },
-
-  // ===== PANDAS MODE =====
-  'pandas.mode': {
-    docKey: 'pandas.mode',
-    title: 'Series.mode()',
-    version: '2.1.3',
-    libName: 'pandas',
-    content: `# Series.mode()
-
-Retourne la ou les valeurs les plus fréquentes (mode).
-
-## Signature:
-\`\`\`python
-Series.mode()
-\`\`\`
-
-## Retour:
-Series contenant la(les) valeur(s) modale(s).
-
-## Exemple:
-\`\`\`python
-# Obtenir la valeur la plus fréquente
-mode_value = df['Embarked'].mode()[0]
-
-# Remplir avec le mode
-df['Embarked'].fillna(mode_value, inplace=True)
-\`\`\``,
-    examples: [
-      'df["column"].mode()',
-      'df["Embarked"].mode()[0]',
-      'df["column"].fillna(df["column"].mode()[0], inplace=True)',
-    ],
-  },
-
-  // ===== NUMPY INF =====
-  'numpy.inf': {
-    docKey: 'numpy.inf',
-    title: 'numpy.inf',
-    version: '1.24.3',
-    libName: 'numpy',
-    content: `# numpy.inf
-
-Représente l'infini en NumPy.
-
-## Usage:
-\`\`\`python
-import numpy as np
-
-# Créer un array avec l'infini
-arr = np.array([1, 2, np.inf, -np.inf, 3])
-
-# Remplacer l'infini par NaN
-arr_clean = arr.replace([np.inf, -np.inf], np.nan)
-
-# Vérifier l'infini
-np.isinf(arr)
-\`\`\`
-
-## Cas d'usage:
-- Gestion des résultats de division par zéro
-- Initialisation de valeurs d'optimisation
-- Nettoyage de données`,
-    examples: [
-      'arr = np.array([1, np.inf, -np.inf])',
-      'arr = arr.replace([np.inf, -np.inf], np.nan)',
-      'np.isinf(arr)',
-    ],
+    examples: `warnings.filterwarnings("ignore", category=FutureWarning)`,
   },
 };
 
 /**
- * Récupère la documentation pour une clé donnée
- * @param docKey Clé de doc (ex: 'pandas.read_csv')
- * @returns DocEntry ou null
+ * Fonction helper pour obtenir la documentation d'un token
  */
-export function getDocumentation(docKey: string): DocEntry | null {
-  return completeMockDocs[docKey] ?? null;
+export function getDocumentation(docKey: string): DocEntry | undefined {
+  return completeMockDocs[docKey];
 }
