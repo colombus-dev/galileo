@@ -27,9 +27,7 @@ export function BackButton({
 			navigate(from);
 			return;
 		}
-
-		// Prefer the actual browser history when available.
-		// This works even when the current page was reached via a full reload.
+		
 		if (window.history.length > 1) {
 			navigate(-1);
 			return;
