@@ -78,3 +78,20 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+@layer components {
+	/*
+	 * Helpers for react-diff-viewer-continued in split view (with hideLineNumbers=true).
+	 * Column order then is:
+	 *  1) left marker  2) left content  3) right marker  4) right content
+	 */
+	.rdv-hide-left-content table col:nth-child(-n + 2),
+	.rdv-hide-left-content table tbody tr > td:nth-child(-n + 2) {
+		display: none;
+	}
+
+	.rdv-hide-right-pane table col:nth-child(n + 3),
+	.rdv-hide-right-pane table tbody tr > td:nth-child(n + 3) {
+		display: none;
+	}
+}

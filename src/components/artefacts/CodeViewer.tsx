@@ -6,12 +6,20 @@ export interface CodeViewerProps {
   code: string;
   language?: string;
   className?: string;
+  showLineNumbers?: boolean;
+  wrapLines?: boolean;
+  lineProps?:
+    | React.HTMLAttributes<HTMLElement>
+    | ((lineNumber: number) => React.HTMLAttributes<HTMLElement>);
 }
 
 export const CodeViewer: React.FC<CodeViewerProps> = ({
   code,
   language = "python",
   className = "",
+	showLineNumbers = true,
+	wrapLines,
+	lineProps,
 }) => (
   <div className={`w-full rounded-xl overflow-hidden shadow-md border border-slate-200 bg-slate-900 ${className}`}>
     <div className="flex items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
@@ -27,7 +35,9 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
         padding: "1.2em",
         borderRadius: 0,
       }}
-      showLineNumbers
+		showLineNumbers={showLineNumbers}
+		wrapLines={wrapLines}
+		lineProps={lineProps as never}
     >
       {code}
     </SyntaxHighlighter>

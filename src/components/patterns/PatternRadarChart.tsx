@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import {
     Radar,
     RadarChart,
@@ -38,42 +39,65 @@ const calculateAverage = (arr?: number[]): number => {
     return arr.reduce((a, b) => a + b, 0) / arr.length;
 };
 
+
 interface PatternRadarChartProps {
     currentPattern: PatternType;
     allPatterns: PatternType[];
 }
 
+type FilterMode = 'all' | 'type' | 'strict';
+
 const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartProps) => {
+    const navigate = useNavigate();
+    const [filterMode, setFilterMode] = useState<FilterMode>('all');
+
+    const filteredPatterns = useMemo(() => {
+        switch (filterMode) {
+            case 'type':
+                return allPatterns.filter(p => p.typePattern === currentPattern.typePattern);
+            case 'strict':
+                return allPatterns.filter(p => 
+                    p.typePattern === currentPattern.typePattern && 
+                    p.typeAlgo === currentPattern.typeAlgo
+                );
+            case 'all':
+            default:
+                return allPatterns;
+        }
+    }, [filterMode, allPatterns, currentPattern]);
 
     const chartData = useMemo(() => {
-        const stats = allPatterns.map(p => ({
+        const patternsToCompare = filteredPatterns.length > 0 ? filteredPatterns : [currentPattern];
+
+        const stats = patternsToCompare.map(p => ({
+            id: p.id,
             score: calculateScore(p),
             ram: calculateAverage(p.ram),
             time: calculateAverage(p.executionTime)
         }));
 
-        const globalMax = {
-            score: 1, // Le score max théorique est 1
-            ram: Math.max(...stats.map(s => s.ram)),
-            time: Math.max(...stats.map(s => s.time))
+        const maxValues = {
+            score: 1, 
+            ram: Math.max(...stats.map(s => s.ram)) || 100, 
+            time: Math.max(...stats.map(s => s.time)) || 100
         };
 
-        const globalMin = {
-            score: 0,
-            ram: Math.min(...stats.map(s => s.ram)),
-            time: Math.min(...stats.map(s => s.time))
+        const findExtreme = (metric: keyof typeof stats[0], type: 'min' | 'max') => {
+            return stats.reduce((prev, curr) => {
+                return (type === 'max' ? curr[metric] > prev[metric] : curr[metric] < prev[metric]) ? curr : prev;
+            });
         };
 
-        const bestScenario = {
-            score: Math.max(...stats.map(s => s.score)), 
-            ram: globalMin.ram,
-            time: globalMin.time
+        const worstPatterns = {
+            score: findExtreme('score', 'min'), 
+            ram: findExtreme('ram', 'max'),     
+            time: findExtreme('time', 'max')    
         };
 
-        const worstScenario = {
-            score: Math.min(...stats.map(s => s.score)),
-            ram: globalMax.ram,
-            time: globalMax.time
+        const bestPatterns = {
+            score: findExtreme('score', 'max'), 
+            ram: findExtreme('ram', 'min'),     
+            time: findExtreme('time', 'min')    
         };
 
         const avgValues = {
@@ -88,82 +112,119 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
             time: calculateAverage(currentPattern.executionTime)
         };
 
-        const scaleMax = {
-            score: 1, 
-            ram: globalMax.ram === 0 ? 100 : globalMax.ram,
-            time: globalMax.time === 0 ? 100 : globalMax.time
-        };
-
         const normalize = (val: number, max: number) => (val / max) * 100;
 
         return [
             {
                 subject: 'Score',
                 fullMark: 100,
-                current: normalize(currentStats.score, scaleMax.score),
-                avg: normalize(avgValues.score, scaleMax.score),
-                best: normalize(bestScenario.score, scaleMax.score),
-                worst: normalize(worstScenario.score, scaleMax.score),
-                // Valeurs réelles pour Tooltip
+                current: normalize(currentStats.score, maxValues.score),
+                avg: normalize(avgValues.score, maxValues.score),
+                best: normalize(bestPatterns.score.score, maxValues.score),
+                worst: normalize(worstPatterns.score.score, maxValues.score),
+                
+                unit: '',
                 realCurrent: currentStats.score.toFixed(2),
                 realAvg: avgValues.score.toFixed(2),
-                realBest: bestScenario.score.toFixed(2),
-                realWorst: worstScenario.score.toFixed(2),
-                unit: ''
+                realBest: bestPatterns.score.score.toFixed(2),
+                bestName: bestPatterns.score.id,
+                realWorst: worstPatterns.score.score.toFixed(2),
+                worstName: worstPatterns.score.id
             },
             {
                 subject: 'RAM',
                 fullMark: 100,
-                current: normalize(currentStats.ram, scaleMax.ram),
-                avg: normalize(avgValues.ram, scaleMax.ram),
-                best: normalize(bestScenario.ram, scaleMax.ram),
-                worst: normalize(worstScenario.ram, scaleMax.ram),
+                current: normalize(currentStats.ram, maxValues.ram),
+                avg: normalize(avgValues.ram, maxValues.ram),
+                best: normalize(bestPatterns.ram.ram, maxValues.ram),
+                worst: normalize(worstPatterns.ram.ram, maxValues.ram),
                 
+                unit: 'MB',
                 realCurrent: currentStats.ram.toFixed(0),
                 realAvg: avgValues.ram.toFixed(0),
-                realBest: bestScenario.ram.toFixed(0),
-                realWorst: worstScenario.ram.toFixed(0),
-                unit: 'MB'
+                realBest: bestPatterns.ram.ram.toFixed(0),
+                bestName: bestPatterns.ram.id,
+                realWorst: worstPatterns.ram.ram.toFixed(0),
+                worstName: worstPatterns.ram.id
             },
             {
                 subject: 'Temps',
                 fullMark: 100,
-                current: normalize(currentStats.time, scaleMax.time),
-                avg: normalize(avgValues.time, scaleMax.time),
-                best: normalize(bestScenario.time, scaleMax.time),
-                worst: normalize(worstScenario.time, scaleMax.time),
+                current: normalize(currentStats.time, maxValues.time),
+                avg: normalize(avgValues.time, maxValues.time),
+                best: normalize(bestPatterns.time.time, maxValues.time),
+                worst: normalize(worstPatterns.time.time, maxValues.time),
 
+                unit: 's',
                 realCurrent: currentStats.time.toFixed(2),
                 realAvg: avgValues.time.toFixed(2),
-                realBest: bestScenario.time.toFixed(2),
-                realWorst: worstScenario.time.toFixed(2),
-                unit: 's'
+                realBest: bestPatterns.time.time.toFixed(2),
+                bestName: bestPatterns.time.id,
+                realWorst: worstPatterns.time.time.toFixed(2),
+                worstName: worstPatterns.time.id
             }
         ];
-    }, [currentPattern, allPatterns]);
+    }, [currentPattern, filteredPatterns]);
+
+    const InteractiveDot = (props: any) => {
+        const { cx, cy, payload, type } = props;
+        
+        if (!cx || !cy) return null;
+
+        const isBest = type === 'best';
+        const color = isBest ? "#22c55e" : "#ef4444";
+        const targetId = isBest ? payload.bestName : payload.worstName;
+
+        return (
+            <g 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if (targetId) navigate(`/pattern/${targetId}`);
+                }}
+                className="cursor-pointer hover:opacity-80 transition-opacity"
+            >
+                <circle cx={cx} cy={cy} r={10} fill="transparent" />
+                
+                <circle cx={cx} cy={cy} r={4} fill={color} stroke="white" strokeWidth={1} />
+            </g>
+        );
+    };
 
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (
-                <div className="bg-white p-3 border border-slate-200 shadow-xl rounded-md text-xs z-50 min-w-[150px]">
+                <div className="bg-white p-3 border border-slate-200 shadow-xl rounded-md text-xs z-50 min-w-[200px]">
                     <p className="font-bold mb-2 text-slate-800 text-sm border-b pb-1">{label}</p>
-                    <div className="space-y-1.5">
-                        <div className="flex justify-between">
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
                             <span className="text-blue-600 font-bold">Actuel:</span>
-                            <span>{data.realCurrent} {data.unit}</span>
+                            <span className="font-mono">{data.realCurrent} {data.unit}</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-green-600 font-medium">Meilleur:</span>
-                            <span>{data.realBest} {data.unit}</span>
+                        
+                        <div className="bg-gray-50 p-1.5 rounded border border-gray-100">
+                            <div className="flex justify-between text-green-700 font-medium">
+                                <span>Meilleur:</span>
+                                <span>{data.realBest} {data.unit}</span>
+                            </div>
+                            <div className="text-[10px] text-green-600/70 italic text-right truncate max-w-[150px]">
+                                ({data.bestName})
+                            </div>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500 font-medium">Moyenne:</span>
+
+                        <div className="flex justify-between items-center text-gray-500">
+                            <span>Moyenne:</span>
                             <span>{data.realAvg} {data.unit}</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-red-500 font-medium">Pire:</span>
-                            <span>{data.realWorst} {data.unit}</span>
+
+                        <div className="bg-gray-50 p-1.5 rounded border border-gray-100">
+                            <div className="flex justify-between text-red-600 font-medium">
+                                <span>Pire:</span>
+                                <span>{data.realWorst} {data.unit}</span>
+                            </div>
+                            <div className="text-[10px] text-red-500/70 italic text-right truncate max-w-[150px]">
+                                ({data.worstName})
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,8 +234,26 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
     };
 
     return (
-        <div className="w-full h-[450px] bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col items-center">
-            <h3 className="text-sm font-semibold text-slate-700 mb-4">Analyse Complète (Benchmark)</h3>
+        <div className="w-full h-[500px] bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col items-center">
+            
+            <div className="w-full flex flex-row justify-between items-center mb-2 px-2">
+                <h3 className="text-sm font-semibold text-slate-700">
+                    Benchmark Comparatif
+                </h3>
+                
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-400">Comparer avec:</span>
+                    <select 
+                        value={filterMode}
+                        onChange={(e) => setFilterMode(e.target.value as FilterMode)}
+                        className="text-xs border border-slate-200 rounded px-2 py-1 bg-slate-50 text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                    >
+                        <option value="all">Tous les patterns</option>
+                        <option value="type">Même Type ({currentPattern.typePattern})</option>
+                        <option value="strict">Type & Algo ({currentPattern.typeAlgo})</option>
+                    </select>
+                </div>
+            </div>
             
             <ResponsiveContainer width="100%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
@@ -188,7 +267,8 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
                         stroke="#ef4444"
                         strokeWidth={1}
                         fill="#ef4444"
-                        fillOpacity={0.1}
+                        fillOpacity={0.15}
+                        dot={<InteractiveDot type="worst" />}
                     />
 
                     <Radar
@@ -197,7 +277,8 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
                         stroke="#22c55e"
                         strokeWidth={1}
                         fill="#22c55e"
-                        fillOpacity={0.15}
+                        fillOpacity={0.25}
+                        dot={<InteractiveDot type="best" />}
                     />
 
                     <Radar
@@ -207,6 +288,7 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
                         strokeWidth={2}
                         strokeDasharray="4 4"
                         fill="transparent"
+                        dot={false}
                     />
 
                     <Radar

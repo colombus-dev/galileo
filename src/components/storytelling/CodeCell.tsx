@@ -33,6 +33,7 @@ export const CodeCell: React.FC<CodeCellProps> = ({
           code={cell.content}
           language="python"
           className="max-w-none w-full"
+			showLineNumbers={showLineNumbers}
         />
       </div>
 

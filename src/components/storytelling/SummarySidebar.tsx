@@ -6,7 +6,6 @@ export interface SummarySidebarProps {
   notebook: NotebookModel;
   activeSection?: string;
   onSelectSection?: (sectionId: string) => void;
-  compact?: boolean;
   className?: string;
 }
 
