@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { NavBar } from '@/components/NavBar';
 import { NotebookWorkspaceLayout } from '@/components/storytelling/NotebookWorkspaceLayout';
 import { SummarySidebar } from '@/components/storytelling/SummarySidebar';
@@ -27,6 +28,8 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
   initialNotebookId,
   logoUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10",
 }) => {
+	const navigate = useNavigate();
+
   // État notebook
   const [notebook, setNotebook] = useState<NotebookModel | null>(null);
   const [notebookError, setNotebookError] = useState<string | null>(null);
@@ -140,15 +143,15 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
           logoUrl={logoUrl}
           title="Galileo - Storytelling"
         >
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/storytelling">Storytelling</a>
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/artefact">Artefact</a>
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/patterns">Patterns</a>
-          </button>
+				<button type="button" onClick={() => navigate('/storytelling')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+					Storytelling
+				</button>
+				<button type="button" onClick={() => navigate('/artefact')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+					Artefact
+				</button>
+				<button type="button" onClick={() => navigate('/patterns')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+					Patterns
+				</button>
         </NavBar>
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-gradient-to-br from-slate-50 to-slate-100">
           <div className="w-full max-w-md px-4">
@@ -176,15 +179,15 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
         logoUrl={logoUrl}
         title="Galileo - Storytelling"
       >
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/storytelling">Storytelling</a>
-        </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/artefact">Artefact</a>
-        </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/patterns">Patterns</a>
-        </button>
+			<button type="button" onClick={() => navigate('/storytelling')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+				Storytelling
+			</button>
+			<button type="button" onClick={() => navigate('/artefact')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+				Artefact
+			</button>
+			<button type="button" onClick={() => navigate('/patterns')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+				Patterns
+			</button>
       </NavBar>
       <NotebookWorkspaceLayout
         sidebar={

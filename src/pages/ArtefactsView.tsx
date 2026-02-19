@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { type ArtefactFilterKey } from "@/components/artefacts/ArtefactFilterMenu";
 import { NotebookSelectorDropdown } from "@/components/NotebookSelectorDropdown";
 import type { NotebookData } from "@/data/mockData";
@@ -19,6 +20,8 @@ function matchesFilter(type: string, filter: ArtefactFilterKey) {
 }
 
 export default function ArtefactsView() {
+	const navigate = useNavigate();
+
   const [mode, setMode] = useState<ModeType>("simple");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectedId = selectedIds[0];
@@ -265,15 +268,27 @@ export default function ArtefactsView() {
           logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
           title="Galileo - Artefacts"
         >
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/storytelling">Storytelling</a>
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/artefact">Artefact</a>
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/patterns">Patterns</a>
-          </button>
+      <button
+        type="button"
+        onClick={() => navigate("/storytelling")}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Storytelling
+      </button>
+      <button
+        type="button"
+        onClick={() => navigate("/artefact")}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Artefact
+      </button>
+      <button
+        type="button"
+        onClick={() => navigate("/patterns")}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Patterns
+      </button>
         </NavBar>
         <div className="p-4 flex flex-row flex-wrap items-center justify-between gap-4 bg-white border-b shadow-sm">
           <div className="w-64">
