@@ -101,8 +101,8 @@ export const mockDataPattern: PatternType[] = [
         hierarchy: { parent: null, children: null }
     },
     {
-        id: "Exemple_de_Pattern_Parent",
-        schema: "Data Preparation -> * -> Modeling",
+        id: 'Exemple_de_Pattern_Parent',
+        schema: 'Data Preparation -> * -> Modeling',
         score: { '[0-0.2[': 10, '[0.2-0.4[': 20, '[0.4-0.6[': 30, '[0.6-0.8[': 25, '[0.8-1.0]': 15 },
         ram: [0.1, 0.3, 0.5, 0.7, 0.9],
         executionTime: [0.2, 0.4, 0.6, 0.8],
@@ -112,25 +112,335 @@ export const mockDataPattern: PatternType[] = [
         hierarchy: { parent: null, children: ['Exemple_de_Pattern_Enfant', 'Exemple_de_Pattern_Enfant_2'] }
     },
     {
-        id: "Exemple_de_Pattern_Enfant",
-        schema: "Data Preparation -> Cleaning -> Modeling",
+        id: 'Exemple_de_Pattern_Enfant',
+        schema: 'Data Preparation -> Cleaning -> Modeling',
         score: { '[0-0.2[': 5, '[0.2-0.4[': 15, '[0.4-0.6[': 25, '[0.6-0.8[': 35, '[0.8-1.0]': 20 },
         ram: [0.2, 0.4, 0.5, 0.6, 0.7],
         executionTime: [0.1, 0.3, 0.4, 0.5, 0.6],
         notebooks: { 'example_child_pattern.ipynb': 0.85 },
         typeAlgo: 'ExampleAlgo',
         typePattern: 'ExampleType',
-        hierarchy: { parent: "Exemple_de_Pattern_Parent", children: null }
+        hierarchy: { parent: 'Exemple_de_Pattern_Parent', children: null }
     },
     {
-        id: "Exemple_de_Pattern_Enfant_2",
-        schema: "Data Preparation -> Cleaning -> Modeling",
+        id: 'Exemple_de_Pattern_Enfant_2',
+        schema: 'Data Preparation -> Cleaning -> Modeling',
         score: { '[0-0.2[': 5, '[0.2-0.4[': 15, '[0.4-0.6[': 25, '[0.6-0.8[': 35, '[0.8-1.0]': 20 },
         ram: [0.2, 0.4, 0.5, 0.6, 0.7],
         executionTime: [0.1, 0.3, 0.4, 0.5, 0.6],
         notebooks: { 'example_child_pattern.ipynb': 0.85 },
         typeAlgo: 'ExampleAlgo',
         typePattern: 'ExampleType',
-        hierarchy: { parent: "Exemple_de_Pattern_Parent", children: null }
+        hierarchy: { parent: 'Exemple_de_Pattern_Parent', children: null }
+    },
+    {
+        id: 'NLP_Pipeline_Parent',
+        schema: 'Load Text -> * -> Classification',
+        score: { '[0-0.2[': 2, '[0.2-0.4[': 10, '[0.4-0.6[': 45, '[0.6-0.8[': 30, '[0.8-1.0]': 8 },
+        ram: [0.4, 0.55, 0.6, 0.65],
+        executionTime: [0.5, 0.6, 0.7, 0.8],
+        notebooks: { 'nlp_master.ipynb': 0.9 },
+        typeAlgo: 'NLP_Generic',
+        typePattern: 'Pipeline',
+        hierarchy: { parent: null, children: ['NLP_Text_Cleaning', 'NLP_Tokenization'] }
+    },
+    {
+        id: 'NLP_Text_Cleaning',
+        schema: 'Regex Remove -> Lowercase -> StopWords',
+        score: { '[0-0.2[': 80, '[0.2-0.4[': 15, '[0.4-0.6[': 5, '[0.6-0.8[': 0, '[0.8-1.0]': 0 },
+        ram: [0.1, 0.15, 0.18, 0.2],
+        executionTime: [0.05, 0.1, 0.15],
+        notebooks: { 'nlp_prep.ipynb': 0.8 },
+        typeAlgo: 'Regex',
+        typePattern: 'Cleaning',
+        hierarchy: { parent: 'NLP_Pipeline_Parent', children: null }
+    },
+    {
+        id: 'NLP_Tokenization',
+        schema: 'Text -> NLTK Tokenize -> Lemmatize',
+        score: { '[0-0.2[': 10, '[0.2-0.4[': 50, '[0.4-0.6[': 30, '[0.6-0.8[': 5, '[0.8-1.0]': 5 },
+        ram: [0.2, 0.25, 0.3, 0.35],
+        executionTime: [0.15, 0.2, 0.25, 0.3],
+        notebooks: { 'nlp_prep.ipynb': 0.85 },
+        typeAlgo: 'NLTK',
+        typePattern: 'Preprocessing',
+        hierarchy: { parent: 'NLP_Pipeline_Parent', children: null }
+    },
+    {
+        id: 'TF_IDF_Extraction',
+        schema: 'Tokens -> TfidfVectorizer -> Matrix',
+        score: { '[0-0.2[': 5, '[0.2-0.4[': 15, '[0.4-0.6[': 40, '[0.6-0.8[': 25, '[0.8-1.0]': 10 },
+        ram: [0.45, 0.5, 0.6, 0.7, 0.8],
+        executionTime: [0.3, 0.4, 0.5, 0.55],
+        notebooks: { 'feature_eng_text.ipynb': 0.7 },
+        typeAlgo: 'TF-IDF',
+        typePattern: 'Feature Extraction',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'Word2Vec_Embedding',
+        schema: 'Tokens -> Word2Vec Model -> Vector Avg',
+        score: { '[0-0.2[': 0, '[0.2-0.4[': 5, '[0.4-0.6[': 20, '[0.6-0.8[': 60, '[0.8-1.0]': 15 },
+        ram: [0.6, 0.7, 0.8, 0.85, 0.9],
+        executionTime: [0.6, 0.75, 0.85, 0.95],
+        notebooks: { 'embeddings_train.ipynb': 0.95 },
+        typeAlgo: 'Word2Vec',
+        typePattern: 'Embedding',
+        hierarchy: { parent: null, children: null }
+    },
+
+    {
+        id: 'CV_Pipeline_Parent',
+        schema: 'Image Load -> * -> Object Detection',
+        score: { '[0-0.2[': 5, '[0.2-0.4[': 15, '[0.4-0.6[': 30, '[0.6-0.8[': 40, '[0.8-1.0]': 10 },
+        ram: [0.5, 0.6, 0.75, 0.9],
+        executionTime: [0.6, 0.7, 0.8, 0.9],
+        notebooks: { 'cv_master.ipynb': 0.9 },
+        typeAlgo: 'CV_Generic',
+        typePattern: 'Pipeline',
+        hierarchy: { parent: null, children: ['CV_Image_Augmentation', 'CNN_Base_Training', 'ResNet_Transfer_Learning'] }
+    },
+    {
+        id: 'CV_Image_Augmentation',
+        schema: 'Image -> Rotate/Flip -> Normalize',
+        score: { '[0-0.2[': 20, '[0.2-0.4[': 40, '[0.4-0.6[': 25, '[0.6-0.8[': 10, '[0.8-1.0]': 5 },
+        ram: [0.3, 0.35, 0.4, 0.45],
+        executionTime: [0.2, 0.3, 0.4],
+        notebooks: { 'cv_augmentation.ipynb': 0.85 },
+        typeAlgo: 'ImageAug',
+        typePattern: 'Preprocessing',
+        hierarchy: { parent: 'CV_Pipeline_Parent', children: null }
+    },
+    {
+        id: 'CNN_Base_Training',
+        schema: 'Conv2D -> MaxPooling -> Flatten -> Dense',
+        score: { '[0-0.2[': 2, '[0.2-0.4[': 8, '[0.4-0.6[': 20, '[0.6-0.8[': 50, '[0.8-1.0]': 20 },
+        ram: [0.7, 0.8, 0.85, 0.9, 0.95],
+        executionTime: [0.7, 0.8, 0.85, 0.95, 0.99],
+        notebooks: { 'cnn_scratch.ipynb': 0.9 },
+        typeAlgo: 'CNN',
+        typePattern: 'Deep Learning',
+        hierarchy: { parent: 'CV_Pipeline_Parent', children: null }
+    },
+    {
+        id: 'ResNet_Transfer_Learning',
+        schema: 'Load ResNet50 -> Freeze Base -> Train Head',
+        score: { '[0-0.2[': 0, '[0.2-0.4[': 5, '[0.4-0.6[': 15, '[0.6-0.8[': 30, '[0.8-1.0]': 50 },
+        ram: [0.8, 0.85, 0.9, 0.95, 0.99],
+        executionTime: [0.8, 0.9, 0.95, 0.98, 0.99],
+        notebooks: { 'transfer_learning.ipynb': 0.95 },
+        typeAlgo: 'ResNet50',
+        typePattern: 'Transfer Learning',
+        hierarchy: { parent: 'CV_Pipeline_Parent', children: null }
+    },
+    {
+        id: 'YOLO_Object_Detection',
+        schema: 'Images -> YOLOv5 -> Bounding Boxes',
+        score: { '[0-0.2[': 0, '[0.2-0.4[': 2, '[0.4-0.6[': 8, '[0.6-0.8[': 30, '[0.8-1.0]': 60 },
+        ram: [0.85, 0.9, 0.95, 0.98],
+        executionTime: [0.85, 0.9, 0.95, 0.99],
+        notebooks: { 'yolo_detect.ipynb': 0.88 },
+        typeAlgo: 'YOLO',
+        typePattern: 'Detection',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'TS_Forecast_Parent',
+        schema: 'Date Parsing -> * -> Forecast Plot',
+        score: { '[0-0.2[': 10, '[0.2-0.4[': 20, '[0.4-0.6[': 40, '[0.6-0.8[': 20, '[0.8-1.0]': 10 },
+        ram: [0.2, 0.3, 0.4, 0.5],
+        executionTime: [0.1, 0.2, 0.4, 0.5],
+        notebooks: { 'sales_forecast.ipynb': 0.8 },
+        typeAlgo: 'TS_Generic',
+        typePattern: 'Pipeline',
+        hierarchy: { parent: null, children: ['TS_Moving_Average', 'ARIMA_Modeling'] }
+    },
+    {
+        id: 'TS_Moving_Average',
+        schema: 'Series -> Rolling Mean -> Plot',
+        score: { '[0-0.2[': 60, '[0.2-0.4[': 20, '[0.4-0.6[': 10, '[0.6-0.8[': 5, '[0.8-1.0]': 5 },
+        ram: [0.05, 0.1, 0.12, 0.15],
+        executionTime: [0.01, 0.05, 0.08, 0.1],
+        notebooks: { 'ts_exploration.ipynb': 0.9 },
+        typeAlgo: 'Rolling',
+        typePattern: 'Smoothing',
+        hierarchy: { parent: 'TS_Forecast_Parent', children: null }
+    },
+    {
+        id: 'ARIMA_Modeling',
+        schema: 'Stationarity Test -> Auto-ARIMA -> Predict',
+        score: { '[0-0.2[': 5, '[0.2-0.4[': 15, '[0.4-0.6[': 50, '[0.6-0.8[': 20, '[0.8-1.0]': 10 },
+        ram: [0.3, 0.35, 0.4, 0.45],
+        executionTime: [0.4, 0.5, 0.6, 0.7, 0.8],
+        notebooks: { 'arima_model.ipynb': 0.85 },
+        typeAlgo: 'ARIMA',
+        typePattern: 'Forecasting',
+        hierarchy: { parent: 'TS_Forecast_Parent', children: null }
+    },
+    {
+        id: 'Prophet_Forecasting',
+        schema: 'Format df -> Prophet Fit -> Make Future',
+        score: { '[0-0.2[': 2, '[0.2-0.4[': 8, '[0.4-0.6[': 30, '[0.6-0.8[': 40, '[0.8-1.0]': 20 },
+        ram: [0.4, 0.45, 0.5, 0.6],
+        executionTime: [0.3, 0.4, 0.5, 0.55],
+        notebooks: { 'prophet_trends.ipynb': 0.9 },
+        typeAlgo: 'Prophet',
+        typePattern: 'Forecasting',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'Regression_Pipeline_Parent',
+        schema: 'Feature Selection -> * -> RMSE Calculation',
+        score: { '[0-0.2[': 15, '[0.2-0.4[': 25, '[0.4-0.6[': 35, '[0.6-0.8[': 15, '[0.8-1.0]': 10 },
+        ram: [0.2, 0.3, 0.4],
+        executionTime: [0.2, 0.3, 0.4, 0.5],
+        notebooks: { 'pricing_model.ipynb': 0.8 },
+        typeAlgo: 'Regression_Generic',
+        typePattern: 'Pipeline',
+        hierarchy: { parent: null, children: ['Linear_Regression', 'Ridge_Regression', 'Lasso_Regression'] }
+    },
+    {
+        id: 'Linear_Regression',
+        schema: 'Train Split -> OLS Fit -> Summary',
+        score: { '[0-0.2[': 50, '[0.2-0.4[': 30, '[0.4-0.6[': 10, '[0.6-0.8[': 5, '[0.8-1.0]': 5 },
+        ram: [0.1, 0.15, 0.2, 0.25],
+        executionTime: [0.05, 0.1, 0.15],
+        notebooks: { 'baseline_reg.ipynb': 0.95 },
+        typeAlgo: 'LinearRegression',
+        typePattern: 'Regression',
+        hierarchy: { parent: 'Regression_Pipeline_Parent', children: null }
+    },
+    {
+        id: 'Ridge_Regression',
+        schema: 'Scale -> Ridge(alpha) -> Predict',
+        score: { '[0-0.2[': 20, '[0.2-0.4[': 40, '[0.4-0.6[': 20, '[0.6-0.8[': 15, '[0.8-1.0]': 5 },
+        ram: [0.15, 0.2, 0.25, 0.3],
+        executionTime: [0.1, 0.15, 0.2, 0.25],
+        notebooks: { 'regularization.ipynb': 0.8 },
+        typeAlgo: 'Ridge',
+        typePattern: 'Regression',
+        hierarchy: { parent: 'Regression_Pipeline_Parent', children: null }
+    },
+    {
+        id: 'Lasso_Regression',
+        schema: 'Scale -> Lasso(alpha) -> Feature Impor.',
+        score: { '[0-0.2[': 15, '[0.2-0.4[': 35, '[0.4-0.6[': 25, '[0.6-0.8[': 15, '[0.8-1.0]': 10 },
+        ram: [0.15, 0.2, 0.25, 0.3],
+        executionTime: [0.1, 0.15, 0.2, 0.3],
+        notebooks: { 'regularization.ipynb': 0.8 },
+        typeAlgo: 'Lasso',
+        typePattern: 'Regression',
+        hierarchy: { parent: 'Regression_Pipeline_Parent', children: null }
+    },
+    {
+        id: 'GridSearchCV_Tuning',
+        schema: 'Define Params -> GridSearchCV -> Best Estimator',
+        score: { '[0-0.2[': 0, '[0.2-0.4[': 5, '[0.4-0.6[': 15, '[0.6-0.8[': 30, '[0.8-1.0]': 50 },
+        ram: [0.5, 0.6, 0.7, 0.8, 0.9],
+        executionTime: [0.7, 0.8, 0.9, 0.95, 0.99],
+        notebooks: { 'hyper_opt.ipynb': 0.85 },
+        typeAlgo: 'GridSearch',
+        typePattern: 'Hyperparameter Tuning',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'RandomizedSearchCV_Tuning',
+        schema: 'Define Dists -> RandomizedSearch -> Best Estimator',
+        score: { '[0-0.2[': 5, '[0.2-0.4[': 10, '[0.4-0.6[': 25, '[0.6-0.8[': 40, '[0.8-1.0]': 20 },
+        ram: [0.4, 0.5, 0.6, 0.7, 0.8],
+        executionTime: [0.5, 0.6, 0.7, 0.8, 0.9],
+        notebooks: { 'hyper_opt.ipynb': 0.75 },
+        typeAlgo: 'RandomSearch',
+        typePattern: 'Hyperparameter Tuning',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'Optuna_Study',
+        schema: 'Define Objective -> Create Study -> Optimize',
+        score: { '[0-0.2[': 2, '[0.2-0.4[': 8, '[0.4-0.6[': 20, '[0.6-0.8[': 45, '[0.8-1.0]': 25 },
+        ram: [0.4, 0.5, 0.6, 0.65, 0.75],
+        executionTime: [0.6, 0.7, 0.8, 0.85, 0.95],
+        notebooks: { 'optuna_xgb.ipynb': 0.9 },
+        typeAlgo: 'Optuna',
+        typePattern: 'Hyperparameter Tuning',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'Cross_Validation_Score',
+        schema: 'Model -> KFold -> cross_val_score',
+        score: { '[0-0.2[': 10, '[0.2-0.4[': 30, '[0.4-0.6[': 40, '[0.6-0.8[': 15, '[0.8-1.0]': 5 },
+        ram: [0.3, 0.4, 0.5, 0.6],
+        executionTime: [0.4, 0.5, 0.6, 0.7],
+        notebooks: { 'model_eval.ipynb': 0.95 },
+        typeAlgo: 'KFold',
+        typePattern: 'Evaluation',
+        hierarchy: { parent: null, children: null }
+    },
+
+    {
+        id: 'XGBoost_Classifier',
+        schema: 'DMatrix -> XGB Train -> Feature Importances',
+        score: { '[0-0.2[': 0, '[0.2-0.4[': 5, '[0.4-0.6[': 15, '[0.6-0.8[': 50, '[0.8-1.0]': 30 },
+        ram: [0.5, 0.6, 0.7, 0.8, 0.85],
+        executionTime: [0.4, 0.5, 0.6, 0.7, 0.75],
+        notebooks: { 'xgb_baseline.ipynb': 0.9 },
+        typeAlgo: 'XGBoost',
+        typePattern: 'Classification',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'LightGBM_Classifier',
+        schema: 'LGB Dataset -> Train -> Plot Metric',
+        score: { '[0-0.2[': 2, '[0.2-0.4[': 8, '[0.4-0.6[': 20, '[0.6-0.8[': 45, '[0.8-1.0]': 25 },
+        ram: [0.3, 0.4, 0.5, 0.6, 0.7],
+        executionTime: [0.2, 0.3, 0.4, 0.5, 0.6],
+        notebooks: { 'lgb_model.ipynb': 0.85 },
+        typeAlgo: 'LightGBM',
+        typePattern: 'Classification',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'CatBoost_Classifier',
+        schema: 'Pool -> CatBoost Fit -> SHAP Values',
+        score: { '[0-0.2[': 5, '[0.2-0.4[': 10, '[0.4-0.6[': 25, '[0.6-0.8[': 40, '[0.8-1.0]': 20 },
+        ram: [0.4, 0.5, 0.6, 0.75, 0.8],
+        executionTime: [0.3, 0.4, 0.5, 0.6, 0.7],
+        notebooks: { 'catboost_exp.ipynb': 0.8 },
+        typeAlgo: 'CatBoost',
+        typePattern: 'Classification',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'Transformer_BERT_Finetune',
+        schema: 'Load BERT -> Tokenize Dataset -> Trainer Train',
+        score: { '[0-0.2[': 0, '[0.2-0.4[': 2, '[0.4-0.6[': 8, '[0.6-0.8[': 20, '[0.8-1.0]': 70 },
+        ram: [0.8, 0.9, 0.95, 0.98, 0.99],
+        executionTime: [0.85, 0.9, 0.95, 0.98, 0.99],
+        notebooks: { 'bert_classification.ipynb': 0.9 },
+        typeAlgo: 'BERT',
+        typePattern: 'Deep Learning',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'LLM_Prompt_Engineering',
+        schema: 'Load API Key -> Build Prompt -> LLM Call',
+        score: { '[0-0.2[': 30, '[0.2-0.4[': 40, '[0.4-0.6[': 20, '[0.6-0.8[': 5, '[0.8-1.0]': 5 },
+        ram: [0.1, 0.15, 0.2, 0.25],
+        executionTime: [0.3, 0.4, 0.5, 0.6, 0.8],
+        notebooks: { 'gpt_prompts.ipynb': 0.88 },
+        typeAlgo: 'LLM API',
+        typePattern: 'Inference',
+        hierarchy: { parent: null, children: null }
+    },
+    {
+        id: 'UMAP_Visualization',
+        schema: 'Scale -> UMAP Fit -> Scatter 2D',
+        score: { '[0-0.2[': 10, '[0.2-0.4[': 20, '[0.4-0.6[': 40, '[0.6-0.8[': 20, '[0.8-1.0]': 10 },
+        ram: [0.4, 0.5, 0.6, 0.7],
+        executionTime: [0.4, 0.5, 0.6, 0.7, 0.8],
+        notebooks: { 'umap_vis.ipynb': 0.9 },
+        typeAlgo: 'UMAP',
+        typePattern: 'Dimensionality Reduction',
+        hierarchy: { parent: null, children: null }
     }
 ];
