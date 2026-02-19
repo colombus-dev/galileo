@@ -6,12 +6,15 @@ import { ArtefactItem } from "@/components/artefacts/ArtefactItem";
 export interface ArtefactPipelineProps {
 	artifacts: Artifact[];
 	cells: CodeCell[];
+	/** Offset (px) from top of viewport to avoid fixed headers */
+	detailsTopOffsetPx?: number;
 	className?: string;
 }
 
 export function ArtefactPipeline({
 	artifacts,
 	cells,
+	detailsTopOffsetPx,
 	className,
 }: ArtefactPipelineProps) {
 	const [selectedArtifactId, setSelectedArtifactId] = useState<string | null>(null);
@@ -47,7 +50,10 @@ export function ArtefactPipeline({
 						className="absolute inset-0 bg-slate-900/20"
 						aria-label="Fermer les détails"
 					/>
-					<div className="absolute right-6 top-6 bottom-6 w-[520px] max-w-[calc(100vw-48px)]">
+					<div
+						className="absolute right-6 bottom-6 w-[520px] max-w-[calc(100vw-48px)]"
+						style={{ top: Math.max(24, (detailsTopOffsetPx ?? 24)) }}
+					>
 						<ArtefactDetailsPanel
 							artifact={selectedArtifact}
 							cells={cells}
