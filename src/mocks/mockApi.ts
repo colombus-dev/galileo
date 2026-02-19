@@ -1,6 +1,7 @@
 import type { NotebookModel, DocEntry } from '@/types/notebook';
 import { mockDocs, mockDocNotFound } from './docs.mock';
 import { mockNotebookIris, mockNotebookSimple } from './notebook.mock';
+import { getDocumentation } from '@/services/completeDocsMock';
 
 /**
  * Service API Mock pour simuler les appels réseau
@@ -22,6 +23,23 @@ export interface FetchDocResponse {
   doc: DocEntry;
   status: 'success' | 'error';
   message?: string;
+}
+
+/**
+ * Récupère la documentation pour une clé donnée
+ * Cherche d'abord dans completeDocsMock, puis dans mockDocs
+ * @param docKey Clé de doc (ex: 'pandas.read_csv')
+ * @returns DocEntry ou entrée "not found"
+ */
+export function getTokenDocumentation(docKey: string): DocEntry | null {
+  // Essayer d'abord les docs complets
+  const completeDoc = getDocumentation(docKey);
+  if (completeDoc) {
+    return completeDoc;
+  }
+
+  // Fallback aux mocks
+  return mockDocs[docKey] ?? null;
 }
 
 /**
@@ -96,7 +114,7 @@ export async function fetchDocMock(docKey: string): Promise<FetchDocResponse> {
     // Délai simulé (200-600ms)
     const delay = Math.random() * 400 + 200;
     setTimeout(() => {
-      const doc = mockDocs[docKey] ?? mockDocNotFound;
+      const doc = getTokenDocumentation(docKey) ?? mockDocNotFound;
       resolve({
         doc,
         status: 'success',

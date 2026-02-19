@@ -17,7 +17,6 @@ export interface CodeCellProps {
 export const CodeCell: React.FC<CodeCellProps> = ({
   cell,
   onTokenClick,
-  showLineNumbers = true,
   className = '',
 }) => {
   if (cell.type !== 'code') {
@@ -27,9 +26,9 @@ export const CodeCell: React.FC<CodeCellProps> = ({
   const tokens = cell.tokens || [];
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`w-full space-y-4 ${className}`}>
       {/* Code */}
-      <div>
+      <div className="w-full">
         <CodeViewer
           code={cell.content}
           language="python"
@@ -45,9 +44,9 @@ export const CodeCell: React.FC<CodeCellProps> = ({
 
       {/* Tokens */}
       {tokens.length > 0 && (
-        <div className="pt-2 border-t border-slate-200">
+        <div className="w-full pt-2 border-t border-slate-200">
           <p className="text-xs text-slate-600 font-medium mb-2">Tokens cliquables :</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="w-full flex flex-wrap gap-2">
             {tokens.map((token) => (
               <TokenChip
                 key={token.id}
