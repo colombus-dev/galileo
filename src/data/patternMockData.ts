@@ -1,14 +1,13 @@
 import { PatternType } from '../PatternType';
 
 export const mockDataPattern: PatternType[] = [
-    // --- FAMILLE 1 : PCA ---
     {
         id: 'PCA_Master_Pipeline',
         schema: 'Feature Eng -> Transform -> Save',
         score: { '[0-0.2[': 27, '[0.2-0.4[': 45, '[0.4-0.6[': 35, '[0.6-0.8[': 38, '[0.8-1.0]': 29 },
         ram: [0.16, 0.33, 0.52, 0.55, 0.63, 0.73],
         executionTime: [0.11, 0.19, 0.22, 0.29, 0.31, 0.7, 0.78],
-        notebooks: { 'train.ipynb': 0.99 },
+        notebooks: { 'train.ipynb': 0.99, 'notebook-1': 0.85, 'notebook-3': 0.82 },
         typeAlgo: 'PCA',
         typePattern: 'Preprocessing',
         hierarchy: { parent: null, children: ['PCA_Data_Scaling', 'PCA_Covariance_Matrix', 'PCA_Eigenvalue_Decomp', 'PCA_Explained_Variance', 'PCA_Component_Selection', 'PCA_Inverse_Transform', 'PCA_Biplot_Visualization'] }
@@ -19,7 +18,7 @@ export const mockDataPattern: PatternType[] = [
         score: { '[0-0.2[': 50, '[0.2-0.4[': 26, '[0.4-0.6[': 6, '[0.6-0.8[': 36, '[0.8-1.0]': 17 },
         ram: [0.1, 0.2, 0.21, 0.52, 0.56, 0.76, 0.86],
         executionTime: [0.11, 0.15, 0.32, 0.73, 0.76, 0.77, 0.88],
-        notebooks: { 'prep.ipynb': 0.52 },
+        notebooks: { 'prep.ipynb': 0.52, 'notebook-1': 0.95, 'notebook-3': 0.92 }, // notebook-1 et 3 utilisent StandardScaler
         typeAlgo: 'PCA',
         typePattern: 'Preprocessing',
         hierarchy: { parent: 'PCA_Master_Pipeline', children: null }
@@ -63,7 +62,7 @@ export const mockDataPattern: PatternType[] = [
         score: { '[0-0.2[': 4, '[0.2-0.4[': 20, '[0.4-0.6[': 41, '[0.6-0.8[': 37, '[0.8-1.0]': 20 },
         ram: [0.35, 0.55, 0.71, 0.78, 0.88],
         executionTime: [0.18, 0.38, 0.56, 0.67, 0.74, 0.76, 0.78],
-        notebooks: { 'explore.ipynb': 0.59 },
+        notebooks: { 'explore.ipynb': 0.59, 'notebook-3': 0.94 }, // notebook-3 utilise SelectKBest
         typeAlgo: 'PCA',
         typePattern: 'Training',
         hierarchy: { parent: 'PCA_Master_Pipeline', children: null }
@@ -90,15 +89,13 @@ export const mockDataPattern: PatternType[] = [
         typePattern: 'Evaluation',
         hierarchy: { parent: 'PCA_Master_Pipeline', children: null }
     },
-
-    // --- FAMILLE 2 : RANDOM FOREST ---
     {
         id: 'RF_Ensemble_Training_Flow',
         schema: 'Tokens -> Embed -> Dense',
         score: { '[0-0.2[': 43, '[0.2-0.4[': 43, '[0.4-0.6[': 46, '[0.6-0.8[': 41, '[0.8-1.0]': 14 },
         ram: [0.16, 0.2, 0.25, 0.4, 0.56, 0.56, 0.68, 0.89],
         executionTime: [0.19, 0.28, 0.33, 0.56, 0.61],
-        notebooks: { 'eval.ipynb': 0.66 },
+        notebooks: { 'eval.ipynb': 0.66, 'notebook-1': 0.98 }, // notebook-1 entraîne explicitement un Random Forest
         typeAlgo: 'Random Forest',
         typePattern: 'Training',
         hierarchy: { parent: null, children: ['RF_Bagging_Init', 'RF_Tree_Depth_Opt', 'RF_Min_Samples_Leaf', 'RF_OOB_Score_Calc', 'RF_Gini_Importance', 'RF_Permutation_Importance', 'RF_Decision_Boundary'] }
@@ -120,7 +117,7 @@ export const mockDataPattern: PatternType[] = [
         score: { '[0-0.2[': 2, '[0.2-0.4[': 34, '[0.4-0.6[': 28, '[0.6-0.8[': 46, '[0.8-1.0]': 6 },
         ram: [0.16, 0.29, 0.35, 0.47, 0.6, 0.63, 0.68, 0.8],
         executionTime: [0.34, 0.34, 0.66, 0.69],
-        notebooks: { 'eval.ipynb': 0.86 },
+        notebooks: { 'eval.ipynb': 0.86, 'notebook-2': 0.88 }, // notebook-2 utilise un DecisionTree sans split valide (problème typique d'optimisation de profondeur)
         typeAlgo: 'Random Forest',
         typePattern: 'Evaluation',
         hierarchy: { parent: 'RF_Ensemble_Training_Flow', children: null }
@@ -153,7 +150,7 @@ export const mockDataPattern: PatternType[] = [
         score: { '[0-0.2[': 20, '[0.2-0.4[': 34, '[0.4-0.6[': 9, '[0.6-0.8[': 34, '[0.8-1.0]': 14 },
         ram: [0.1, 0.14, 0.29, 0.31, 0.48, 0.59, 0.77],
         executionTime: [0.19, 0.22, 0.38, 0.7, 0.72, 0.86],
-        notebooks: { 'experiment.ipynb': 0.66 },
+        notebooks: { 'experiment.ipynb': 0.66, 'notebook-1': 0.95 }, // notebook-1 affiche les feature_importances_
         typeAlgo: 'Random Forest',
         typePattern: 'Deep Learning',
         hierarchy: { parent: 'RF_Ensemble_Training_Flow', children: null }
@@ -175,13 +172,11 @@ export const mockDataPattern: PatternType[] = [
         score: { '[0-0.2[': 11, '[0.2-0.4[': 49, '[0.4-0.6[': 2, '[0.6-0.8[': 27, '[0.8-1.0]': 15 },
         ram: [0.13, 0.26, 0.39, 0.49, 0.72, 0.75, 0.77, 0.77],
         executionTime: [0.3, 0.49, 0.5, 0.64, 0.65, 0.76],
-        notebooks: { 'explore.ipynb': 0.64 },
+        notebooks: { 'explore.ipynb': 0.64, 'notebook-2': 0.80 }, // Notebook-2 explore la séparation d'un arbre
         typeAlgo: 'Random Forest',
         typePattern: 'Training',
         hierarchy: { parent: 'RF_Ensemble_Training_Flow', children: null }
     },
-
-    // --- FAMILLE 3 : K-MEANS ---
     {
         id: 'KMeans_Clustering_Workflow',
         schema: 'Images -> CNN -> Classify',
@@ -270,8 +265,6 @@ export const mockDataPattern: PatternType[] = [
         typePattern: 'Clustering',
         hierarchy: { parent: 'KMeans_Clustering_Workflow', children: null }
     },
-
-    // --- FAMILLE 4 : XGBOOST ---
     {
         id: 'XGB_Gradient_Boosting_Flow',
         schema: 'Train/Test Split -> Fit -> Predict',
@@ -333,7 +326,7 @@ export const mockDataPattern: PatternType[] = [
         score: { '[0-0.2[': 13, '[0.2-0.4[': 32, '[0.4-0.6[': 32, '[0.6-0.8[': 34, '[0.8-1.0]': 39 },
         ram: [0.22, 0.25, 0.33, 0.65],
         executionTime: [0.14, 0.16, 0.33, 0.45, 0.47, 0.63, 0.72],
-        notebooks: { 'explore.ipynb': 0.84 },
+        notebooks: { 'explore.ipynb': 0.84, 'notebook-3': 0.95 }, // notebook-3 implémente une cross_val_score
         typeAlgo: 'XGBoost',
         typePattern: 'Evaluation',
         hierarchy: { parent: 'XGB_Gradient_Boosting_Flow', children: null }
@@ -344,7 +337,7 @@ export const mockDataPattern: PatternType[] = [
         score: { '[0-0.2[': 50, '[0.2-0.4[': 6, '[0.4-0.6[': 6, '[0.6-0.8[': 35, '[0.8-1.0]': 38 },
         ram: [0.19, 0.31, 0.35, 0.4, 0.62, 0.65, 0.76, 0.76],
         executionTime: [0.18, 0.22, 0.38, 0.55, 0.68, 0.72, 0.85],
-        notebooks: { 'explore.ipynb': 0.69 },
+        notebooks: { 'explore.ipynb': 0.69, 'notebook-1': 0.90, 'notebook-3': 0.88 }, // notebooks 1 et 3 font une matrice de confusion
         typeAlgo: 'XGBoost',
         typePattern: 'Evaluation',
         hierarchy: { parent: 'XGB_Gradient_Boosting_Flow', children: null }
@@ -361,7 +354,6 @@ export const mockDataPattern: PatternType[] = [
         hierarchy: { parent: 'XGB_Gradient_Boosting_Flow', children: null }
     },
 
-    // --- FAMILLE 5 : NEURAL NETWORKS ---
     {
         id: 'NN_Deep_Learning_Pipeline',
         schema: 'Scale -> Fit -> Feature Importance',
