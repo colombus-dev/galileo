@@ -9,6 +9,7 @@ import PatternListNotebook from "@/components/patterns/PatternListNotebook";
 import { CodeNotebookModal } from "@/components/patterns/CodeNotebookModal";
 import HierarchyPatterns from "@/components/patterns/HierarchyPatterns";
 import PatternRadarChart from "@/components/patterns/PatternRadarChart";
+import {BackButton} from "@/components/BackButton";
 
 export default function PatternDetails() {
     const { id } = useParams();
@@ -61,9 +62,10 @@ export default function PatternDetails() {
                 </button>
             </NavBar>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+               
 
                 <div className="lg:col-span-2 space-y-8 m-2">
-
+                     <BackButton fallbackTo="/patterns" />
                     <div className="border-b border-gray-200 pb-8">
                         <PatternTitle currentPattern={currentPattern} />
                         <div className="mt-6">
