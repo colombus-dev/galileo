@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { NavBar } from '@/components/NavBar';
 import { NotebookWorkspaceLayout } from '@/components/storytelling/NotebookWorkspaceLayout';
 import { SummarySidebar } from '@/components/storytelling/SummarySidebar';
@@ -7,6 +7,8 @@ import { SectionSummaryView } from '@/components/storytelling/SectionSummaryView
 import { CodePanel } from '@/components/storytelling/CodePanel';
 import { DocSidePanel } from '@/components/storytelling/DocSidePanel';
 import { fetchNotebookMock, fetchDocMock, getTokenDocumentation } from '@/mocks/mockApi';
+import { completeMockDocs } from '@/services/completeDocsMock';
+import { normalizeDocKey, getDocKeyVariants } from '@/utils/docKeyMapper';
 import type { NotebookModel, Token, DocEntry } from '@/types/notebook';
 
 export interface StorytellingWorkspaceProps {
@@ -34,7 +36,6 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
 
   // État notebook
   const [notebook, setNotebook] = useState<NotebookModel | null>(initialNotebook);
-  const [notebookError, setNotebookError] = useState<string | null>(null);
 
   // État section active
   const [activeSectionId, setActiveSectionId] = useState<string | undefined>(undefined);
@@ -73,11 +74,8 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
         if (response.status === 'success' && response.notebook) {
           setNotebook(response.notebook);
           setActiveSectionId(undefined);
-        } else {
-          setNotebookError(response.message || 'Erreur de chargement du notebook');
         }
       } catch (error) {
-        setNotebookError('Erreur lors du chargement du notebook');
         console.error(error);
       }
     };
@@ -136,6 +134,54 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
     }
   }, []);
 
+  const handleDocKeyClick = useCallback(async (docKey: string) => {
+    setDocState((prev) => ({
+      ...prev,
+      isOpen: true,
+      loading: true,
+      error: null,
+      selectedToken: null,
+    }));
+
+    try {
+      // Normaliser la clé pour chercher dans la doc
+      const normalized = normalizeDocKey(docKey);
+      const variants = getDocKeyVariants(normalized);
+      
+      // Chercher dans completeMockDocs
+      let docEntry: DocEntry | undefined;
+      for (const variant of variants) {
+        if (completeMockDocs[variant]) {
+          docEntry = completeMockDocs[variant];
+          break;
+        }
+      }
+
+      if (docEntry) {
+        setDocState((prev) => ({
+          ...prev,
+          loading: false,
+          docEntry,
+        }));
+      } else {
+        // Fallback aux mocks API
+        const response = await fetchDocMock(normalized);
+        setDocState((prev) => ({
+          ...prev,
+          loading: false,
+          docEntry: response.doc,
+        }));
+      }
+    } catch (error) {
+      setDocState((prev) => ({
+        ...prev,
+        loading: false,
+        error: 'Erreur de chargement de la documentation',
+      }));
+      console.error(error);
+    }
+  }, []);
+
   const handleCloseDoc = useCallback(() => {
     setDocState((prev) => ({
       ...prev,
@@ -163,9 +209,6 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
         <div className="flex items-center justify-center h-[calc(100vh-80px)]">
           <div className="text-center">
             <p className="text-slate-600 mb-2">Chargement du notebook...</p>
-            {notebookError && (
-              <p className="text-red-600 text-sm">{notebookError}</p>
-            )}
           </div>
         </div>
       </>
@@ -180,20 +223,33 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
         title="Galileo - Storytelling"
       >
         <button
+          type="button"
           onClick={handleBackToImport}
           className="px-4 py-2 bg-slate-600 text-white rounded hover:bg-slate-700 transition"
         >
           ← Retour à l'import
         </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/storytelling">Storytelling</a>
-        </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/artefact">Artefact</a>
-        </button>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          <a href="/patterns">Patterns</a>
-        </button>
+		<button
+			type="button"
+			onClick={() => navigate('/storytelling')}
+			className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+		>
+			Storytelling
+		</button>
+		<button
+			type="button"
+			onClick={() => navigate('/artefact')}
+			className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+		>
+			Artefact
+		</button>
+		<button
+			type="button"
+			onClick={() => navigate('/patterns')}
+			className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+		>
+			Patterns
+		</button>
       </NavBar>
       <NotebookWorkspaceLayout
         sidebar={
@@ -216,6 +272,7 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
                 collapsed={codeCollapsed}
                 onToggleCollapsed={setCodeCollapsed}
                 onTokenClick={handleTokenClick}
+                onDocKeyClick={handleDocKeyClick}
               />
             </div>
           ) : (

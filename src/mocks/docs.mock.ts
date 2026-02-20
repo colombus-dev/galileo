@@ -512,6 +512,666 @@ arr = np.array([1, 2, 3, 4, 5])
 print(np.unique(iris.target))
 print(np.bincount(y))`,
   },
+  'numpy.inf': {
+    docKey: 'numpy.inf',
+    title: 'numpy.inf - Infini',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# numpy.inf - Représenter l'infini
+
+Constante NumPy pour représenter l'infini (positive infinity).
+
+## Utilisation
+
+\`\`\`python
+import numpy as np
+
+# Créer un array avec l'infini
+arr = np.array([1, 2, np.inf, -np.inf])
+
+# Remplacer les valeurs infinies
+arr = arr.replace([np.inf, -np.inf], np.nan)
+
+# Vérifier les infinies
+np.isinf(arr)  # Retourne boolean array
+\`\`\`
+
+## Cas d'usage
+
+- Valeurs par défaut pour les comparaisons
+- Détection et remplacement de valeurs problématiques
+- Initialisation de variables dans les algorithmes`,
+    examples: `arr = np.array([1, 2, np.inf])
+arr = arr.replace([np.inf, -np.inf], np.nan)`,
+  },
+  'numpy.nan': {
+    docKey: 'numpy.nan',
+    title: 'numpy.nan - Valeurs manquantes',
+    version: '1.24.3',
+    libName: 'numpy',
+    content: `# numpy.nan - Not A Number
+
+Constante pour représenter les valeurs manquantes ou indéfinies.
+
+## Utilisation
+
+\`\`\`python
+import numpy as np
+
+# Créer un array avec NaN
+arr = np.array([1.0, 2.0, np.nan, 4.0])
+
+# Vérifier les NaN
+np.isnan(arr)  # [False, False, True, False]
+
+# Compter les NaN
+np.isnan(arr).sum()  # 1
+
+# Imputer les NaN avec la moyenne
+mean_val = np.nanmean(arr)
+arr = np.where(np.isnan(arr), mean_val, arr)
+\`\`\`
+
+## Importance
+
+- Représente les valeurs manquantes dans les données réelles
+- À différencier de None en Python
+- Requiert des fonctions spéciales (nanmean, nansum, etc.)`,
+    examples: `arr = np.array([1.0, np.nan, 3.0])
+np.isnan(arr)
+mean = np.nanmean(arr)`,
+  },
+  'seaborn': {
+    docKey: 'seaborn',
+    title: 'Seaborn - Visualisation statistique',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# Seaborn - Statistical Data Visualization
+
+Seaborn est une librairie de visualisation basée sur matplotlib, spécialisée dans les graphiques statistiques.
+
+## Avantages par rapport à matplotlib
+
+- Palettes de couleurs élégantes par défaut
+- Intégration directe avec pandas DataFrames
+- Graphiques statistiques complexes en quelques lignes
+- Gestion automatique des légendes et labels
+
+## Graphiques principaux
+
+- \`barplot\` : Diagrammes en barres avec statistiques
+- \`scatterplot\` : Graphiques en nuages de points
+- \`heatmap\` : Matrices avec code couleur
+- \`histplot\` : Histogrammes avec distribution
+- \`boxplot\` : Boîtes à moustaches
+- \`countplot\` : Comptage des catégories
+
+## Installation
+
+\`\`\`bash
+pip install seaborn
+\`\`\``,
+    examples: `import seaborn as sns
+sns.barplot(x='Sex', y='Survived', data=df)
+sns.heatmap(df.corr(), annot=True)`,
+  },
+  'seaborn.countplot': {
+    docKey: 'seaborn.countplot',
+    title: 'seaborn.countplot() - Compter les catégories',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.countplot() - Diagramme de comptage
+
+Crée un diagramme en barres montrant le nombre d'occurrences de chaque catégorie.
+
+## Paramètres courants
+
+- x : Colonne catégorique (axe X)
+- y : Colonne catégorique (axe Y)
+- data : DataFrame
+- hue : Colonne pour colorer les barres (groupement secondaire)
+- palette : Palettes de couleurs
+- order : Ordre des catégories
+
+## Exemple
+
+\`\`\`python
+import seaborn as sns
+
+# Compter les passagers par port d'embarquement
+sns.countplot(x='Embarked', data=df)
+plt.title('Nombre de passagers par port')
+plt.show()
+\`\`\`
+
+## Cas d'usage
+
+- Distribution des valeurs catégorique
+- Vérifier le déséquilibre des classes
+- Exploration rapide des données`,
+    examples: `sns.countplot(x='Embarked', data=df)
+sns.countplot(x='Sex', hue='Survived', data=df)`,
+  },
+  'seaborn.barplot': {
+    docKey: 'seaborn.barplot',
+    title: 'seaborn.barplot() - Diagramme avec statistiques',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.barplot() - Diagramme en barres avec statistiques
+
+Crée un diagramme montrant la moyenne (ou autre statistique) avec intervalle de confiance.
+
+## Paramètres courants
+
+- x : Catégorie (axe X)
+- y : Valeur numérique (axe Y)
+- hue : Groupement secondaire
+- data : DataFrame
+- palette : Couleurs
+- ci : Intervalle de confiance (95 par défaut)
+
+## Exemple
+
+\`\`\`python
+import seaborn as sns
+
+# Taux de survie par sexe
+sns.barplot(x='Sex', y='Survived', data=df)
+plt.title('Taux de survie par sexe')
+plt.show()
+
+# Avec hue pour un deuxième groupement
+sns.barplot(x='Pclass', y='Survived', hue='Sex', data=df)
+\`\`\`
+
+## Différence avec countplot
+
+- countplot : Compte les occurrences
+- barplot : Affiche la moyenne avec CI`,
+    examples: `sns.barplot(x='Sex', y='Survived', data=df)
+sns.barplot(x='Pclass', y='Survived', hue='Sex', data=df)`,
+  },
+  'seaborn.boxplot': {
+    docKey: 'seaborn.boxplot',
+    title: 'seaborn.boxplot() - Boîtes à moustaches',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.boxplot() - Box Plot (Boîtes à moustaches)
+
+Affiche la distribution avec quartiles, médiane et outliers.
+
+## Structure de la boîte
+
+- Ligne au centre : Médiane (Q2)
+- Bord inférieur : Q1 (25e percentile)
+- Bord supérieur : Q3 (75e percentile)
+- Moustaches : Min/Max (ou 1.5×IQR)
+- Points : Outliers
+
+## Paramètres
+
+- x, y : Axes
+- hue : Groupement
+- data : DataFrame
+- dodge : Si True, sépare les boîtes par hue
+
+## Exemple
+
+\`\`\`python
+import seaborn as sns
+
+# Distribution des âges par survie
+sns.boxplot(x='Survived', y='Age', data=df)
+plt.title('Âge par statut de survie')
+plt.show()
+
+# Par classe et sexe
+sns.boxplot(x='Pclass', y='Age', hue='Survived', data=df[df['Sex']=='female'])
+\`\`\`
+
+## Cas d'usage
+
+- Détection d'outliers
+- Comparaison de distributions
+- Analyse bivariée`,
+    examples: `sns.boxplot(x='Survived', y='Age', data=df)
+sns.boxplot(x='Pclass', y='Age', hue='Survived', data=df)`,
+  },
+  'seaborn.histplot': {
+    docKey: 'seaborn.histplot',
+    title: 'seaborn.histplot() - Histogramme',
+    version: '0.13.0',
+    libName: 'seaborn',
+    content: `# sns.histplot() - Histogramme avec distribution
+
+Crée un histogramme avec support pour KDE (Kernel Density Estimation).
+
+## Paramètres courants
+
+- x : Données numériques
+- hue : Groupement par couleur
+- bins : Nombre de bacs (défaut: auto)
+- kde : Si True, ajoute courbe de densité
+- palette : Couleurs
+- stat : 'count', 'frequency', 'density', 'probability'
+
+## Exemple
+
+\`\`\`python
+import seaborn as sns
+
+# Distribution simple
+sns.histplot(data=df, x='Age', bins=30)
+
+# Avec groupement par survie
+sns.histplot(data=df, x='Age', hue='Survived', bins=30, kde=True, 
+             palette={0: 'red', 1: 'green'})
+plt.title('Distribution d\\'âge par survie')
+plt.show()
+\`\`\`
+
+## Cas d'usage
+
+- Analyser la distribution d'une variable
+- Détecter des patterns ou bimodalité
+- Grouper par catégories`,
+    examples: `sns.histplot(data=df, x='Age', bins=30)
+sns.histplot(data=df, x='Age', hue='Survived', kde=True)`,
+  },
+  'matplotlib.pyplot.figure': {
+    docKey: 'matplotlib.pyplot.figure',
+    title: 'matplotlib.pyplot.figure() - Créer une figure',
+    version: '3.7.1',
+    libName: 'matplotlib',
+    content: `# plt.figure() - Créer une nouvelle figure
+
+Crée une nouvelle figure pour les graphiques.
+
+## Paramètres courants
+
+- figsize : Tuple (width, height) en pouces
+- dpi : Résolution (défaut: 100)
+- facecolor : Couleur de fond
+
+## Exemple
+
+\`\`\`python
+import matplotlib.pyplot as plt
+
+# Figure simple
+fig = plt.figure(figsize=(8, 6))
+plt.plot([1, 2, 3], [1, 4, 2])
+plt.show()
+
+# Plusieurs subplots
+fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+axes[0, 0].plot([1, 2, 3])
+axes[0, 1].scatter([1, 2, 3], [1, 4, 2])
+plt.tight_layout()
+plt.show()
+\`\`\`
+
+## Bonnes pratiques
+
+- Toujours spécifier figsize pour un contrôle
+- Utiliser subplots pour plusieurs graphiques
+- Appeler plt.tight_layout() pour éviter chevauchements`,
+    examples: `fig = plt.figure(figsize=(8, 6))
+plt.plot([1, 2, 3])
+plt.show()`,
+  },
+  'matplotlib.pyplot.bar': {
+    docKey: 'matplotlib.pyplot.bar',
+    title: 'matplotlib.pyplot.bar() - Diagramme en barres',
+    version: '3.7.1',
+    libName: 'matplotlib',
+    content: `# plt.bar() - Diagramme en barres
+
+Crée un diagramme en barres simple.
+
+## Paramètres
+
+- x : Positions des barres
+- height : Hauteurs des barres
+- width : Largeur des barres (défaut: 0.8)
+- color : Couleur
+
+## Exemple
+
+\`\`\`python
+import matplotlib.pyplot as plt
+
+categories = ['Died', 'Survived']
+counts = [545, 342]
+
+plt.bar(categories, counts, color=['red', 'green'])
+plt.xlabel('Status')
+plt.ylabel('Count')
+plt.title('Survival Distribution')
+plt.show()
+\`\`\`
+
+## Vs seaborn.barplot
+
+- matplotlib : Contrôle bas-niveau, simple
+- seaborn : Statistiques automatiques, esthétique`,
+    examples: `plt.bar(['A', 'B', 'C'], [1, 4, 2])
+plt.bar(categories, counts, color=['red', 'green'])`,
+  },
+  'matplotlib.pyplot.plot': {
+    docKey: 'matplotlib.pyplot.plot',
+    title: 'matplotlib.pyplot.plot() - Graphique linéaire',
+    version: '3.7.1',
+    libName: 'matplotlib',
+    content: `# plt.plot() - Graphique linéaire
+
+Crée un graphique linéaire en reliant les points.
+
+## Paramètres
+
+- x, y : Coordonnées
+- color : Couleur ('r', 'g', 'b', etc.)
+- linestyle : Style ('-', '--', '-.', ':')
+- marker : Marqueur ('o', 's', '^', etc.)
+- label : Légende
+
+## Exemple
+
+\`\`\`python
+import matplotlib.pyplot as plt
+
+x = [1, 2, 3, 4, 5]
+y = [1, 4, 2, 3, 5]
+
+plt.plot(x, y, color='blue', marker='o', linestyle='-', label='Data')
+plt.xlabel('X axis')
+plt.ylabel('Y axis')
+plt.title('Line Plot')
+plt.legend()
+plt.show()
+\`\`\`
+
+## Cas d'usage
+
+- Séries temporelles
+- Courbes de fonction
+- Évolution dans le temps`,
+    examples: `plt.plot([1, 2, 3], [1, 4, 2])
+plt.plot(x, y, color='blue', marker='o')`,
+  },
+  'matplotlib.pyplot.scatter': {
+    docKey: 'matplotlib.pyplot.scatter',
+    title: 'matplotlib.pyplot.scatter() - Graphique en nuages',
+    version: '3.7.1',
+    libName: 'matplotlib',
+    content: `# plt.scatter() - Graphique en nuages de points
+
+Crée un graphique en nuages de points (dispersé).
+
+## Paramètres
+
+- x, y : Coordonnées
+- s : Taille des points
+- c : Couleur (peut être une array pour gradient)
+- alpha : Transparence (0-1)
+- cmap : Colormap
+
+## Exemple
+
+\`\`\`python
+import matplotlib.pyplot as plt
+
+x = [1, 2, 3, 4, 5]
+y = [1, 4, 2, 3, 5]
+
+plt.scatter(x, y, s=100, c='blue', alpha=0.5)
+plt.xlabel('X axis')
+plt.ylabel('Y axis')
+plt.title('Scatter Plot')
+plt.show()
+\`\`\`
+
+## Cas d'usage
+
+- Corrélation bivariée
+- Clustering de données
+- Détection de patterns`,
+    examples: `plt.scatter(x, y, s=100, c='blue')
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap='viridis')`,
+  },
+  'sklearn.ensemble.RandomForestClassifier': {
+    docKey: 'sklearn.ensemble.RandomForestClassifier',
+    title: 'sklearn.ensemble.RandomForestClassifier',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# RandomForestClassifier - Ensemble d'arbres aléatoires
+
+Classifier basé sur plusieurs arbres de décision avec bootstrap et sélection aléatoire de features.
+
+## Avantages
+
+- Robuste au surapprentissage (overfitting)
+- Gère bien les données non-normalisées
+- Feature importance automatique
+- Parallélisable
+
+## Paramètres importants
+
+- n_estimators : Nombre d'arbres (défaut: 100)
+- max_depth : Profondeur maximale
+- min_samples_split : Observations min pour split
+- random_state : Graine pour reproductibilité
+- n_jobs : -1 pour parallélisation
+
+## Exemple
+
+\`\`\`python
+from sklearn.ensemble import RandomForestClassifier
+
+rf = RandomForestClassifier(n_estimators=500, random_state=42)
+rf.fit(X_train, y_train)
+y_pred = rf.predict(X_test)
+
+# Feature importance
+importances = rf.feature_importances_
+\`\`\`
+
+## Performance
+
+Généralement meilleur que Logistic Regression pour les données complexes.`,
+    examples: `rf = RandomForestClassifier(n_estimators=500, random_state=42)
+rf.fit(X_train, y_train)
+y_pred = rf.predict(X_test)
+importances = rf.feature_importances_`,
+  },
+  'sklearn.pipeline.Pipeline': {
+    docKey: 'sklearn.pipeline.Pipeline',
+    title: 'sklearn.pipeline.Pipeline - Chaîner les transformations',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# Pipeline - Chaîner preprocessing et modèle
+
+Un Pipeline enchaîne une série de transformations puis un modèle.
+
+## Avantages
+
+- Évite la fuite de données (data leakage)
+- Simplifie le code
+- Fit et predict en une ligne
+- Compatible avec GridSearchCV
+
+## Exemple
+
+\`\`\`python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('model', LogisticRegression(max_iter=1000))
+])
+
+# Fit et predict
+pipeline.fit(X_train, y_train)
+y_pred = pipeline.predict(X_test)
+\`\`\`
+
+## ⚠️ Important
+
+Le scaler est fit SEULEMENT sur X_train, puis appliqué sur X_test. 
+Cela prévient la fuite de données !
+
+## Pipeline avec étapes multiples
+
+\`\`\`python
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('feature_selection', SelectKBest(k=10)),
+    ('model', SVC())
+])
+\`\`\``,
+    examples: `pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('model', LogisticRegression())
+])
+pipeline.fit(X_train, y_train)`,
+  },
+  'sklearn.linear_model.LogisticRegression': {
+    docKey: 'sklearn.linear_model.LogisticRegression',
+    title: 'sklearn.linear_model.LogisticRegression',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# LogisticRegression - Classifier linéaire
+
+Régression logistique pour la classification binaire ou multi-classe.
+
+## Quand l'utiliser
+
+- Baseline rapide et interprtable
+- Données linéairement séparables (ou proches)
+- Importance des coefficients est primordiale
+- Données haute-dimensionnelles
+
+## Paramètres importants
+
+- max_iter : Itérations maximales pour la convergence
+- C : Inverse de la force de régularisation
+- random_state : Graine pour reproductibilité
+- solver : 'lbfgs', 'liblinear', 'saga', etc.
+
+## Exemple
+
+\`\`\`python
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
+# Normaliser les données (important !)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Créer et entraîner
+model = LogisticRegression(max_iter=1000, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+\`\`\`
+
+## Interprétabilité
+
+Coefficients indiquent l'importance de chaque feature.`,
+    examples: `model = LogisticRegression(max_iter=1000, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)`,
+  },
+  'sklearn.metrics.classification_report': {
+    docKey: 'sklearn.metrics.classification_report',
+    title: 'sklearn.metrics.classification_report()',
+    version: '1.3.2',
+    libName: 'sklearn',
+    content: `# classification_report() - Rapport complet de classification
+
+Génère un rapport textuel avec Precision, Recall, F1-score pour chaque classe.
+
+## Métriques
+
+- Precision : TP / (TP + FP) - Parmi nos prédictions positives, combien étaient correctes ?
+- Recall : TP / (TP + FN) - Parmi les vrais positifs, combien avons-nous détecté ?
+- F1-score : Moyenne harmonique de Precision et Recall
+- Support : Nombre d'occurrences de chaque classe
+
+## Exemple
+
+\`\`\`python
+from sklearn.metrics import classification_report
+
+report = classification_report(y_test, y_pred)
+print(report)
+
+# Output exemple :
+#              precision    recall  f1-score   support
+#           0       0.85      0.90      0.87       100
+#           1       0.88      0.82      0.85        95
+#
+#    accuracy                           0.86       195
+#   macro avg       0.86      0.86      0.86       195
+#weighted avg       0.86      0.86      0.86       195
+\`\`\`
+
+## Avec digits et output_dict
+
+\`\`\`python
+# Plus de décimales
+report = classification_report(y_test, y_pred, digits=4)
+
+# Retourner un dict
+report_dict = classification_report(y_test, y_pred, output_dict=True)
+\`\`\``,
+    examples: `from sklearn.metrics import classification_report
+print(classification_report(y_test, y_pred))`,
+  },
+  'os.walk': {
+    docKey: 'os.walk',
+    title: 'os.walk() - Parcourir répertoires',
+    version: '3.9+',
+    libName: 'os',
+    content: `# os.walk() - Traverser une arborescence
+
+Parcourt récursivement les répertoires et fichiers.
+
+## Syntaxe
+
+\`\`\`python
+os.walk(top, topdown=True, onerror=None, followlinks=False)
+\`\`\`
+
+## Retour
+
+Tuple : (dirpath, dirnames, filenames)
+- dirpath : Chemin du répertoire courant
+- dirnames : Liste des sous-répertoires
+- filenames : Liste des fichiers
+
+## Exemple
+
+\`\`\`python
+import os
+
+for dirname, subdirs, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        full_path = os.path.join(dirname, filename)
+        print(full_path)
+\`\`\`
+
+## Cas d'usage
+
+- Parcourir une arborescence de fichiers
+- Traiter tous les fichiers d'un dossier
+- Chercher des fichiers spécifiques`,
+    examples: `for dirname, subdirs, filenames in os.walk('/data'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))`,
+  },
 };
 
 export const mockDocNotFound: DocEntry = {
@@ -525,17 +1185,18 @@ La documentation pour ce token n'est pas disponible dans cette démo.
 
 ## Tokens disponibles
 
-- pandas
-- pandas.read_csv
-- pandas.DataFrame
+- pandas, pandas.read_csv, pandas.DataFrame, pandas.DataFrame.drop
+- numpy, numpy.inf, numpy.nan
 - sklearn.model_selection.train_test_split
 - sklearn.preprocessing.StandardScaler
+- sklearn.linear_model.LogisticRegression
+- sklearn.ensemble.RandomForestClassifier
+- sklearn.pipeline.Pipeline
 - sklearn.svm.SVC
-- sklearn.metrics.accuracy_score
-- sklearn.metrics.confusion_matrix
-- seaborn.heatmap
-- matplotlib.pyplot
+- sklearn.metrics.accuracy_score, sklearn.metrics.confusion_matrix, sklearn.metrics.classification_report
 - sklearn.datasets.load_iris
-- numpy`,
+- seaborn, seaborn.heatmap, seaborn.countplot, seaborn.barplot, seaborn.boxplot, seaborn.histplot
+- matplotlib.pyplot, matplotlib.pyplot.figure, matplotlib.pyplot.bar, matplotlib.pyplot.plot, matplotlib.pyplot.scatter
+- os.walk`,
   examples: `// Documentation non disponible`,
 };

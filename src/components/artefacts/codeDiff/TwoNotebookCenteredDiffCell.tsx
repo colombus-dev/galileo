@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 
 import { CodeViewer } from "../CodeViewer";
+import { DocModal } from "@/components/DocModal";
+import { useArtefactDocumentation } from "@/hooks/useArtefactDocumentation";
 import { CellCardShell, PlaceholderCell } from "./CellCardShell";
 
 import {
@@ -75,13 +77,14 @@ function getLineProps(opts: {
 	};
 }
 
-export function TwoNotebookCenteredDiffCell({
+function TwoNotebookCenteredDiffCellComponent({
  	cellIndex,
   title,
   baseLabel,
   baseCode,
   otherLabel,
   otherCode,
+  onDocKeyClick,
 }: {
   cellIndex: number;
   title: string;
@@ -89,6 +92,7 @@ export function TwoNotebookCenteredDiffCell({
   baseCode: string | null;
   otherLabel: string;
   otherCode: string | null;
+  onDocKeyClick?: (docKey: string) => void;
 }) {
   const baseNormalized = useMemo(
     () => normalizeCode(baseCode ?? ""),
@@ -131,6 +135,8 @@ export function TwoNotebookCenteredDiffCell({
                 language="python"
                 className="max-w-none w-full shadow-none border-0"
                 wrapLines
+				enableDocLinks={true}
+				onDocKeyClick={onDocKeyClick}
 				lineProps={
 					getLineProps({
 						highlights: highlights ? highlights.base : null,
@@ -156,6 +162,8 @@ export function TwoNotebookCenteredDiffCell({
                 language="python"
                 className="max-w-none w-full shadow-none border-0"
                 wrapLines
+				enableDocLinks={true}
+				onDocKeyClick={onDocKeyClick}
 				lineProps={
 					getLineProps({
 						highlights: highlights ? highlights.other : null,
@@ -171,5 +179,29 @@ export function TwoNotebookCenteredDiffCell({
         </div>
       </div>
     </CellCardShell>
+  );
+}
+
+export function TwoNotebookCenteredDiffCell(props: {
+  cellIndex: number;
+  title: string;
+  baseLabel: string;
+  baseCode: string | null;
+  otherLabel: string;
+  otherCode: string | null;
+}) {
+  const { handleDocKeyClick, isDocModalOpen, docEntry, loading, error, closeDocModal } = useArtefactDocumentation();
+
+  return (
+    <>
+      <TwoNotebookCenteredDiffCellComponent {...props} onDocKeyClick={handleDocKeyClick} />
+      <DocModal
+        isOpen={isDocModalOpen}
+        docEntry={docEntry}
+        loading={loading}
+        error={error}
+        onClose={closeDocModal}
+      />
+    </>
   );
 }

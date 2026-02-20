@@ -18,6 +18,8 @@ export type ArtefactsSimpleModeProps = {
   onSearch: (query: string) => void;
   scrollToTop: () => void;
   scrollToBottom: () => void;
+	/** Offset (px) for the artefact details popup to avoid fixed headers */
+	detailsTopOffsetPx?: number;
 };
 
 export function ArtefactsSimpleMode({
@@ -28,6 +30,7 @@ export function ArtefactsSimpleMode({
   onSearch,
   scrollToTop,
   scrollToBottom,
+	detailsTopOffsetPx,
 }: ArtefactsSimpleModeProps) {
   return (
     <div>
@@ -62,7 +65,11 @@ export function ArtefactsSimpleMode({
         </div>
 
         <div className="mt-6">
-          <ArtefactPipeline artifacts={filteredArtifacts} cells={notebook.cells} />
+        <ArtefactPipeline
+          artifacts={filteredArtifacts}
+          cells={notebook.cells}
+          detailsTopOffsetPx={detailsTopOffsetPx}
+        />
         </div>
       </div>
 

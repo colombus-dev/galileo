@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  type ArtefactFilterKey,
-} from "@/components/artefacts/ArtefactFilterMenu";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router";
+import { type ArtefactFilterKey } from "@/components/artefacts/ArtefactFilterMenu";
 import { NotebookSelectorDropdown } from "@/components/NotebookSelectorDropdown";
 import type { NotebookData } from "@/data/mockData";
 import { getNotebookById } from "@/services/notebook";
 import { NavBar } from "@/components/NavBar";
-import Select, { type Option } from "@/components/Select";
-import { ModeSwitchButton, type ModeType } from "@/components/artefacts/ModeSwitchButton";
+import {
+  ModeSwitchButton,
+  type ModeType,
+} from "@/components/artefacts/ModeSwitchButton";
 import { ArtefactsSimpleMode } from "@/pages/artefacts/ArtefactsSimpleMode";
 import { ArtefactsComparisonMode } from "@/pages/artefacts/ArtefactsComparisonMode";
 
@@ -19,13 +20,18 @@ function matchesFilter(type: string, filter: ArtefactFilterKey) {
 }
 
 export default function ArtefactsView() {
+	const navigate = useNavigate();
+  const [isNavCollapsed, setIsNavCollapsed] = useState(false);
+
   const [mode, setMode] = useState<ModeType>("simple");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectedId = selectedIds[0];
   const [query, setQuery] = useState("");
   const [filterKey, setFilterKey] = useState<ArtefactFilterKey>("all");
 
-  const [selectedNotebooks, setSelectedNotebooks] = useState<NotebookData[]>([]);
+  const [selectedNotebooks, setSelectedNotebooks] = useState<NotebookData[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,41 +51,151 @@ export default function ArtefactsView() {
     });
   }, [primaryNotebook, query, filterKey]);
 
-  const sectionOptions = useMemo<Option[]>(() => {
-    const base: Option[] = [
-      { label: "Contexte & problème", value: "section-context" },
-      { label: "Évaluation performance", value: "section-performance" },
-      { label: "Artefacts", value: "section-artefacts" },
-      { label: "Validation pédagogique", value: "section-pedagogical" },
+  const sectionSteps = useMemo(() => {
+    const base = [
+      { label: "Contexte & problème", id: "section-context" },
+      { label: "Évaluation performance", id: "section-performance" },
+      { label: "Artefacts", id: "section-artefacts" },
+      { label: "Validation pédagogique", id: "section-pedagogical" },
     ];
-
     if (mode !== "comparaison") return base;
-
     return [
-      {
-        label: "Comparaison — Contexte & Données",
-        value: "section-compare-context-data",
-      },
-      {
-        label: "Comparaison — Performance",
-        value: "section-compare-performance",
-      },
-      {
-        label: "Comparaison — Artefacts",
-        value: "section-compare-artefacts",
-      },
-      {
-        label: "Comparaison — Code",
-        value: "section-compare-code",
-      },
+      { label: "Contexte & Données", id: "section-compare-context-data" },
+      { label: "Performance", id: "section-compare-performance" },
+      { label: "Artefacts", id: "section-compare-artefacts" },
+      { label: "Code", id: "section-compare-code" },
     ];
   }, [mode]);
+
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
+  const [scrollProgressPct, setScrollProgressPct] = useState(0);
+
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (!element) return;
     element.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  useEffect(() => {
+    if (!selectedId) {
+      setActiveSectionId(null);
+      return;
+    }
+
+    const ids = sectionSteps.map((s) => s.id);
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((e): e is HTMLElement => Boolean(e));
+    if (elements.length === 0) return;
+
+    // Default to first step when entering the page/mode.
+    setActiveSectionId((current) => current ?? sectionSteps[0]?.id ?? null);
+
+    const ratiosById = new Map<string, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const target = entry.target as HTMLElement;
+          ratiosById.set(
+            target.id,
+            entry.isIntersecting ? entry.intersectionRatio : 0,
+          );
+        }
+
+        let bestId: string | null = null;
+        let bestRatio = 0;
+        for (const step of sectionSteps) {
+          const ratio = ratiosById.get(step.id) ?? 0;
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestId = step.id;
+          }
+        }
+
+        if (bestId) setActiveSectionId(bestId);
+      },
+      {
+        // Compensate sticky header: consider a section active once it passes below the header.
+        root: null,
+        rootMargin: `-${Math.max(0, headerHeight + 16)}px 0px -60% 0px`,
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      },
+    );
+
+    for (const el of elements) observer.observe(el);
+    return () => observer.disconnect();
+  }, [headerHeight, sectionSteps, selectedId]);
+
+  const stepIndex = useMemo(() => {
+    if (!activeSectionId) return 0;
+    const idx = sectionSteps.findIndex((s) => s.id === activeSectionId);
+    return idx >= 0 ? idx : 0;
+  }, [activeSectionId, sectionSteps]);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const ro = new ResizeObserver(() => {
+      setHeaderHeight(header.getBoundingClientRect().height);
+    });
+    ro.observe(header);
+    setHeaderHeight(header.getBoundingClientRect().height);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedId) {
+      setScrollProgressPct(0);
+      return;
+    }
+
+    let raf = 0;
+    const compute = () => {
+      raf = 0;
+      const first = document.getElementById(sectionSteps[0]?.id ?? "");
+      const last = document.getElementById(
+        sectionSteps[sectionSteps.length - 1]?.id ?? "",
+      );
+      if (!first || !last) {
+        setScrollProgressPct(0);
+        return;
+      }
+
+      const scrollY = window.scrollY ?? 0;
+      const start =
+        first.getBoundingClientRect().top +
+        scrollY -
+        Math.max(0, headerHeight + 24);
+      const end =
+        last.getBoundingClientRect().bottom +
+        scrollY -
+        Math.max(0, window.innerHeight - 80);
+
+      const denom = Math.max(1, end - start);
+      const pos = scrollY;
+      const raw = (pos - start) / denom;
+      const clamped = Math.max(0, Math.min(1, raw));
+      setScrollProgressPct(clamped * 100);
+    };
+
+    const onScrollOrResize = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(compute);
+    };
+
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+    compute();
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [headerHeight, sectionSteps, selectedId]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -105,7 +221,10 @@ export default function ArtefactsView() {
   };
 
   useEffect(() => {
-    const ids = mode === "comparaison" ? selectedIds.slice(0, 3) : selectedIds.slice(0, 1);
+    const ids =
+      mode === "comparaison"
+        ? selectedIds.slice(0, 3)
+        : selectedIds.slice(0, 1);
     if (ids.length === 0) {
       setSelectedNotebooks([]);
       setError(null);
@@ -145,21 +264,35 @@ export default function ArtefactsView() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="sticky top-0 z-50">
-        <NavBar
-          logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
-          title="Galileo - Artefacts"
+      <div ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-white">
+    {!isNavCollapsed ? (
+      <NavBar
+        logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwt1HL9fRcwfyF4lzGkCREKMmUv7OVyYGftYlNCNxNuENKpOCJZNxywAsv3fYra7N7uUP1&s=10"
+        title="Galileo - Artefacts"
+      >
+        <button
+          type="button"
+          onClick={() => navigate("/storytelling")}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/storytelling">Storytelling</a>
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/artefact">Artefact</a>
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            <a href="/patterns">Patterns</a>
-          </button>
-        </NavBar>
+          Storytelling
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/artefact")}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Artefact
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/patterns")}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Patterns
+        </button>
+      </NavBar>
+    ) : null}
         <div className="p-4 flex flex-row flex-wrap items-center justify-between gap-4 bg-white border-b shadow-sm">
           <div className="w-64">
             <NotebookSelectorDropdown
@@ -170,21 +303,71 @@ export default function ArtefactsView() {
             />
           </div>
 
-          <ModeSwitchButton mode={mode} onChange={setMode} />
-
-          {selectedId && primaryNotebook ? (
-            <div className="w-64">
-              <Select
-                options={sectionOptions}
-                placeholder="Aller à une section"
-                onSelect={(option) => scrollToSection(String(option.value))}
-                className="max-w-[260px]"
-              />
-            </div>
-          ) : null}
-        </div>
+      <div className="flex items-center gap-3">
+        <ModeSwitchButton mode={mode} onChange={setMode} />
+        <button
+          type="button"
+          onClick={() => setIsNavCollapsed((v) => !v)}
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+        >
+          {isNavCollapsed ? "Afficher navigation" : "Masquer navigation"}
+        </button>
       </div>
-      <div className="flex flex-col gap-2 p-6 mb-4">
+        </div>
+      {!isNavCollapsed && selectedId && primaryNotebook ? (
+				<div className="border-b bg-white/95">
+					<div className="p-4">
+						<div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+							<div className="flex items-center justify-between gap-3">
+								<div className="flex items-center gap-2 min-w-0">
+									<span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+										Navigation
+									</span>
+									<span className="text-xs font-semibold text-slate-700 truncate">
+										{sectionSteps[stepIndex]?.label ?? ""}
+									</span>
+								</div>
+								<div className="text-xs font-semibold text-slate-500 shrink-0">
+									{stepIndex + 1}/{sectionSteps.length}
+								</div>
+							</div>
+
+							<div className="mt-3 h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+								<div
+									className="h-full bg-indigo-600"
+									style={{ width: `${scrollProgressPct}%` }}
+									aria-hidden="true"
+								/>
+							</div>
+							<div className="mt-3 flex items-center gap-2 overflow-x-auto">
+								{sectionSteps.map((step) => {
+									const isActive = step.id === activeSectionId;
+									return (
+										<button
+											key={step.id}
+											type="button"
+											onClick={() => scrollToSection(step.id)}
+											className={[
+												"shrink-0 rounded-full px-3 py-1 text-xs font-semibold border",
+												isActive
+													? "border-indigo-200 bg-indigo-50 text-indigo-700"
+													: "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+											].join(" ")}
+									>
+										{step.label}
+									</button>
+									);
+								})}
+							</div>
+						</div>
+					</div>
+				</div>
+      ) : null}
+      </div>
+		<div
+			className="flex flex-col gap-2 p-6 mb-4"
+			style={{ paddingTop: headerHeight + 24 }}
+		>
         <div className="mt-8">
           {!selectedId ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-700">
@@ -214,6 +397,7 @@ export default function ArtefactsView() {
                 onSearch={setQuery}
                 scrollToTop={scrollToTop}
                 scrollToBottom={scrollToBottom}
+					detailsTopOffsetPx={headerHeight + 24}
               />
             )
           ) : null}

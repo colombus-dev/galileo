@@ -10,6 +10,7 @@ export interface CodePanelProps {
   collapsed?: boolean;
   onToggleCollapsed?: (collapsed: boolean) => void;
   onTokenClick?: (token: Token) => void;
+  onDocKeyClick?: (docKey: string) => void;
   className?: string;
 }
 
@@ -23,6 +24,7 @@ export const CodePanel: React.FC<CodePanelProps> = ({
   collapsed = false,
   onToggleCollapsed,
   onTokenClick,
+  onDocKeyClick,
   className = '',
 }) => {
   const codeCells = useMemo(() => {
@@ -59,6 +61,7 @@ export const CodePanel: React.FC<CodePanelProps> = ({
                 <CodeCell
                   cell={cell}
                   onTokenClick={onTokenClick}
+                  onDocKeyClick={onDocKeyClick}
                 />
               </div>
             ))

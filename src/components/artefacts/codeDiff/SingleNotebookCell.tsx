@@ -1,20 +1,24 @@
 import { useMemo } from "react";
 
 import { CodeViewer } from "../CodeViewer";
+import { DocModal } from "@/components/DocModal";
+import { useArtefactDocumentation } from "@/hooks/useArtefactDocumentation";
 
 import { CellCardShell, PlaceholderCell } from "./CellCardShell";
 
 import { countLines, normalizeCode } from "../../../utils/diffUtils";
 import { getInterleavingSeparatorLineNumbers } from "../../../utils/diffUtils";
 
-export function SingleNotebookCell({
+function SingleNotebookCellComponent({
 	cellIndex,
 	title,
 	code,
+	onDocKeyClick,
 }: {
 	cellIndex: number;
 	title: string;
 	code: string;
+	onDocKeyClick?: (docKey: string) => void;
 }) {
 	const normalized = useMemo(() => normalizeCode(code), [code]);
 	const separatorLines = useMemo(
@@ -31,6 +35,8 @@ export function SingleNotebookCell({
 					language="python"
 					className="max-w-none"
 					wrapLines
+					enableDocLinks={true}
+					onDocKeyClick={onDocKeyClick}
 					lineProps={(lineNumber) =>
 						separatorLines.has(lineNumber)
 							? {
@@ -45,5 +51,26 @@ export function SingleNotebookCell({
 				<PlaceholderCell message="Code indisponible pour cette cellule." />
 			)}
 		</CellCardShell>
+	);
+}
+
+export function SingleNotebookCell(props: {
+	cellIndex: number;
+	title: string;
+	code: string;
+}) {
+	const { handleDocKeyClick, isDocModalOpen, docEntry, loading, error, closeDocModal } = useArtefactDocumentation();
+
+	return (
+		<>
+			<SingleNotebookCellComponent {...props} onDocKeyClick={handleDocKeyClick} />
+			<DocModal
+				isOpen={isDocModalOpen}
+				docEntry={docEntry}
+				loading={loading}
+				error={error}
+				onClose={closeDocModal}
+			/>
+		</>
 	);
 }
