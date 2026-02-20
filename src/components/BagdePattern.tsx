@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Link } from 'react-router';
 import { PatternType, Counts } from '@/PatternType';
 
 const DEFAULT_COLORS: Record<string, string> = {
@@ -52,9 +53,12 @@ const BadgePattern: React.FC<BadgePatternProps> = ({
 
   const hexColor = DEFAULT_COLORS[finalColorKey] || finalColorKey;
 
+  const patternUrl = pattern?.id ? `/pattern/${pattern.id}` : '#';
+
   return (
-    <div
-      className="inline-flex items-center justify-center px-5 py-2 border-2 font-bold transition-all"
+    <Link
+      to={patternUrl}
+      className="inline-flex items-center justify-center px-5 py-2 border-2 font-bold transition-all hover:opacity-80 cursor-pointer"
       style={{
         borderRadius: '1.25rem',
         backgroundColor: `${hexColor}1A`,
@@ -65,7 +69,7 @@ const BadgePattern: React.FC<BadgePatternProps> = ({
       <span className="text-2xl tracking-tight leading-none">
         {finalLabel}
       </span>
-    </div>
+    </Link>
   );
 };
 
