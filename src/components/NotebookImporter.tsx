@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { MdExpandMore, MdExpandLess, MdDelete, MdCheckCircle, MdRefresh, MdClear } from "react-icons/md";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -200,6 +200,23 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [dontAskAgain, setDontAskAgain] = useState(false);
   const [selectedHistoryId, setSelectedHistoryId] = useState<string>("");
+
+  // Fermer le modal de confirmation avec Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showConfirmation) {
+        handleCancelImport();
+      }
+    };
+
+    if (showConfirmation) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [showConfirmation]);
 
   const isReadyToImport = !!selectedNotebook && !!notebook;
   const hasFiles = selectedNotebook || selectedPyproject;
@@ -859,12 +876,23 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
 
       {/* Confirmation Modal */}
       {showConfirmation && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-md mx-4 p-6 space-y-4">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={handleCancelImport}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-lg max-w-md mx-4 p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-slate-900">
-                📥 Importer le notebook ?
-              </h2>
+              <div className="flex items-start justify-between">
+                <h2 className="text-lg font-semibold text-slate-900 flex-1">
+                  📥 Importer le notebook ?
+                </h2>
+                <p className="text-xs text-slate-400 flex-shrink-0 ml-2">
+                  <kbd className="px-1 py-0.5 bg-slate-200 rounded text-slate-700 font-mono text-xs">Esc</kbd>
+                </p>
+              </div>
               <p className="text-sm text-slate-600">
                 L'import du notebook vous amènera à la partie <span className="font-semibold">storytelling</span> pour explorer les données et créer des analyses.
               </p>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdClose, MdLightbulb } from 'react-icons/md';
 
 /**
@@ -7,6 +7,23 @@ import { MdClose, MdLightbulb } from 'react-icons/md';
  */
 export const InteractiveTutorial: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
+
+  // Fermer avec Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isVisible) {
+        setIsVisible(false);
+      }
+    };
+
+    if (isVisible) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isVisible]);
 
   if (!isVisible) {
     return null;
@@ -32,12 +49,16 @@ export const InteractiveTutorial: React.FC = () => {
                 <strong>3. Panneau latéral:</strong> La documentation apparaît à droite avec des exemples et des explications.
               </li>
             </ul>
+            <p className="text-xs text-blue-700 mt-3 flex items-center gap-2">
+              <kbd className="px-1 py-0.5 bg-blue-200 rounded text-blue-900 font-mono text-xs">Esc</kbd> pour fermer
+            </p>
           </div>
         </div>
         <button
           onClick={() => setIsVisible(false)}
           className="flex-shrink-0 text-blue-400 hover:text-blue-600 transition-colors p-1"
           title="Fermer"
+          aria-label="Fermer le tutoriel"
         >
           <MdClose className="text-lg" />
         </button>
