@@ -1,7 +1,5 @@
-import React, { useMemo } from 'react';
-import { MdWarningAmber } from 'react-icons/md';
-import { Storyteller } from '@/components/Storyteller';
-import { renderMarkdown } from '@/utils/markdownRenderer';
+import React, { useMemo, useState } from 'react';
+import { MdWarningAmber, MdExpandMore, MdExpandLess } from 'react-icons/md';
 import type { NotebookModel, NotebookSection } from '@/types/notebook';
 
 export interface SectionSummaryViewProps {
@@ -12,15 +10,18 @@ export interface SectionSummaryViewProps {
 }
 
 /**
- * Affiche le résumé d'une section
- * Si aucun markdown n'est trouvé, affiche un banner de fallback
+ * Affiche uniquement le résumé/informations du notebook
+ * Pas d'affichage des cellules markdown individuelles
+ * Permet l'expansion pour voir le texte complet
  */
 export const SectionSummaryView: React.FC<SectionSummaryViewProps> = ({
   notebook,
   section,
-  fallbackMessage = 'Pas de résumé Markdown trouvé. Le mode code est activé.',
+  fallbackMessage = 'Pas de résumé disponible.',
   className = '',
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const hasMarkdown = useMemo(() => {
     return section.cellIds.some((cellId) => {
       const cell = notebook.cells.find((c) => c.id === cellId);
@@ -52,44 +53,45 @@ export const SectionSummaryView: React.FC<SectionSummaryViewProps> = ({
           <div>
             <p className="text-sm font-medium text-amber-900">⚠️ {fallbackMessage}</p>
             <p className="text-xs text-amber-700 mt-1">
-              Cette section ne contient pas de cellules Markdown. Seul le code est disponible ci-dessous.
+              Cette section ne contient pas de cellules Markdown.
             </p>
           </div>
         </div>
       )}
 
-      {/* Summary text */}
-      <div className="prose prose-sm max-w-none mb-8">
-        <Storyteller
-          title="Résumé"
-          paragraph={section.summary}
-          as="h3"
-          variant="plain"
-          size="md"
-          tone={hasMarkdown ? 'default' : 'subtle'}
-        />
-      </div>
+      {/* Summary section with expansion */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-slate-900">Informations du notebook (Markdown)</h3>
 
-      {/* Markdown content dari cellules */}
-      {hasMarkdown && (
-        <div className="space-y-6">
-          {section.cellIds.map((cellId) => {
-            const cell = notebook.cells.find((c) => c.id === cellId);
-            if (!cell || cell.type !== 'markdown') return null;
-
-            return (
-              <div
-                key={cell.id}
-                className="rounded-lg bg-white border border-slate-200 p-6 shadow-sm space-y-3"
-              >
-                <div className="text-slate-700 text-sm space-y-3">
-                  {renderMarkdown(cell.content)}
-                </div>
-              </div>
-            );
-          })}
+        {/* Summary text */}
+        <div
+          className={`text-slate-700 transition-all duration-200 overflow-hidden ${
+            isExpanded ? 'max-h-none' : 'max-h-32'
+          }`}
+        >
+          <p className="m-0 whitespace-pre-wrap text-sm leading-relaxed">{section.summary}</p>
         </div>
-      )}
+
+        {/* Expand toggle button */}
+        {section.summary && section.summary.length > 200 && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-sm font-medium transition-colors"
+          >
+            {isExpanded ? (
+              <>
+                <MdExpandLess className="text-lg" />
+                Voir moins
+              </>
+            ) : (
+              <>
+                <MdExpandMore className="text-lg" />
+                Voir plus
+              </>
+            )}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

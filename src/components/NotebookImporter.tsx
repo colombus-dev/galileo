@@ -435,7 +435,7 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold text-slate-900">
-                  📚 Notebooks importés
+                  Selectionner un notebook pré-existant
                 </h3>
                 {notebooks.length > 0 && (
                   <button

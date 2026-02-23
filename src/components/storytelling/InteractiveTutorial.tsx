@@ -19,7 +19,7 @@ export const InteractiveTutorial: React.FC = () => {
           <MdLightbulb className="text-xl text-blue-600 flex-shrink-0 mt-1" />
           <div className="flex-1">
             <h3 className="font-semibold text-blue-900 text-sm mb-1">
-              💡 Le code est interactif !
+              Le code est interactif !
             </h3>
             <ul className="text-xs text-blue-800 space-y-1">
               <li>
