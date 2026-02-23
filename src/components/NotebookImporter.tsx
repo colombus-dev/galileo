@@ -1,5 +1,8 @@
 import React, { useCallback, useId, useRef, useState } from "react";
-import { MdExpandMore, MdExpandLess, MdDelete, MdCheckCircle } from "react-icons/md";
+import { MdExpandMore, MdExpandLess, MdDelete, MdCheckCircle, MdRefresh, MdClear } from "react-icons/md";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useNotebookHistory } from "../hooks/useNotebookHistory";
 
 type NotebookJson = Record<string, unknown>;
 
@@ -12,23 +15,15 @@ export interface ParsedDependencies {
 export type NotebookImporterProps = {
   label?: string;
   helperText?: string;
-
   disabled?: boolean;
-
-  /** Appelé au moment où l'utilisateur clique "Importer" */
   onImport?: (payload: {
     notebookFile: File;
     notebook: NotebookJson;
     pyprojectFile: File | null;
     dependencies: ParsedDependencies | null;
   }) => void;
-
-  /** Appelé en cas d'erreur (type invalide / parsing) */
   onError?: (error: { code: string; message: string }) => void;
-
-  /** Affiche le JSON en preview */
   showPreview?: boolean;
-
   className?: string;
 };
 
@@ -48,9 +43,6 @@ function getExt(name: string) {
   return idx >= 0 ? name.slice(idx).toLowerCase() : "";
 }
 
-/**
- * Parse les dépendances depuis le contenu TOML
- */
 function parsePyprojectToml(content: string): ParsedDependencies | null {
   try {
     const pythonVersion = extractPythonVersion(content);
@@ -68,30 +60,19 @@ function parsePyprojectToml(content: string): ParsedDependencies | null {
   }
 }
 
-/**
- * Extrait la version Python du TOML
- */
 function extractPythonVersion(content: string): string {
-  // Format: requires-python = "^3.8"
   let match = content.match(/requires-python\s*=\s*"([^"]+)"/);
   if (match) return match[1];
-
-  // Format: python = "^3.8"
   match = content.match(/python\s*=\s*"([^"]+)"/);
   if (match) return match[1];
-
   return "3.10";
 }
 
-/**
- * Extrait les dépendances du TOML
- */
 function extractDependencies(
   content: string
 ): Array<{ name: string; version: string }> {
   const dependencies: Array<{ name: string; version: string }> = [];
 
-  // Format PEP 621: dependencies = ["package>=1.0", "other~=2.0"]
   let match = content.match(/^\s*dependencies\s*=\s*\[([\s\S]*?)\]/m);
   if (match) {
     const depLines = match[1].split(/[,\n]/).filter((l) => l.trim());
@@ -109,7 +90,6 @@ function extractDependencies(
     return dependencies;
   }
 
-  // Format Poetry: dependencies = { package = "^1.0", other = "~2.0" }
   match = content.match(/^\s*dependencies\s*=\s*{([\s\S]*?)}/m);
   if (match) {
     const depLines = match[1].split(/[,\n]/).filter((l) => l.trim());
@@ -129,15 +109,11 @@ function extractDependencies(
   return dependencies;
 }
 
-/**
- * Extrait les dépendances de développement du TOML
- */
 function extractDevDependencies(
   content: string
 ): Array<{ name: string; version: string }> {
   const devDependencies: Array<{ name: string; version: string }> = [];
 
-  // Format PEP 621 avec optional-dependencies: dev = [...]
   let match = content.match(/optional-dependencies\s*=\s*{[\s\S]*?dev\s*=\s*\[([\s\S]*?)\]/);
   if (match) {
     const depLines = match[1].split(/[,\n]/).filter((l) => l.trim());
@@ -155,7 +131,6 @@ function extractDevDependencies(
     return devDependencies;
   }
 
-  // Format Poetry: [tool.poetry.group.dev.dependencies]
   match = content.match(/\[tool\.poetry\.group\.dev\.dependencies\]([\s\S]*?)(?=\[|$)/);
   if (match) {
     const depLines = match[1].split(/\n/).filter((l) => l.trim());
@@ -172,7 +147,6 @@ function extractDevDependencies(
     return devDependencies;
   }
 
-  // Format Poetry legacy: [tool.poetry.dev-dependencies]
   match = content.match(/\[tool\.poetry\.dev-dependencies\]([\s\S]*?)(?=\[|$)/);
   if (match) {
     const depLines = match[1].split(/\n/).filter((l) => l.trim());
@@ -192,10 +166,6 @@ function extractDevDependencies(
   return devDependencies;
 }
 
-/**
- * Composant amélioré d'import de notebooks avec support pyproject.toml
- * Layout 2-colonnes : drag-drop gauche, panneau rétractable droit
- */
 export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   label = "Importer un notebook",
   helperText = "Glisse-dépose les fichiers ou clique pour parcourir",
@@ -209,6 +179,17 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const inputTomlRef = useRef<HTMLInputElement | null>(null);
 
+  const {
+    notebooks,
+    currentNotebook,
+    isLoaded,
+    addNotebook,
+    setCurrentFromHistory,
+    removeNotebook,
+    clearHistory,
+    resetCurrent,
+  } = useNotebookHistory();
+
   const [isDragging, setIsDragging] = useState(false);
   const [selectedNotebook, setSelectedNotebook] = useState<File | null>(null);
   const [selectedPyproject, setSelectedPyproject] = useState<File | null>(null);
@@ -218,6 +199,7 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   const [panelExpanded, setPanelExpanded] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [dontAskAgain, setDontAskAgain] = useState(false);
+  const [selectedHistoryId, setSelectedHistoryId] = useState<string>("");
 
   const isReadyToImport = !!selectedNotebook && !!notebook;
   const hasFiles = selectedNotebook || selectedPyproject;
@@ -265,7 +247,6 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
       try {
         const text = await file.text();
         const parsed = JSON.parse(text) as NotebookJson;
-
         setSelectedNotebook(file);
         setNotebook(parsed);
         setError(null);
@@ -292,13 +273,7 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
       try {
         const text = await file.text();
         setSelectedPyproject(file);
-
-        // Parse les dépendances
         const parsed = parsePyprojectToml(text);
-        console.log("📝 Pyproject.toml parsing result:", {
-          rawText: text.slice(0, 500),
-          parsed,
-        });
         setDependencies(parsed);
         setError(null);
       } catch {
@@ -341,7 +316,6 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
     [loadPyproject]
   );
 
-  // Drag & drop handlers
   const onDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   }, []);
@@ -358,7 +332,6 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       if (disabled) return;
-
       setIsDragging(false);
 
       const files = Array.from(e.dataTransfer.files);
@@ -377,11 +350,10 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
   const onImportClick = useCallback(() => {
     if (!selectedNotebook || !notebook) return;
 
-    // Check if user has previously selected "don't ask again"
     const skipConfirmation = localStorage.getItem("skipImportConfirmation") === "true";
     
     if (skipConfirmation) {
-      // Skip confirmation and import directly
+      addNotebook(notebook, selectedNotebook.name, dependencies);
       onImport?.({
         notebookFile: selectedNotebook,
         notebook,
@@ -389,15 +361,13 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
         dependencies,
       });
     } else {
-      // Show confirmation modal
       setShowConfirmation(true);
     }
-  }, [notebook, onImport, selectedNotebook, selectedPyproject, dependencies]);
+  }, [selectedNotebook, notebook, selectedPyproject, dependencies, onImport, addNotebook]);
 
   const handleConfirmImport = useCallback(() => {
     if (!selectedNotebook || !notebook) return;
 
-    // Save preference if "don't ask again" is checked
     if (dontAskAgain) {
       localStorage.setItem("skipImportConfirmation", "true");
     }
@@ -405,347 +375,487 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
     setShowConfirmation(false);
     setDontAskAgain(false);
 
+    addNotebook(notebook, selectedNotebook.name, dependencies);
     onImport?.({
       notebookFile: selectedNotebook,
       notebook,
       pyprojectFile: selectedPyproject,
       dependencies,
     });
-  }, [notebook, onImport, selectedNotebook, selectedPyproject, dependencies, dontAskAgain]);
+  }, [notebook, onImport, selectedNotebook, selectedPyproject, dependencies, dontAskAgain, addNotebook]);
 
   const handleCancelImport = useCallback(() => {
     setShowConfirmation(false);
     setDontAskAgain(false);
   }, []);
 
+  const handleReimportFromHistory = useCallback(
+    (notebookId: string) => {
+      const found = setCurrentFromHistory(notebookId);
+      if (found) {
+        onImport?.({
+          notebookFile: new File(
+            [JSON.stringify(found.notebook)],
+            found.name,
+            { type: "application/json" }
+          ),
+          notebook: found.notebook,
+          pyprojectFile: null,
+          dependencies: found.dependencies || null,
+        });
+      }
+    },
+    [setCurrentFromHistory, onImport]
+  );
+
+  const handleRemoveFromHistory = useCallback(
+    (notebookId: string) => {
+      removeNotebook(notebookId);
+    },
+    [removeNotebook]
+  );
+
+  const handleResetCurrent = useCallback(() => {
+    resetCurrent();
+  }, [resetCurrent]);
+
+  const handleClearHistory = useCallback(() => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer tout l'historique ?")) {
+      clearHistory();
+      setSelectedHistoryId("");
+    }
+  }, [clearHistory]);
+
   return (
     <div className={className}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-80px)] lg:h-auto p-6 lg:p-8">
-        {/* Colonne gauche : Drop zone */}
-        <div className="lg:col-span-1 flex flex-col">
-          <label htmlFor={inputId} className="mb-4 block text-sm font-medium text-slate-800">
-            {label}
-          </label>
-
-          {/* Zone DnD */}
-          <div
-            role="button"
-            tabIndex={0}
-            aria-disabled={disabled}
-            onClick={openNotebookDialog}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") openNotebookDialog();
-            }}
-            onDragOver={onDragOver}
-            onDragEnter={onDragEnter}
-            onDragLeave={onDragLeave}
-            onDrop={onDrop}
-            className={[
-              "rounded-xl border-2 border-dashed p-8 transition",
-              "flex flex-col gap-6",
-              disabled
-                ? "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400"
-                : "cursor-pointer border-slate-300 bg-white hover:bg-slate-50",
-              isDragging && !disabled ? "border-blue-500 bg-blue-50" : "",
-            ].join(" ")}
-          >
-            <div className="text-center">
-              <p className="text-base text-slate-700">
-                <span className="font-semibold">Glisse-dépose</span> tes fichiers ici{" "}
-                <span className="text-slate-500">ou</span>{" "}
-                <span className="underline underline-offset-2">clique pour parcourir</span>
-              </p>
-              <p className="mt-2 text-sm text-slate-500">{helperText}</p>
-              <p className="mt-2 text-xs text-slate-500">
-                📓 Notebook (.ipynb) + 📝 Configuration (pyproject.toml)
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openNotebookDialog();
-                }}
-                disabled={disabled}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 transition"
-              >
-                📓 Notebook
-              </button>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openPyprojectDialog();
-                }}
-                disabled={disabled}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 transition"
-              >
-                📝 Config
-              </button>
-            </div>
-
-            {error ? (
-              <div
-                className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-                onClick={(e) => e.stopPropagation()}
-              >
-                ⚠️ {error}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 lg:p-8 min-h-screen lg:min-h-auto">
+        {/* Colonne gauche : Historique & Réimport */}
+        {isLoaded && (
+          <div className="lg:col-span-1 h-fit">
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-slate-900">
+                  📚 Notebooks importés
+                </h3>
+                {notebooks.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearHistory}
+                    className="p-1 text-slate-400 hover:text-slate-600 transition"
+                    title="Effacer l'historique"
+                  >
+                    <MdClear className="text-lg" />
+                  </button>
+                )}
               </div>
-            ) : null}
 
-            {/* Affichage fichiers sélectionnés */}
-            <div onClick={(e) => e.stopPropagation()} className="space-y-3 border-t border-slate-200 pt-4">
-              {selectedNotebook ? (
-                <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <MdCheckCircle className="text-lg text-green-600" />
-                    <div>
-                      <p className="truncate text-sm font-medium text-slate-800">
-                        {selectedNotebook.name}
-                      </p>
-                      <p className="text-xs text-slate-500">{formatBytes(selectedNotebook.size)}</p>
-                    </div>
+              {notebooks.length === 0 ? (
+                <p className="text-xs text-slate-500 italic">Aucun notebook importé</p>
+              ) : (
+                <div className="space-y-3">
+                  {/* Select dropdown */}
+                  <div>
+                    <select
+                      value={selectedHistoryId}
+                      onChange={(e) => {
+                        setSelectedHistoryId(e.target.value);
+                      }}
+                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Sélectionner un notebook</option>
+                      {notebooks.map((nb) => (
+                        <option key={nb.id} value={nb.id}>
+                          {nb.name} ({new Date(nb.timestamp).toLocaleDateString()})
+                        </option>
+                      ))}
+                    </select>
                   </div>
+
+                  {/* Réimporter button */}
                   <button
                     type="button"
+                    disabled={!selectedHistoryId}
                     onClick={() => {
-                      setSelectedNotebook(null);
-                      setNotebook(null);
+                      if (selectedHistoryId) {
+                        handleReimportFromHistory(selectedHistoryId);
+                      }
                     }}
-                    className="p-1 hover:bg-green-100 rounded transition"
+                    className="w-full rounded-lg bg-blue-600 text-white px-3 py-2 text-sm font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 transition flex items-center justify-center gap-2"
                   >
-                    <MdDelete className="text-lg text-green-600" />
+                    <MdRefresh className="text-lg" />
+                    Réimporter
                   </button>
-                </div>
-              ) : null}
 
-              {selectedPyproject ? (
-                <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <MdCheckCircle className="text-lg text-blue-600" />
-                    <div>
-                      <p className="truncate text-sm font-medium text-slate-800">
-                        {selectedPyproject.name}
+                  {/* Current notebook info */}
+                  {currentNotebook && (
+                    <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 space-y-2">
+                      <p className="text-xs font-semibold text-blue-900">
+                        ✓ Actuellement sélectionné
                       </p>
-                      <p className="text-xs text-slate-500">{formatBytes(selectedPyproject.size)}</p>
+                      <p className="text-xs text-blue-800 break-words">{currentNotebook.name}</p>
+                      <button
+                        type="button"
+                        onClick={handleResetCurrent}
+                        className="w-full text-xs text-blue-600 hover:text-blue-700 font-medium transition"
+                      >
+                        Réinitialiser
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Recent notebooks list */}
+                  <div className="space-y-2 border-t border-slate-200 pt-3">
+                    <p className="text-xs font-medium text-slate-600">Récents</p>
+                    <div className="space-y-1 max-h-48 overflow-y-auto">
+                      {notebooks.slice(0, 5).map((nb) => (
+                        <div
+                          key={nb.id}
+                          className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-2 py-2 hover:bg-slate-100 transition group"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs truncate text-slate-700">
+                              {nb.name}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(nb.timestamp).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveFromHistory(nb.id)}
+                            className="p-1 text-slate-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition"
+                            title="Supprimer"
+                          >
+                            <MdDelete className="text-sm" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedPyproject(null);
-                      setDependencies(null);
-                    }}
-                    className="p-1 hover:bg-blue-100 rounded transition"
-                  >
-                    <MdDelete className="text-lg text-blue-600" />
-                  </button>
                 </div>
-              ) : null}
-
-              {!selectedNotebook && !selectedPyproject ? (
-                <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
-                  Aucun fichier sélectionné
-                </div>
-              ) : null}
+              )}
             </div>
           </div>
+        )}
 
-          {/* Boutons d'action */}
-          <div className="mt-6 flex gap-3">
-            <button
-              type="button"
-              onClick={onImportClick}
-              disabled={disabled || !isReadyToImport}
-              className="flex-1 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 transition flex flex-col items-center gap-1"
+        {/* Colonnes centrales & droites : Import zone */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Card d'import */}
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <label htmlFor={inputId} className="mb-4 block text-sm font-medium text-slate-800">
+              {label}
+            </label>
+
+            {/* Zone DnD */}
+            <div
+              role="button"
+              tabIndex={0}
+              aria-disabled={disabled}
+              onClick={openNotebookDialog}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") openNotebookDialog();
+              }}
+              onDragOver={onDragOver}
+              onDragEnter={onDragEnter}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
+              className={[
+                "rounded-xl border-2 border-dashed p-8 transition",
+                "flex flex-col gap-6",
+                disabled
+                  ? "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400"
+                  : "cursor-pointer border-slate-300 bg-white hover:bg-slate-50",
+                isDragging && !disabled ? "border-blue-500 bg-blue-50" : "",
+              ].join(" ")}
             >
-              <span>📥 Importer</span>
-              <span className="text-xs font-normal opacity-90">(vous amènera à la partie storytelling)</span>
-            </button>
+              <div className="text-center">
+                <p className="text-base text-slate-700">
+                  <span className="font-semibold">Glisse-dépose</span> tes fichiers ici{" "}
+                  <span className="text-slate-500">ou</span>{" "}
+                  <span className="underline underline-offset-2">clique pour parcourir</span>
+                </p>
+                <p className="mt-2 text-sm text-slate-500">{helperText}</p>
+                <p className="mt-2 text-xs text-slate-500">
+                  📓 Notebook (.ipynb) + 📝 Configuration (pyproject.toml)
+                </p>
+              </div>
 
-            <button
-              type="button"
-              onClick={reset}
-              disabled={disabled || !hasFiles}
-              className="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 transition"
-            >
-              ↻ Réinitialiser
-            </button>
-          </div>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openNotebookDialog();
+                  }}
+                  disabled={disabled}
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 transition"
+                >
+                  📓 Notebook
+                </button>
 
-          {/* Input files */}
-          <input
-            id={inputId}
-            ref={inputRef}
-            type="file"
-            accept=".ipynb"
-            disabled={disabled}
-            onChange={onNotebookChange}
-            className="hidden"
-          />
-          <input
-            ref={inputTomlRef}
-            type="file"
-            accept=".toml"
-            disabled={disabled}
-            onChange={onPyprojectChange}
-            className="hidden"
-          />
-        </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openPyprojectDialog();
+                  }}
+                  disabled={disabled}
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 transition"
+                >
+                  📝 Config
+                </button>
+              </div>
 
-        {/* Colonne droite : Panneau rétractable */}
-        <div className="lg:col-span-1 flex flex-col">
-          <div className="flex flex-col h-full rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
-            {/* Header du panneau */}
-            <button
-              onClick={() => setPanelExpanded(!panelExpanded)}
-              className="flex items-center justify-between gap-2 px-4 py-3 bg-slate-50 hover:bg-slate-100 transition border-b border-slate-200 flex-shrink-0"
-            >
-              <span className="font-semibold text-slate-900">📋 Aperçu</span>
-              {panelExpanded ? (
-                <MdExpandLess className="text-lg text-slate-600" />
-              ) : (
-                <MdExpandMore className="text-lg text-slate-600" />
-              )}
-            </button>
-
-            {/* Contenu du panneau */}
-            {panelExpanded ? (
-              <div className="p-4 space-y-4 overflow-y-auto flex-1">
-                {/* Statut */}
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-slate-900">📊 Statut</p>
-                  <div className="text-xs space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className={selectedNotebook ? "text-green-600" : "text-slate-400"}>
-                        {selectedNotebook ? "✓" : "○"}
-                      </span>
-                      <span className={selectedNotebook ? "text-slate-700" : "text-slate-500"}>
-                        Notebook
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={selectedPyproject ? "text-green-600" : "text-slate-400"}>
-                        {selectedPyproject ? "✓" : "○"}
-                      </span>
-                      <span className={selectedPyproject ? "text-slate-700" : "text-slate-500"}>
-                        Dépendances (pyproject.toml)
-                      </span>
-                    </div>
-                  </div>
+              {error ? (
+                <div
+                  className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  ⚠️ {error}
                 </div>
+              ) : null}
 
-                {/* Info Notebook */}
-                {notebook ? (
-                  <div className="space-y-2 border-t border-slate-200 pt-4">
-                    <p className="text-sm font-semibold text-slate-900">📓 Notebook</p>
-                    <div className="text-xs space-y-1 text-slate-600 bg-slate-50 p-3 rounded">
-                      <p className="truncate"><span className="font-medium">Fichier:</span> {selectedNotebook?.name}</p>
-                      <p><span className="font-medium">Cellules:</span> {(notebook as any)?.cells?.length || 0}</p>
-                      <p><span className="font-medium">Taille:</span> {formatBytes(selectedNotebook?.size || 0)}</p>
+              {/* Affichage fichiers sélectionnés */}
+              <div onClick={(e) => e.stopPropagation()} className="space-y-3 border-t border-slate-200 pt-4">
+                {selectedNotebook ? (
+                  <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <MdCheckCircle className="text-lg text-green-600" />
+                      <div>
+                        <p className="truncate text-sm font-medium text-slate-800">
+                          {selectedNotebook.name}
+                        </p>
+                        <p className="text-xs text-slate-600">
+                          {formatBytes(selectedNotebook.size)}
+                        </p>
+                      </div>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        reset();
+                      }}
+                      className="text-slate-400 hover:text-slate-600 transition"
+                    >
+                      <MdDelete className="text-lg" />
+                    </button>
                   </div>
-                ) : null}
+                ) : (
+                  <p className="text-xs text-slate-500 italic text-center">
+                    Aucun notebook sélectionné
+                  </p>
+                )}
 
-                {/* Info Dépendances Complètes */}
-                {dependencies || selectedPyproject ? (
-                  <div className="space-y-2 border-t border-slate-200 pt-4">
-                    <p className="text-sm font-semibold text-slate-900">🐍 Configuration Python</p>
-                    {dependencies ? (
-                      <div className="text-xs bg-slate-50 p-3 rounded space-y-3">
+                {selectedPyproject ? (
+                  <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <MdCheckCircle className="text-lg text-green-600" />
+                      <div>
+                        <p className="truncate text-sm font-medium text-slate-800">
+                          {selectedPyproject.name}
+                        </p>
+                        <p className="text-xs text-slate-600">
+                          {formatBytes(selectedPyproject.size)}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedPyproject(null);
+                        setDependencies(null);
+                      }}
+                      className="text-slate-400 hover:text-slate-600 transition"
+                    >
+                      <MdDelete className="text-lg" />
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 italic text-center">
+                    Aucun fichier de config
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Bouton d'import */}
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={onImportClick}
+                disabled={!isReadyToImport || disabled}
+                className="flex-1 rounded-lg bg-blue-600 text-white px-4 py-3 text-sm font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 transition"
+              >
+                📥 Importer
+              </button>
+              <button
+                type="button"
+                onClick={reset}
+                disabled={!hasFiles || disabled}
+                className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 transition"
+              >
+                Annuler
+              </button>
+            </div>
+
+            {/* Panneau d'infos */}
+            <button
+              type="button"
+              onClick={() => setPanelExpanded(!panelExpanded)}
+              className="mt-6 flex w-full items-center gap-2 border-t border-slate-200 pt-4 text-left text-sm font-medium text-slate-700 hover:text-slate-900 transition"
+            >
+              {panelExpanded ? (
+                <MdExpandLess className="text-lg" />
+              ) : (
+                <MdExpandMore className="text-lg" />
+              )}
+              Détails d'import
+            </button>
+
+            {panelExpanded && (
+              <div className="mt-4 space-y-4 border-t border-slate-200 pt-4">
+                {dependencies ? (
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-slate-900">
+                      🔧 Dépendances Python ({dependencies.dependencies.length + dependencies.devDependencies.length})
+                    </p>
+                    <div className="space-y-2">
+                      {dependencies.dependencies.length > 0 && (
                         <div>
-                          <p className="font-semibold text-slate-700 mb-1">Version Python:</p>
-                          <p className="font-mono bg-slate-900 text-green-400 p-2 rounded text-xs">
-                            python {dependencies.pythonVersion}
+                          <p className="text-xs font-medium text-slate-700">
+                            Production ({dependencies.dependencies.length})
                           </p>
+                          <div className="space-y-1">
+                            {dependencies.dependencies.slice(0, 5).map((dep, i) => (
+                              <p key={i} className="text-xs text-slate-600">
+                                • {dep.name}: {dep.version}
+                              </p>
+                            ))}
+                            {dependencies.dependencies.length > 5 && (
+                              <p className="text-xs text-slate-500 italic">
+                                +{dependencies.dependencies.length - 5} autres...
+                              </p>
+                            )}
+                          </div>
                         </div>
+                      )}
 
-                        {dependencies.dependencies.length > 0 ? (
-                          <div>
-                            <p className="font-semibold text-slate-700 mb-2">
-                              📦 Dépendances ({dependencies.dependencies.length})
-                            </p>
-                            <div className="space-y-1 max-h-48 overflow-y-auto bg-white p-2 rounded border border-slate-200">
-                              {dependencies.dependencies.map((dep, i) => (
-                                <div key={i} className="text-xs text-slate-600 flex justify-between items-center gap-2">
-                                  <span className="font-mono flex-1 truncate">{dep.name}</span>
-                                  <span className="text-slate-500 font-mono text-right flex-shrink-0">{dep.version}</span>
-                                </div>
-                              ))}
-                            </div>
+                      {dependencies.devDependencies.length > 0 && (
+                        <div className="border-t border-slate-200 pt-2">
+                          <p className="text-xs font-medium text-slate-700">
+                            Développement ({dependencies.devDependencies.length})
+                          </p>
+                          <div className="space-y-1">
+                            {dependencies.devDependencies.slice(0, 5).map((dep, i) => (
+                              <p key={i} className="text-xs text-slate-600">
+                                • {dep.name}: {dep.version}
+                              </p>
+                            ))}
+                            {dependencies.devDependencies.length > 5 && (
+                              <p className="text-xs text-slate-500 italic">
+                                +{dependencies.devDependencies.length - 5} autres...
+                              </p>
+                            )}
                           </div>
-                        ) : (
-                          <div className="text-xs text-slate-500">Aucune dépendance détectée</div>
-                        )}
-
-                        {dependencies.devDependencies.length > 0 ? (
-                          <div>
-                            <p className="font-semibold text-slate-700 mb-2">
-                              🛠️ Dépendances Dev ({dependencies.devDependencies.length})
-                            </p>
-                            <div className="space-y-1 max-h-48 overflow-y-auto bg-white p-2 rounded border border-slate-200">
-                              {dependencies.devDependencies.map((dep, i) => (
-                                <div key={i} className="text-xs text-slate-600 flex justify-between items-center gap-2">
-                                  <span className="font-mono flex-1 truncate">{dep.name}</span>
-                                  <span className="text-slate-500 font-mono text-right flex-shrink-0">{dep.version}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-xs text-slate-500">Aucune dépendance dev détectée</div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-slate-500 italic">
-                        ⚠️ Erreur parsing pyproject.toml ou fichier en cours de traitement...
-                      </div>
-                    )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : null}
 
                 {/* Preview Cellules */}
                 {showPreview && notebook ? (
                   <div className="border-t border-slate-200 pt-4 space-y-2">
-                    <p className="text-sm font-semibold text-slate-900">📝 Aperçu du Code ({((notebook as any)?.cells || []).length} cellules)</p>
-                    <div className="space-y-2">
-                      {((notebook as any)?.cells || []).slice(0, 8).map((cell: any, i: number) => (
-                        <div key={i} className="bg-slate-900 rounded p-2 space-y-1">
-                          <p className="text-xs font-semibold text-blue-400">
-                            {cell.cell_type === "code" ? "💻 Code" : "📄 Markdown"} (Cellule {i + 1})
-                          </p>
-                          <pre className="text-xs text-green-400 font-mono overflow-x-auto line-clamp-4 whitespace-pre-wrap break-words">
-                            {Array.isArray(cell.source)
-                              ? cell.source.join("").slice(0, 200)
-                              : String(cell.source).slice(0, 200)}
-                            {(Array.isArray(cell.source)
-                              ? cell.source.join("").length
-                              : String(cell.source).length) > 200
-                              ? "..."
-                              : ""}
-                          </pre>
+                    <p className="text-sm font-semibold text-slate-900">
+                      📝 Aperçu du Code ({((notebook as any)?.cells || []).length} cellules)
+                    </p>
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {((notebook as any)?.cells || []).slice(0, 5).map((cell: any, i: number) => (
+                        <div key={i} className="space-y-1 border border-slate-200 rounded-lg overflow-hidden">
+                          <div className="bg-slate-100 px-3 py-2 border-b border-slate-200 flex items-center gap-2">
+                            <span className="text-xs font-semibold text-slate-700">
+                              {cell.cell_type === "code" ? "💻" : "📄"} Cellule {i + 1}
+                            </span>
+                            <span className="text-xs text-slate-500">
+                              {cell.cell_type === "code" ? "Code" : "Markdown"}
+                            </span>
+                          </div>
+                          
+                          {cell.cell_type === "code" ? (
+                            <div className="bg-slate-900">
+                              <SyntaxHighlighter
+                                language="python"
+                                style={vscDarkPlus}
+                                customStyle={{
+                                  margin: 0,
+                                  background: "transparent",
+                                  fontSize: 12,
+                                  padding: "0.8em",
+                                  borderRadius: 0,
+                                }}
+                                showLineNumbers={false}
+                                wrapLines={true}
+                              >
+                                {Array.isArray(cell.source)
+                                  ? cell.source.join("").slice(0, 400)
+                                  : String(cell.source).slice(0, 400)}
+                              </SyntaxHighlighter>
+                              {(Array.isArray(cell.source)
+                                ? cell.source.join("").length
+                                : String(cell.source).length) > 400 && (
+                                <div className="px-3 py-1 bg-slate-800 text-xs text-slate-400 border-t border-slate-700">
+                                  ... affichage tronqué
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="px-3 py-2 text-sm text-slate-700 bg-slate-50 max-h-32 overflow-hidden">
+                              <p className="whitespace-pre-wrap break-words">
+                                {Array.isArray(cell.source)
+                                  ? cell.source.join("").slice(0, 300)
+                                  : String(cell.source).slice(0, 300)}
+                              </p>
+                              {(Array.isArray(cell.source)
+                                ? cell.source.join("").length
+                                : String(cell.source).length) > 300 && (
+                                <p className="text-xs text-slate-500 italic">
+                                  ... affichage tronqué
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
-                      {((notebook as any)?.cells || []).length > 8 && (
-                        <p className="text-xs text-slate-500 italic text-center">
-                          +{((notebook as any)?.cells || []).length - 8} cellules...
+                      {((notebook as any)?.cells || []).length > 5 && (
+                        <p className="text-xs text-slate-500 italic text-center py-2">
+                          +{((notebook as any)?.cells || []).length - 5} cellules supplémentaires
                         </p>
                       )}
                     </div>
                   </div>
                 ) : null}
               </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
-                Cliquer pour développer
-              </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Input files */}
+      <input
+        ref={inputRef}
+        id={inputId}
+        type="file"
+        accept=".ipynb"
+        onChange={onNotebookChange}
+        className="hidden"
+      />
+      <input
+        ref={inputTomlRef}
+        type="file"
+        accept=".toml"
+        onChange={onPyprojectChange}
+        className="hidden"
+      />
 
       {/* Confirmation Modal */}
       {showConfirmation && (
@@ -760,7 +870,6 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
               </p>
             </div>
 
-            {/* Checkbox for "don't ask again" */}
             <div className="flex items-center gap-2 py-2">
               <input
                 type="checkbox"
@@ -777,7 +886,6 @@ export const NotebookImporter: React.FC<NotebookImporterProps> = ({
               </label>
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-3 pt-4 border-t border-slate-200">
               <button
                 type="button"
