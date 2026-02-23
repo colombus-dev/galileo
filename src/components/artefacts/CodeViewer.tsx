@@ -204,7 +204,7 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
               transform: 'translateX(-50%)',
             }}
           >
-            👉 Voir plus
+            🔍 Voir plus
           </div>
         )}
       </div>

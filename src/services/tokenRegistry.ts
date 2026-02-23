@@ -414,6 +414,48 @@ export const tokenLibraryRegistry: Record<string, TokenRegistryEntry> = {
     kind: 'function',
     docKey: 'seaborn.barplot',
   },
+  'seaborn.lineplot': {
+    lib: 'seaborn',
+    name: 'lineplot',
+    kind: 'function',
+    docKey: 'seaborn.lineplot',
+  },
+  'seaborn.violinplot': {
+    lib: 'seaborn',
+    name: 'violinplot',
+    kind: 'function',
+    docKey: 'seaborn.violinplot',
+  },
+  'seaborn.stripplot': {
+    lib: 'seaborn',
+    name: 'stripplot',
+    kind: 'function',
+    docKey: 'seaborn.stripplot',
+  },
+  'seaborn.pairplot': {
+    lib: 'seaborn',
+    name: 'pairplot',
+    kind: 'function',
+    docKey: 'seaborn.pairplot',
+  },
+  'seaborn.clustermap': {
+    lib: 'seaborn',
+    name: 'clustermap',
+    kind: 'function',
+    docKey: 'seaborn.clustermap',
+  },
+  'seaborn.kdeplot': {
+    lib: 'seaborn',
+    name: 'kdeplot',
+    kind: 'function',
+    docKey: 'seaborn.kdeplot',
+  },
+  'seaborn.histplot': {
+    lib: 'seaborn',
+    name: 'histplot',
+    kind: 'function',
+    docKey: 'seaborn.histplot',
+  },
 
   // ============ JUPYTER ============
   'jupyter': {

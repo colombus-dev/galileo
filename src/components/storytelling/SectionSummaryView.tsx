@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { MdWarningAmber, MdExpandMore, MdExpandLess } from 'react-icons/md';
+import { MdWarningAmber, MdArticle, MdClose } from 'react-icons/md';
 import type { NotebookModel, NotebookSection } from '@/types/notebook';
 
 export interface SectionSummaryViewProps {
@@ -80,12 +80,12 @@ export const SectionSummaryView: React.FC<SectionSummaryViewProps> = ({
           >
             {isExpanded ? (
               <>
-                <MdExpandLess className="text-lg" />
+                <MdClose className="text-lg" />
                 Voir moins
               </>
             ) : (
               <>
-                <MdExpandMore className="text-lg" />
+                <MdArticle className="text-lg" />
                 Voir plus
               </>
             )}

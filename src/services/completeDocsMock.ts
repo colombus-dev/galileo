@@ -18,11 +18,11 @@ Pandas est une librairie Python open-source pour la manipulation et l'analyse de
 
 ## Caractéristiques principales
 
-- **DataFrame** : Structure tabulaire 2D avec colonnes nommées et indexage flexible
-- **Series** : Structure 1D pour manipuler des colonnes isolées
-- **Groupby** : Opérations d'agrégation et transformation en groupe
-- **Merge/Join** : Fusion entre plusieurs DataFrames
-- **Time series** : Manipulation de données temporelles avec indexage temporel
+- DataFrame : Structure tabulaire 2D avec colonnes nommées et indexage flexible
+- Series : Structure 1D pour manipuler des colonnes isolées
+- Groupby : Opérations d'agrégation et transformation en groupe
+- Merge/Join : Fusion entre plusieurs DataFrames
+- Time series : Manipulation de données temporelles avec indexage temporel
 
 ## Cas d'usage
 
@@ -52,12 +52,12 @@ Charge un fichier CSV dans un DataFrame pandas.
 
 ## Paramètres principaux
 
-- **filepath_or_buffer** : Chemin du fichier ou URL
-- **sep** : Délimiteur (défaut: ',')
-- **header** : Ligne à utiliser comme noms (défaut: 0)
-- **dtype** : Types des colonnes
-- **skiprows** : Nombre de lignes à ignorer
-- **nrows** : Nombre de lignes à lire`,
+- filepath_or_buffer : Chemin du fichier ou URL
+- sep : Délimiteur (défaut: ',')
+- header : Ligne à utiliser comme noms (défaut: 0)
+- dtype : Types des colonnes
+- skiprows : Nombre de lignes à ignorer
+- nrows : Nombre de lignes à lire`,
     examples: `df = pd.read_csv("iris.csv")
 df = pd.read_csv("data.csv", sep=';', encoding='utf-8')
 df = pd.read_csv("large.csv", nrows=1000)`,
@@ -73,17 +73,17 @@ Un DataFrame est une structure 2D composée de lignes et colonnes, similaire à 
 
 ## Attributs principaux
 
-- **shape** : Dimensions (lignes, colonnes)
-- **columns** : Noms des colonnes
-- **index** : Indices des lignes
-- **dtypes** : Types de données
+- shape : Dimensions (lignes, colonnes)
+- columns : Noms des colonnes
+- index : Indices des lignes
+- dtypes : Types de données
 
 ## Méthodes courantes
 
-- **head()** : Voir les premières lignes
-- **tail()** : Voir les dernières lignes
-- **describe()** : Statistiques descriptives
-- **info()** : Informations sur les colonnes`,
+- head() : Voir les premières lignes
+- tail() : Voir les dernières lignes
+- describe() : Statistiques descriptives
+- info() : Informations sur les colonnes`,
     examples: `df.shape  # (100, 5)
 df.head()
 df.describe()
@@ -100,9 +100,9 @@ Supprime des lignes ou colonnes du DataFrame.
 
 ## Paramètres
 
-- **labels** : Indices ou noms à supprimer
-- **axis** : 0 pour lignes, 1 pour colonnes
-- **inplace** : Modifier le DataFrame original`,
+- labels : Indices ou noms à supprimer
+- axis : 0 pour lignes, 1 pour colonnes
+- inplace : Modifier le DataFrame original`,
     examples: `df.drop('column_name', axis=1)
 df.drop([0, 1, 2], axis=0)
 df.drop(columns=['col1', 'col2'])`,
@@ -153,9 +153,9 @@ NumPy est la librairie fondamentale pour le calcul scientifique en Python.
 
 ## Caractéristiques
 
-- **ndarray** : Structure de tableau n-dimensionnel
-- **Opérations vectorisées** : Opérations rapides sur tableaux
-- **Algèbre linéaire** : Operations matricielles`,
+- ndarray : Structure de tableau n-dimensionnel
+- Opérations vectorisées : Opérations rapides sur tableaux
+- Algèbre linéaire : Operations matricielles`,
     examples: `import numpy as np
 
 arr = np.array([1, 2, 3])
@@ -211,12 +211,12 @@ Scikit-learn est la librairie standard pour le machine learning en Python.
 
 ## Modules principaux
 
-- **datasets** : Chargement de datasets
-- **preprocessing** : Normalisation et scaling
-- **model_selection** : Train/test split et cross-validation
-- **ensemble** : Modèles d'ensemble (Random Forest, etc.)
-- **metrics** : Métriques d'évaluation
-- **svm** : Support Vector Machines`,
+- datasets : Chargement de datasets
+- preprocessing : Normalisation et scaling
+- model_selection : Train/test split et cross-validation
+- ensemble : Modèles d'ensemble (Random Forest, etc.)
+- metrics : Métriques d'évaluation
+- svm : Support Vector Machines`,
     examples: `from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC`,
@@ -232,10 +232,10 @@ Charge le célèbre dataset Iris avec 150 fleurs.
 
 ## Contenu
 
-- **X** : 4 features morphologiques
-- **y** : 3 classes (espèces)
-- **feature_names** : Noms des features
-- **target_names** : Noms des classes`,
+- X : 4 features morphologiques
+- y : 3 classes (espèces)
+- feature_names : Noms des features
+- target_names : Noms des classes`,
     examples: `iris = load_iris()
 X = iris.data
 y = iris.target`,
@@ -262,9 +262,9 @@ Divise les données en ensembles d'entraînement et de test.
 
 ## Paramètres
 
-- **test_size** : Proportion du test (0.2 par défaut)
-- **random_state** : Seed pour reproductibilité
-- **stratify** : Stratification pour preservez les proportions de classes`,
+- test_size : Proportion du test (0.2 par défaut)
+- random_state : Seed pour reproductibilité
+- stratify : Stratification pour preservez les proportions de classes`,
     examples: `X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)`,
   },
@@ -308,9 +308,9 @@ Classifieur basé sur les Support Vector Machines.
 
 ## Paramètres
 
-- **kernel** : 'linear', 'rbf', 'poly', 'sigmoid'
-- **C** : Paramètre de régularisation
-- **gamma** : Coefficient pour noyau RBF`,
+- kernel : 'linear', 'rbf', 'poly', 'sigmoid'
+- C : Paramètre de régularisation
+- gamma : Coefficient pour noyau RBF`,
     examples: `model = SVC(kernel='rbf', C=1.0)
 model.fit(X_train, y_train)
 predictions = model.predict(X_test)`,
@@ -445,10 +445,72 @@ Crée un nuage de points.`,
     libName: 'seaborn',
     content: `# Seaborn - Statistical Data Visualization
 
-Seaborn est construite sur Matplotlib pour créer des visualisations statistiques attrayantes.`,
-    examples: `import seaborn as sns
+Seaborn est une librairie de visualisation statistique construite sur Matplotlib. Elle propose une interface haut niveau pour créer des graphiques statistiques attrayants et informatifs.
 
-sns.heatmap(data)
+## Caractéristiques principales
+
+- Interface intuitive : Syntaxe simplifiée comparée à Matplotlib
+- Palettes de couleurs : Palettes élégantes et perceptuellement uniformes
+- Estimation statistique : Calculs automatiques d'erreurs et intervalles de confiance
+- Thèmes intégrés : Styles visuels professionnels prédéfinis
+- Intégration pandas : Accès direct aux colonnes de DataFrames
+
+## Types de visualisations disponibles
+
+### Visualisations univariées
+- histplot() : Histogrammes et distributions
+- kdeplot() : Diagrammes de densité estimée par noyau
+- ecdfplot() : Fonction de distribution empirique cumulative
+- rugplot() : Marques pour valeurs individuelles
+
+### Visualisations bivariées
+- scatterplot() : Nuages de points avec support des catégories
+- lineplot() : Graphiques linéaires avec estimation
+- binplot() : Graphiques 2D avec bins hexagonaux
+- jointplot() : Graphiques pairs avec distributions marginales
+
+### Comparaisons de distributions
+- boxplot() : Box plot avec quartiles
+- violinplot() : Density plot avec box plot intégré
+- stripplot() : Points individuels avec jitter
+- swarmplot() : Points évitant les chevauchements
+- pointplot() : Estimations avec intervalles de confiance
+- barplot() : Graphiques en barres avec moyennes
+
+### Matrices et relations
+- heatmap() : Matrices avec codage couleur
+- clustermap() : Heatmap avec clustering hiérarchique
+
+### Graphiques spécialisés
+- pairplot() : Matrice de scatter plots (pairwise)
+- relplot() : Graphiques relationels multiples
+- catplot() : Graphiques catégoriques multiples
+- lmplot() : Graphiques avec régression linéaire
+
+## Cas d'usage courants
+
+- Analyse exploratoire (EDA) avec distributions et relations
+- Visualisation de modèles de régression et classification
+- Comparaison de sous-groupes dans les données
+- Création de dashboards statistiques professionnels`,
+    examples: `import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Charger un dataset d'exemple
+iris = sns.load_dataset('iris')
+
+# Scatter plot avec couleurs par espèce
+sns.scatterplot(data=iris, x='sepal_length', y='sepal_width', hue='species')
+plt.show()
+
+# Box plot de la distribution
+sns.boxplot(data=iris, x='species', y='sepal_length')
+plt.show()
+
+# Heatmap de corrélation
+correlation = iris.corr(numeric_only=True)
+sns.heatmap(correlation, annot=True, cmap='coolwarm')
 plt.show()`,
   },
   'seaborn.heatmap': {
@@ -458,15 +520,38 @@ plt.show()`,
     libName: 'seaborn',
     content: `# heatmap() - Heatmap visualization
 
-Visualise une matrice comme une heatmap avec couleurs.
+Visualise une matrice 2D avec un codage couleur. Utile pour visualiser les corréations, matrices de confusion, ou toute matrice numérique.
 
-## Paramètres
+## Paramètres principaux
 
-- **data** : Matrice 2D
-- **cmap** : Colormap
-- **annot** : Afficher les valeurs`,
-    examples: `sns.heatmap(confusion_matrix)
-sns.heatmap(data, cmap='coolwarm', annot=True)`,
+- data : Matrice 2D (numpy array ou DataFrame)
+- cmap : Colormap (ex: 'viridis', 'coolwarm', 'RdYlGn')
+- annot : Afficher les valeurs numériques (True/False)
+- fmt : Format des annotations (ex: '.2f')
+- cbar : Afficher la barre de couleur (True/False)
+- vmin, vmax : Bornes de la normalisation des couleurs
+- square : Forcer les cellules à être carrées (True/False)
+- linewidths : Épaisseur des lignes entre cellules
+
+## Cas d'usage
+
+- Visualiser les corrélations entre variables (correlation matrix)
+- Afficher les matrices de confusion pour la classification
+- Heatmaps temporelles (ex: activités par jour/heure)
+- Visualiser les résultats de paramètres d'algorithmes`,
+    examples: `import seaborn as sns
+import pandas as pd
+
+# Heatmap de corrélation
+corr_matrix = data.corr(numeric_only=True)
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', square=True)
+
+# Heatmap avec annotations personnalisées
+sns.heatmap(confusion_matrix, annot=True, fmt='.0f', cmap='Blues', 
+            xticklabels=labels, yticklabels=labels)
+
+# Heatmap sans barre de couleur
+sns.heatmap(data, cbar=False, cmap='viridis')`,
   },
   'seaborn.scatterplot': {
     docKey: 'seaborn.scatterplot',
@@ -475,28 +560,442 @@ sns.heatmap(data, cmap='coolwarm', annot=True)`,
     libName: 'seaborn',
     content: `# scatterplot() - Scatter plot amélioré
 
-Scatter plot avec support des groupes et couleurs.`,
-    examples: `sns.scatterplot(x='col1', y='col2', hue='target', data=df)`,
+Crée un nuage de points avec support avancé des groupes, couleurs, et tailles.
+
+## Paramètres principaux
+
+- data : DataFrame ou dictionnaire
+- x, y : Colonnes ou noms pour axes X et Y
+- hue : Colonne pour codage couleur (groupes)
+- size : Colonne pour taille des points
+- style : Colonne pour style des marqueurs (triangle, carré, etc.)
+- palette : Palette de couleurs
+- alpha : Transparence (0 à 1)
+- s : Taille des points (par défaut 100)
+
+## Cas d'usage
+
+- Visualiser les relations entre deux variables continues
+- Identifier les clusters et patterns
+- Observer l'influence d'une troisième variable (via couleur/taille)
+- Détecter les outliers et anomalies`,
+    examples: `import seaborn as sns
+
+# Scatter plot simple
+sns.scatterplot(data=iris, x='sepal_length', y='sepal_width')
+
+# Scatter plot avec groupes par couleur
+sns.scatterplot(data=iris, x='sepal_length', y='sepal_width', hue='species')
+
+# Scatter plot avec tailles variables
+sns.scatterplot(data=data, x='height', y='weight', size='age', 
+                hue='category', palette='deep')
+
+# Personalisation avancée
+sns.scatterplot(data=data, x='x', y='y', hue='group', style='model',
+                alpha=0.6, s=200)`,
   },
   'seaborn.boxplot': {
     docKey: 'seaborn.boxplot',
     title: 'seaborn.boxplot()',
     version: '0.12.2',
     libName: 'seaborn',
-    content: `# boxplot() - Box plot
+    content: `# boxplot() - Box plot pour distributions
 
-Visualise la distribution des données avec quartiles.`,
-    examples: `sns.boxplot(data=df, x='category', y='value')`,
+Visualise la distribution des données avec quartiles, médiane et outliers détectés.
+
+## Paramètres principaux
+
+- data : DataFrame
+- x : Colonne catégorique (groupes)
+- y : Colonne numérique (valeurs)
+- hue : Colonne supplémentaire pour sous-groupes
+- palette : Palette de couleurs
+- orient : 'v' (vertical) ou 'h' (horizontal)
+- width : Largeur des boxes
+- fliersize : Taille des points des outliers
+
+## Composants d'un box plot
+
+- Box : Contient 50% des données (Q1 à Q3)
+- Ligne intérieure : Médiane (Q2)
+- Moustaches : Limites basées sur l'intervalle interquartile
+- Points : Outliers au-delà des moustaches
+
+## Cas d'usage
+
+- Comparer les distributions de plusieurs groupes
+- Identifier les outliers
+- Évaluer la variabilité et asymétrie
+- Comparaison pré/post traitement`,
+    examples: `import seaborn as sns
+
+# Box plot simple par catégorie
+sns.boxplot(data=iris, x='species', y='sepal_length')
+
+# Box plot avec sous-groupes
+sns.boxplot(data=tips, x='day', y='total_bill', hue='sex', palette='Set2')
+
+# Box plot horizontal
+sns.boxplot(data=data, y='category', x='value', orient='h')
+
+# Personnalisation
+sns.boxplot(data=data, x='group', y='value', palette='dark', width=0.6)`,
   },
   'seaborn.barplot': {
     docKey: 'seaborn.barplot',
     title: 'seaborn.barplot()',
     version: '0.12.2',
     libName: 'seaborn',
-    content: `# barplot() - Bar plot
+    content: `# barplot() - Bar plot avec estimation
 
-Crée un graphique en barres avec estimations.`,
-    examples: `sns.barplot(data=df, x='category', y='value')`,
+Crée un graphique en barres affichant l'estimateur (moyenne par défaut) avec intervalle de confiance.
+
+## Paramètres principaux
+
+- data : DataFrame
+- x : Colonne catégorique
+- y : Colonne numérique
+- hue : Sous-groupement
+- estimator : Fonction d'estimation (np.mean, np.median, np.sum, etc.)
+- errorbar : Type d'erreur ('sd', 'se', 'ci', 'pi', etc.)
+- palette : Palette de couleurs
+- orient : 'v' (vertical) ou 'h' (horizontal)
+
+## Différence avec plt.bar()
+
+Contrairement à plt.bar(), seaborn.barplot() calcule automatiquement les agrégations et intervalles de confiance.
+
+## Cas d'usage
+
+- Comparer les moyennes entre groupes
+- Afficher les résultats d'agrégations
+- Présenter les résultats avec intervalles de confiance
+- Comparaison de stratégies ou traitements`,
+    examples: `import seaborn as sns
+import numpy as np
+
+# Bar plot simple
+sns.barplot(data=iris, x='species', y='sepal_length')
+
+# Bar plot avec sous-groupes
+sns.barplot(data=tips, x='day', y='total_bill', hue='sex')
+
+# Bar plot avec estimation personnalisée
+sns.barplot(data=data, x='group', y='value', estimator=np.median, 
+            errorbar=('ci', 95), palette='husl')
+
+# Bar plot horizontal
+sns.barplot(data=data, y='category', x='value', orient='h')`,
+  },
+  'seaborn.lineplot': {
+    docKey: 'seaborn.lineplot',
+    title: 'seaborn.lineplot()',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# lineplot() - Graphique linéaire avec estimation
+
+Crée des graphiques linéaires avec support automatique des estimations et intervalles de confiance.
+
+## Paramètres principaux
+
+- data : DataFrame
+- x, y : Colonnes pour axes
+- hue : Colonne pour couleur de ligne
+- style : Colonne pour style de ligne (tirets, pointillés, etc.)
+- size : Colonne pour épaisseur de ligne
+- estimator : Fonction d'agrégation
+- errorbar : Type d'intervalle d'erreur
+
+## Cas d'usage
+
+- Série temporelle et évolution dans le temps
+- Lignes de tendance avec intervalles de confiance
+- Comparaison de plusieurs trajectoires
+- Visualisation d'expériences répétées`,
+    examples: `import seaborn as sns
+
+# Ligne simple
+sns.lineplot(data=data, x='time', y='value')
+
+# Lignes multiples avec légende
+sns.lineplot(data=data, x='time', y='value', hue='group')
+
+# Avec estimation et IC
+sns.lineplot(data=data, x='epoch', y='loss', hue='model', errorbar='sd')
+
+# Styles multiples
+sns.lineplot(data=data, x='x', y='y', hue='group', style='method')`,
+  },
+  'seaborn.violinplot': {
+    docKey: 'seaborn.violinplot',
+    title: 'seaborn.violinplot()',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# violinplot() - Violin plot (KDE + box plot)
+
+Combine un diagramme de densité (violin) avec un box plot pour afficher la distribution complète.
+
+## Paramètres principaux
+
+- data : DataFrame
+- x, y : Colonnes catégorique et numérique
+- hue : Sous-groupement
+- palette : Palette de couleurs
+- split : Partager les violons par groupes hue (True/False)
+- inner : Style intérieur ('box', 'point', 'quartile', 'stick', None)
+
+## Composants
+
+- Forme du violin : Représente la densité de probabilité estimée
+- Quart intérieur : Box plot optionnel
+- Largeur : Reflète la probabilité relative
+
+## Cas d'usage
+
+- Visualiser des distributions non-gaussiennes
+- Comparer plusieurs distributions en détail
+- Détecter les modes multiples (bimodalité)
+- Distribution avec densité complète`,
+    examples: `import seaborn as sns
+
+# Violin plot simple
+sns.violinplot(data=iris, x='species', y='sepal_length')
+
+# Violin plot avec box plot intégré
+sns.violinplot(data=tips, x='day', y='total_bill', hue='sex', split=True)
+
+# Personnalisation
+sns.violinplot(data=data, x='group', y='value', palette='Set2', 
+               inner='quartile')`,
+  },
+  'seaborn.stripplot': {
+    docKey: 'seaborn.stripplot',
+    title: 'seaborn.stripplot()',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# stripplot() - Points individuels avec jitter
+
+Affiche chaque point individuel avec un décalage aléatoire (jitter) pour éviter les chevauchements.
+
+## Paramètres principaux
+
+- data : DataFrame
+- x, y : Colonnes
+- hue : Colonne pour couleur
+- jitter : Quantité de jitter (0 à 1)
+- size : Taille des points
+- alpha : Transparence
+
+## Cas d'usage
+
+- Voir tous les points individuels
+- Identifier la répartition exacte et densité
+- Petits à moyens datasets (évite surcharge visuelle)`,
+    examples: `import seaborn as sns
+
+# Strip plot simple
+sns.stripplot(data=tips, x='day', y='total_bill')
+
+# Avec couleur par catégorie
+sns.stripplot(data=tips, x='day', y='total_bill', hue='sex', jitter=True)`,
+  },
+  'seaborn.pairplot': {
+    docKey: 'seaborn.pairplot',
+    title: 'seaborn.pairplot()',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# pairplot() - Matrice de scatter plots par paire
+
+Crée une matrice de graphiques montrant les relationships deux à deux entre toutes les variables numériques.
+
+## Paramètres principaux
+
+- data : DataFrame
+- hue : Colonne pour colorer par groupes
+- palette : Palette de couleurs
+- diag_kind : Type de diagramme diagonal ('hist', 'kde')
+- plot_kws : Arguments pour les scatter plots
+- diag_kws : Arguments pour le diagonal
+
+## Cas d'usage
+
+- Exploration exploratoire complète (EDA)
+- Identifier rapidement les corrélations
+- Détecter les patterns multivariés
+- Visualisation des clusters`,
+    examples: `import seaborn as sns
+
+# Pairplot simple
+sns.pairplot(iris)
+
+# Avec coloration par groupe
+sns.pairplot(iris, hue='species', palette='husl')
+
+# Personnalisation du diagonale
+sns.pairplot(data, diag_kind='kde', plot_kws={'alpha': 0.6})`,
+  },
+  'seaborn.clustermap': {
+    docKey: 'seaborn.clustermap',
+    title: 'seaborn.clustermap()',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# clustermap() - Heatmap avec clustering hiérarchique
+
+Crée une heatmap avec clustering hiérarchique des lignes et colonnes.
+
+## Paramètres principaux
+
+- data : Matrice 2D
+- cmap : Colormap
+- method : Méthode de clustering ('complete', 'average', 'single', 'ward')
+- metric : Métrique de distance ('euclidean', 'correlation', etc.)
+- annot : Afficher les valeurs
+- fmt : Format des annotations
+- cbar_kws : Arguments pour la barre de couleur
+
+## Cas d'usage
+
+- Identification de groupes cohérents dans les données
+- Clustering hiérarchique visuel
+- Analyse de corrélations structurées
+- Visualisation d'expériences biologiques (ex: gene expression)`,
+    examples: `import seaborn as sns
+
+# Clustermap simple
+sns.clustermap(data, cmap='viridis')
+
+# Avec corrélation comme métrique
+sns.clustermap(data.corr(numeric_only=True), cmap='coolwarm', 
+               center=0, annot=True)
+
+# Personnalisation
+sns.clustermap(data, method='ward', metric='euclidean', 
+               cmap='Blues', z_score=0)`,
+  },
+  'seaborn.kdeplot': {
+    docKey: 'seaborn.kdeplot',
+    title: 'seaborn.kdeplot()',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# kdeplot() - Kernel Density Estimation plot
+
+Visualise la distribution de probabilité estimée par noyau (KDE) d'une ou plusieurs variables.
+
+## Paramètres principaux
+
+- data : DataFrame
+- x, y : Colonnes (2D KDE si x et y)
+- hue : Colonne pour plusieurs densités
+- fill : Remplir l'aire sous la courbe (True/False)
+- levels : Nombre de contours (2D)
+- cmap : Colormap
+- bw_adjust : Ajustement de la bande passante
+
+## Cas d'usage
+
+- Lisse les distributions (vs histogramme brut)
+- Visualise les modes de distributions
+- KDE 2D pour patterns de dépendance
+- Comparaison de densités entre groupes`,
+    examples: `import seaborn as sns
+
+# KDE simple 1D
+sns.kdeplot(data=iris, x='sepal_length', fill=True)
+
+# KDE par groupe
+sns.kdeplot(data=iris, x='sepal_length', hue='species', fill=True)
+
+# KDE 2D avec contours
+sns.kdeplot(data=iris, x='sepal_length', y='sepal_width', fill=True, 
+            cmap='viridis')
+
+# Avec plusieurs contours
+sns.kdeplot(data=data, x='x', y='y', fill=False, levels=5)`,
+  },
+  'seaborn.histplot': {
+    docKey: 'seaborn.histplot',
+    title: 'seaborn.histplot()',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# histplot() - Histogram avec options avancées
+
+Crée des histogrammes avec support de multiples variables et statistiques.
+
+## Paramètres principaux
+
+- data : DataFrame
+- x, y : Colonnes
+- hue : Colonne pour sous-groupes
+- stat : Type de statistique ('count', 'frequency', 'density', 'probability')
+- bins : Nombre ou définition des bins
+- kde : Ajouter une courbe KDE (True/False)
+- multiple : Comment empiler/afficher ('layer', 'dodge', 'stack', 'fill')
+
+## Cas d'usage
+
+- Distributions univariées
+- Comparaison de distributions entre groupes
+- Analyse de la forme et asymétrie
+- Combinaison avec KDE`,
+    examples: `import seaborn as sns
+
+# Histogramme simple
+sns.histplot(data=iris, x='sepal_length', bins=20)
+
+# Avec KDE
+sns.histplot(data=iris, x='sepal_length', kde=True, stat='density')
+
+# Histogramme avec sous-groupes
+sns.histplot(data=iris, x='sepal_length', hue='species', multiple='dodge')
+
+# Statistique personnalisée
+sns.histplot(data=data, x='value', stat='probability', bins=30)`,
+  },
+  'sns': {
+    docKey: 'sns',
+    title: 'Seaborn (alias: sns)',
+    version: '0.12.2',
+    libName: 'seaborn',
+    content: `# Seaborn (alias: sns)
+
+Alias pour accéder à seaborn: import seaborn as sns
+
+Seaborn est une librairie de visualisation statistique construite sur Matplotlib. Elle propose une interface haut niveau pour créer des graphiques statistiques attrayants et informatifs de manière simple et intuitive.
+
+## Import recommandé
+
+\`\`\`python
+import seaborn as sns
+import matplotlib.pyplot as plt
+\`\`\`
+
+## Principales fonctions de visualisation
+
+- Distributions : histplot(), kdeplot(), ecdfplot()
+- Relationnels : scatterplot(), lineplot()
+- Catégoriques : boxplot(), violinplot(), barplot(), stripplot(), pointplot()
+- Matrices : heatmap(), clustermap()
+- Figures multiples : pairplot(), relplot(), catplot()
+
+## Thèmes et palettes
+
+Seaborn propose également des fonctions pour personnaliser l'apparence:
+- \`sns.set_theme()\` : Appliquer un thème
+- \`sns.set_palette()\` : Changer la palette de couleurs
+- \`sns.color_palette()\` : Créer une palette`,
+    examples: `import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Configuration
+sns.set_theme(style='darkgrid', palette='husl')
+
+# Visualisations variées
+sns.scatterplot(data=iris, x='sepal_length', y='sepal_width', hue='species')
+sns.boxplot(data=iris, x='species', y='sepal_length')
+sns.heatmap(iris.corr(numeric_only=True), annot=True)
+
+plt.show()`,
   },
 
   // ============ JUPYTER/IPYTHON ============
@@ -542,10 +1041,10 @@ Pandas est une librairie Python open-source pour la manipulation et l'analyse de
 
 ## Caractéristiques principales
 
-- **DataFrame** : Structure tabulaire 2D avec colonnes nommées et indexage flexible
-- **Series** : Structure 1D pour manipuler des colonnes isolées
-- **Groupby** : Opérations d'agrégation et transformation en groupe
-- **Merge/Join** : Fusion entre plusieurs DataFrames`,
+- DataFrame : Structure tabulaire 2D avec colonnes nommées et indexage flexible
+- Series : Structure 1D pour manipuler des colonnes isolées
+- Groupby : Opérations d'agrégation et transformation en groupe
+- Merge/Join : Fusion entre plusieurs DataFrames`,
     examples: `import pandas as pd
 
 df = pd.read_csv("data.csv")
@@ -564,10 +1063,10 @@ NumPy est la librairie fondamentale pour le calcul scientifique en Python.
 
 ## Caractéristiques principales
 
-- **ndarray** : Tableaux multidimensionnels efficients
-- **Opérations mathématiques** : Opérations vectorisées
-- **Algèbre linéaire** : Décompositions matricielles
-- **Nombres aléatoires** : Générateurs pseudo-aléatoires`,
+- ndarray : Tableaux multidimensionnels efficients
+- Opérations mathématiques : Opérations vectorisées
+- Algèbre linéaire : Décompositions matricielles
+- Nombres aléatoires : Générateurs pseudo-aléatoires`,
     examples: `import numpy as np
 
 arr = np.array([1, 2, 3])
@@ -586,38 +1085,17 @@ Pyplot est l'interface MATLAB-like pour la visualisation avec Matplotlib.
 
 ## Fonctionnalités
 
-- **figure()** : Crée une nouvelle figure
-- **plot()** : Trace des lignes et des marqueurs
-- **scatter()** : Nuage de points
-- **show()** : Affiche la figure`,
+- figure() : Crée une nouvelle figure
+- plot() : Trace des lignes et des marqueurs
+- scatter() : Nuage de points
+- show() : Affiche la figure`,
     examples: `import matplotlib.pyplot as plt
 
 plt.figure()
 plt.plot([1, 2, 3])
 plt.show()`,
   },
-  'sns': {
-    docKey: 'sns',
-    title: 'Seaborn (alias: sns)',
-    version: '0.12.2',
-    libName: 'seaborn',
-    content: `# Seaborn - Statistical Visualization (alias: sns)
 
-Alias pour seaborn: import seaborn as sns
-
-Seaborn est basée sur matplotlib et fournit une interface pour tracer des graphiques statistiques.
-
-## Fonctionnalités
-
-- **heatmap()** : Heatmaps avec annotation
-- **scatterplot()** : Nuages de points avec hue
-- **boxplot()** : Boîtes à moustaches
-- **barplot()** : Diagrammes en barres statistiques`,
-    examples: `import seaborn as sns
-
-sns.scatterplot(data=df, x="x", y="y")
-sns.heatmap(data=df, annot=True)`,
-  },
   // ============ PANDAS METHODS - MANQUANTS DU NOTEBOOK ============
   'fillna': {
     docKey: 'fillna',
@@ -1107,9 +1585,9 @@ Trie le DataFrame selon une ou plusieurs colonnes.
 
 ## Paramètres
 
-- **by** : Colonne(s) à trier
-- **ascending** : Ordre ascendant (True) ou descendant (False)
-- **inplace** : Modifie sur place si True
+- by : Colonne(s) à trier
+- ascending : Ordre ascendant (True) ou descendant (False)
+- inplace : Modifie sur place si True
 
 ## Exemple
 
@@ -1171,9 +1649,9 @@ Modèle de régression logistique pour la classification supervisée.
 
 ## Paramètres
 
-- **max_iter** : Nombre maximum d'itérations
-- **random_state** : Seed pour la reproductibilité
-- **C** : Inverse de la force de régularisation
+- max_iter : Nombre maximum d'itérations
+- random_state : Seed pour la reproductibilité
+- C : Inverse de la force de régularisation
 
 ## Exemple
 
@@ -1198,10 +1676,10 @@ Classificateur basé sur une forêt d'arbres de décision aléatoires.
 
 ## Paramètres
 
-- **n_estimators** : Nombre d'arbres (défaut: 100)
-- **random_state** : Seed pour la reproductibilité
-- **max_depth** : Profondeur maximale des arbres
-- **min_samples_split** : Minimum de samples pour splitter
+- n_estimators : Nombre d'arbres (défaut: 100)
+- random_state : Seed pour la reproductibilité
+- max_depth : Profondeur maximale des arbres
+- min_samples_split : Minimum de samples pour splitter
 
 ## Exemple
 
@@ -1272,9 +1750,9 @@ Divise les données en ensembles d'entraînement et de test.
 
 ## Paramètres
 
-- **test_size** : Proportion du test set (défaut: 0.25)
-- **random_state** : Seed pour la reproductibilité
-- **stratify** : Stratifier selon une variable (important pour les données déséquilibrées)
+- test_size : Proportion du test set (défaut: 0.25)
+- random_state : Seed pour la reproductibilité
+- stratify : Stratifier selon une variable (important pour les données déséquilibrées)
 
 ## Exemple
 
@@ -1339,11 +1817,11 @@ Crée une carte de chaleur annotée pour visualiser des données matricielles.
 
 ## Paramètres
 
-- **data** : Données 2D (DataFrame ou array)
-- **annot** : Afficher les valeurs (True/False)
-- **cmap** : Palette de couleurs
-- **cbar** : Afficher la barre de couleur (True/False)
-- **fmt** : Format des annotations
+- data : Données 2D (DataFrame ou array)
+- annot : Afficher les valeurs (True/False)
+- cmap : Palette de couleurs
+- cbar : Afficher la barre de couleur (True/False)
+- fmt : Format des annotations
 
 ## Exemple
 
@@ -1365,11 +1843,11 @@ Crée un histogramme avec kde (kernel density estimation) optionnel.
 
 ## Paramètres
 
-- **data** : DataFrame ou données
-- **x** ou **y** : Colonne à visualiser
-- **bins** : Nombre de bins (défaut: auto)
-- **hue** : Colonne pour grouper par couleur
-- **kde** : Ajouter une courbe de densité
+- data : DataFrame ou données
+- x ou y : Colonne à visualiser
+- bins : Nombre de bins (défaut: auto)
+- hue : Colonne pour grouper par couleur
+- kde : Ajouter une courbe de densité
 
 ## Exemple
 
@@ -1409,11 +1887,11 @@ Affiche min, Q1, médiane, Q3, max et outliers.
 
 ## Paramètres
 
-- **data** : DataFrame
-- **x** / **y** : Variables à visualiser
-- **hue** : Grouper par couleur
-- **palette** : Couleurs
-- **dodge** : Éviter le chevauchement
+- data : DataFrame
+- x / y : Variables à visualiser
+- hue : Grouper par couleur
+- palette : Couleurs
+- dodge : Éviter le chevauchement
 
 ## Exemple
 
@@ -1542,9 +2020,9 @@ Crée une nouvelle figure avec les dimensions spécifiées.
 
 ## Paramètres
 
-- **figsize** : Tuple (largeur, hauteur) en pouces
-- **dpi** : Résolution en points par pouce
-- **facecolor** : Couleur de fond
+- figsize : Tuple (largeur, hauteur) en pouces
+- dpi : Résolution en points par pouce
+- facecolor : Couleur de fond
 
 ## Exemple
 
@@ -1824,8 +2302,8 @@ Contrôle quels avertissements sont affichés.
 
 ## Paramètres
 
-- **action** : 'ignore', 'always', 'error', 'default'
-- **category** : Type d'avertissement (ex: FutureWarning)
+- action : 'ignore', 'always', 'error', 'default'
+- category : Type d'avertissement (ex: FutureWarning)
 
 ## Exemple
 
