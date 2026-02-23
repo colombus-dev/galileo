@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { NavBar } from '@/components/NavBar';
 import { NotebookWorkspaceLayout } from '@/components/storytelling/NotebookWorkspaceLayout';
@@ -6,6 +6,7 @@ import { SummarySidebar } from '@/components/storytelling/SummarySidebar';
 import { SectionSummaryView } from '@/components/storytelling/SectionSummaryView';
 import { CodePanel } from '@/components/storytelling/CodePanel';
 import { DocSidePanel } from '@/components/storytelling/DocSidePanel';
+import { InteractiveTutorial } from '@/components/storytelling/InteractiveTutorial';
 import { fetchNotebookMock, fetchDocMock, getTokenDocumentation } from '@/mocks/mockApi';
 import { completeMockDocs } from '@/services/completeDocsMock';
 import { normalizeDocKey, getDocKeyVariants } from '@/utils/docKeyMapper';
@@ -33,6 +34,9 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
   onBackToImport,
 }) => {
   const navigate = useNavigate();
+
+  // Ref pour le scroll du contenu principal
+  const mainContentRef = useRef<HTMLDivElement>(null);
 
   // État notebook
   const [notebook, setNotebook] = useState<NotebookModel | null>(initialNotebook);
@@ -63,7 +67,11 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
     // Si initialNotebook est fourni, l'utiliser directement
     if (initialNotebook) {
       setNotebook(initialNotebook);
-      setActiveSectionId(undefined);
+      // Auto-sélectionner la première section
+      const firstSection = initialNotebook.sections[0];
+      if (firstSection) {
+        setActiveSectionId(firstSection.id);
+      }
       return;
     }
 
@@ -73,7 +81,11 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
         const response = await fetchNotebookMock(initialNotebookId);
         if (response.status === 'success' && response.notebook) {
           setNotebook(response.notebook);
-          setActiveSectionId(undefined);
+          // Auto-sélectionner la première section
+          const firstSection = response.notebook.sections[0];
+          if (firstSection) {
+            setActiveSectionId(firstSection.id);
+          }
         }
       } catch (error) {
         console.error(error);
@@ -95,6 +107,10 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
   const handleSelectSection = useCallback((sectionId: string) => {
     setActiveSectionId(sectionId);
     setCodeCollapsed(false);
+    // Scroll to top du contenu principal
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = 0;
+    }
   }, []);
 
   const handleTokenClick = useCallback(async (token: Token) => {
@@ -245,6 +261,7 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
 		</button>
       </NavBar>
       <NotebookWorkspaceLayout
+        mainRef={mainContentRef}
         sidebar={
           <SummarySidebar
             notebook={notebook}
@@ -255,6 +272,7 @@ export const StorytellingWorkspace: React.FC<StorytellingWorkspaceProps> = ({
         main={
           activeSection ? (
             <div className="w-full space-y-8 p-6">
+              <InteractiveTutorial />
               <SectionSummaryView
                 notebook={notebook}
                 section={activeSection}

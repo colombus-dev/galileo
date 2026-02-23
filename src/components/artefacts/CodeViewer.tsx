@@ -119,6 +119,11 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
         span.style.cursor = 'pointer';
         span.style.position = 'relative';
         span.setAttribute('data-doc-key', token);
+        // Highlighting par défaut (subtle)
+        span.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+        span.style.borderBottom = '1px dotted rgba(59, 130, 246, 0.5)';
+        span.style.borderRadius = '2px';
+        span.style.padding = '2px 4px';
         
         // Événement hover
         span.addEventListener('mouseenter', () => {
@@ -128,19 +133,15 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
             x: rect.left + rect.width / 2,
             y: rect.top,
           });
-          span.style.backgroundColor = 'rgba(59, 130, 246, 0.25)';
+          span.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
           span.style.borderBottom = '2px dotted rgb(59, 130, 246)';
-          span.style.borderRadius = '2px';
-          span.style.padding = '2px 4px';
         });
 
         span.addEventListener('mouseleave', () => {
           setHoveredToken(null);
           setTooltipPos(null);
-          span.style.backgroundColor = '';
-          span.style.borderBottom = '';
-          span.style.borderRadius = '';
-          span.style.padding = '';
+          span.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+          span.style.borderBottom = '1px dotted rgba(59, 130, 246, 0.5)';
         });
 
         span.addEventListener('click', () => {
