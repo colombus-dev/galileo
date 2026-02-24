@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MdClose, MdError } from 'react-icons/md';
 import { renderMarkdown } from '@/utils/markdownRenderer';
 import type { DocEntry } from '@/types/notebook';
@@ -22,15 +22,39 @@ export const DocSidePanel: React.FC<DocSidePanelProps> = ({
   onClose,
   className = '',
 }) => {
+  // Fermer avec Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+
+    if (onClose) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
   return (
     <div className={`flex flex-col h-full ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between gap-2 p-4 border-b border-slate-200 flex-shrink-0">
-        <h2 className="text-lg font-semibold text-slate-900 truncate">Documentation</h2>
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold text-slate-900 truncate">Documentation</h2>
+          {onClose && (
+            <p className="text-xs text-slate-400 mt-1">
+              Appuyez sur <kbd className="px-1 py-0.5 bg-slate-200 rounded text-slate-700 font-mono text-xs">Esc</kbd>
+            </p>
+          )}
+        </div>
         <button
           onClick={onClose}
-          className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+          className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors flex-shrink-0"
           title="Fermer"
+          aria-label="Fermer la documentation"
         >
           <MdClose className="text-lg text-slate-600" />
         </button>

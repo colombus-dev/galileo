@@ -43,7 +43,7 @@ export function ArtefactPipeline({
 			</div>
 
 			{selectedArtifact ? (
-				<div className="fixed inset-0 z-40">
+				<div className="fixed inset-0 z-[1000]">
 					<button
 						type="button"
 						onClick={() => setSelectedArtifactId(null)}

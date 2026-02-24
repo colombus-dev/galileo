@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { CodeNotebook } from "./CodeNotebook";
 
 interface CodeNotebookModalProps {
@@ -9,6 +10,23 @@ export const CodeNotebookModal: React.FC<CodeNotebookModalProps> = ({
     selectedNotebook,
     closeModal
 }) => {
+    // Fermer avec Escape
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'auto';
+        };
+    }, [closeModal]);
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
@@ -19,10 +37,16 @@ export const CodeNotebookModal: React.FC<CodeNotebookModalProps> = ({
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50">
-                    <h3 className="font-semibold text-gray-800">Détails du Notebook</h3>
+                    <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">Détails du Notebook</h3>
+                        <p className="text-xs text-gray-400 mt-1">
+                            Appuyez sur <kbd className="px-1 py-0.5 bg-gray-200 rounded text-gray-700 font-mono text-xs">Esc</kbd>
+                        </p>
+                    </div>
                     <button
                         onClick={closeModal}
-                        className="p-1 rounded-full hover:bg-gray-200 text-gray-500 transition-colors"
+                        className="p-1 rounded-full hover:bg-gray-200 text-gray-500 transition-colors flex-shrink-0"
+                        aria-label="Fermer"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18"></line>

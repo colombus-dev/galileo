@@ -175,8 +175,7 @@ function extractSectionSummary(cells: NotebookCell[]): string {
         .replace(/`(.+?)`/g, '$1')
         .trim();
     })
-    .join('\n\n')
-    .substring(0, 300); // Limiter à 300 caractères
+    .join('\n\n');
 }
 
 /**
