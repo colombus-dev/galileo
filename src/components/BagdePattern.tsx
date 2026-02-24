@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router';
-import { PatternType, Counts } from '@/types/PatternType';
+import { PatternType } from '@/types/PatternType';
 
 const DEFAULT_COLORS: Record<string, string> = {
   green: '#10B981',
@@ -14,28 +14,14 @@ interface BadgePatternProps {
   pattern?: PatternType;
 }
 
-const SCORE_WEIGHTS: Record<keyof Counts, number> = {
-  '[0-0.2[': 0.1,
-  '[0.2-0.4[': 0.3,
-  '[0.4-0.6[': 0.5,
-  '[0.6-0.8[': 0.7,
-  '[0.8-1.0]': 0.9,
-};
+const getColorFromNotebooks = (notebooks?: Record<string, number>): string => {
+  if (!notebooks) return 'white';
+  
+  const scores = Object.values(notebooks);
+  if (scores.length === 0) return 'white';
 
-const getColorFromScore = (score: Counts): string => {
-  let totalCount = 0;
-  let weightedSum = 0;
-
-  (Object.keys(SCORE_WEIGHTS) as Array<keyof Counts>).forEach((key) => {
-    const count = score[key] || 0;
-    const weight = SCORE_WEIGHTS[key];
-    weightedSum += count * weight;
-    totalCount += count;
-  });
-
-  if (totalCount === 0) return 'white';
-
-  const averageScore = weightedSum / totalCount;
+  const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+  
   if (averageScore >= 0.7) return 'green';
   if (averageScore >= 0.4) return 'orange';
   return 'red';
@@ -47,7 +33,7 @@ const BadgePattern: React.FC<BadgePatternProps> = ({
   const finalLabel = pattern?.id;
 
   const finalColorKey = useMemo(() => {
-    if (pattern && pattern.score) return getColorFromScore(pattern.score);
+    if (pattern) return getColorFromNotebooks(pattern.notebooks);
     return 'white';
   }, [pattern]);
 
