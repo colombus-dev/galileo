@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { HierarchyPatterns } from '@/components/patterns/HierarchyPatterns';
 import { mockDataPattern } from '@/data/patternMockData';
-import { PatternType } from '@/PatternType';
+import { PatternType } from '@/types/PatternType';
 
 const meta = {
   title: 'Patterns/HierarchyPatterns',

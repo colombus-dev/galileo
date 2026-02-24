@@ -201,6 +201,7 @@ export function TwoNotebookCenteredDiffCell(props: {
         loading={loading}
         error={error}
         onClose={closeDocModal}
+        sidePanel={true}
       />
     </>
   );

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { type PatternType } from '@/PatternType';
+import { type PatternType } from '@/types/PatternType';
 
 interface PatternsListProps {
     data: PatternType[];
@@ -9,8 +9,8 @@ const PatternsList = ({ data }: PatternsListProps) => {
     const navigate = useNavigate();
 
     const getTotalFrequency = (pattern: PatternType) => {
-        if (!pattern.score) return 0;
-        return Object.values(pattern.score).reduce((sum, val) => sum + (val || 0), 0);
+        if (!pattern.notebooks) return 0;
+        return Object.keys(pattern.notebooks).length;
     };
 
     const sortedPatterns = [...data].sort((a, b) => getTotalFrequency(b) - getTotalFrequency(a));
@@ -56,7 +56,7 @@ const PatternsList = ({ data }: PatternsListProps) => {
 
                             <div className="flex flex-col items-end">
                                 <span className="text-sm font-bold text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
-                                    {frequency} fois
+                                    {frequency} {frequency > 1 ? 'notebooks' : 'notebook'}
                                 </span>
                             </div>
                         </div>

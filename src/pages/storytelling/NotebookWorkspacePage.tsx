@@ -72,7 +72,7 @@ export const NotebookWorkspacePage: React.FC<NotebookWorkspacePageProps> = ({
       </NavBar>
       <div className="w-full h-[calc(100vh-80px)] bg-gradient-to-br from-slate-50 to-slate-100">
         <NotebookImporter
-          label="Importer un notebook Jupyter (.ipynb)"
+          label="Importer un nouveau notebook"
           helperText="Glisse-dépose un notebook .ipynb ou clique pour parcourir. Les sections sont détectées automatiquement à partir des titres markdown."
           onImport={handleImportNotebook}
           showPreview={true}

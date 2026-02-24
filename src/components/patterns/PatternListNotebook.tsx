@@ -1,5 +1,5 @@
 import React from 'react';
-import { PatternType } from "@/PatternType"; 
+import { PatternType } from "@/types/PatternType"; 
 
 interface PatternListNotebookProps {
     pattern: PatternType;
@@ -59,7 +59,7 @@ export const PatternListNotebook: React.FC<PatternListNotebookProps> = ({
 
                         <div className="flex flex-col items-end gap-1 ml-4">
                             <span className="text-xs font-bold text-gray-600">
-                                {Math.round(nb.score * 100)}%
+                                {nb.score}
                             </span>
                             <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                                 <div 

@@ -4,6 +4,7 @@ export interface NotebookWorkspaceLayoutProps {
   sidebar: React.ReactNode;
   main: React.ReactNode;
   docPanel?: React.ReactNode;
+  mainRef?: React.RefObject<HTMLDivElement>;
   className?: string;
 }
 
@@ -17,6 +18,7 @@ export const NotebookWorkspaceLayout: React.FC<NotebookWorkspaceLayoutProps> = (
   sidebar,
   main,
   docPanel,
+  mainRef,
   className = '',
 }) => {
   return (
@@ -27,7 +29,7 @@ export const NotebookWorkspaceLayout: React.FC<NotebookWorkspaceLayoutProps> = (
       </aside>
 
       {/* Contenu principal */}
-      <main className="flex-1 w-full overflow-y-auto">
+      <main ref={mainRef} className="flex-1 w-full overflow-y-auto">
         <div className="w-full h-full">
           {main}
         </div>

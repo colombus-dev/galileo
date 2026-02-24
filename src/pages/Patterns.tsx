@@ -51,7 +51,9 @@ export default function Patterns() {
 
         const matchType = selectedType === '' || pattern.typePattern === selectedType;
         const matchAlgo = selectedAlgo === '' || pattern.typeAlgo === selectedAlgo;
-        const matchMetric = selectedMetric === '' || (pattern[selectedMetric as keyof typeof pattern] !== undefined);
+        
+        const matchMetric = selectedMetric === '' || 
+            (selectedMetric === 'score' ? pattern.notebooks !== undefined : pattern[selectedMetric as keyof typeof pattern] !== undefined);
 
         return matchSearch && matchType && matchAlgo && matchMetric;
     });
@@ -130,6 +132,14 @@ export default function Patterns() {
                         data={filteredData}
                         activeMetric={selectedMetric}
                         fullWidth
+                        display="more"
+                    />
+                    <PatternHeatmap
+                        title={`Patterns (${filteredData.length})`}
+                        data={filteredData}
+                        activeMetric={selectedMetric}
+                        fullWidth
+                        display="less"
                     />
                 </div>
                 <div className="shrink-0">

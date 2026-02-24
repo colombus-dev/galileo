@@ -1,4 +1,4 @@
-import { PatternType } from "@/PatternType";
+import { PatternType } from "@/types/PatternType";
 
 interface PatternTitleProps {
     currentPattern: PatternType;

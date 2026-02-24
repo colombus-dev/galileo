@@ -23,15 +23,18 @@ export function ArtefactsComparisonMode({
 	const [isCodeDiffOpen, setIsCodeDiffOpen] = useState(false);
 
   return (
-    <section className="rounded-2xl border border-indigo-200 bg-indigo-50/50 p-6">
-      <header className="flex items-start gap-3">
-        <div className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white">
-          <Info className="h-5 w-5" aria-hidden="true" />
+    <section className="rounded-2xl border border-indigo-200 bg-indigo-50/50 p-8">
+      <header className="flex items-start gap-4 mb-8">
+        <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white flex-shrink-0">
+          <Info className="h-6 w-6" aria-hidden="true" />
         </div>
         <div className="min-w-0">
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-xl font-semibold text-slate-900">
             Comparaison des notebooks
           </h2>
+          <p className="text-sm text-slate-600 mt-1">
+            Analyse comparative entre les notebooks sélectionnés
+          </p>
         </div>
       </header>
       <div>
@@ -40,69 +43,81 @@ export function ArtefactsComparisonMode({
           onScrollBottom={scrollToBottom}
         />
 
-        <div className="mb-6">
+        <div className="space-y-8">
           {visibleNotebooks.length < 2 ? (
-            <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-slate-700">
-              Sélectionne au moins 2 notebooks pour activer la comparaison.
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 text-slate-700 text-center">
+              <p className="text-sm">Sélectionne au moins 2 notebooks pour activer la comparaison.</p>
             </div>
           ) : (
             <>
-              <div id="section-compare-context-data" className="mt-5 scroll-mt-40">
-                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                  Contexte &amp; Données
+              <section id="section-compare-context-data" className="scroll-mt-40">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-0.5 w-1.5 bg-indigo-600 rounded-full" />
+                  <div className="text-xs font-semibold uppercase tracking-wider text-indigo-700">
+                    Contexte &amp; Données
+                  </div>
                 </div>
-                <div className="mt-4">
+                <div className="bg-white rounded-xl border border-indigo-100 p-6">
                   <NotebookContextDataComparison notebooks={visibleNotebooks} />
                 </div>
-              </div>
+              </section>
 
-              <div
+              <section
                 id="section-compare-performance"
-                className="mt-6 mb-6 scroll-mt-40"
+                className="scroll-mt-40"
               >
-                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                  Performance &amp; Évaluation
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-0.5 w-1.5 bg-indigo-600 rounded-full" />
+                  <div className="text-xs font-semibold uppercase tracking-wider text-indigo-700">
+                    Performance &amp; Évaluation
+                  </div>
                 </div>
-                <div className="mt-4">
+                <div className="bg-white rounded-xl border border-indigo-100 p-6">
                   <NotebookPerformanceComparison notebooks={visibleNotebooks} />
                 </div>
-              </div>
+              </section>
 
-              <div
+              <section
                 id="section-compare-artefacts"
-                className="mt-6 mb-6 scroll-mt-40"
+                className="scroll-mt-40"
               >
-                <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                  Artefacts
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-0.5 w-1.5 bg-indigo-600 rounded-full" />
+                  <div className="text-xs font-semibold uppercase tracking-wider text-indigo-700">
+                    Artefacts
+                  </div>
                 </div>
-                <div className="mt-4">
+                <div className="bg-white rounded-xl border border-indigo-100 p-6">
                   <NotebookArtefactsComparison notebooks={visibleNotebooks} />
                 </div>
-              </div>
+              </section>
 
-              <div id="section-compare-code" className="mt-6 mb-6 scroll-mt-40">
+              <section id="section-compare-code" className="scroll-mt-40">
           <button
             type="button"
             onClick={() => setIsCodeDiffOpen((v) => !v)}
-            className="w-full flex items-center justify-between gap-3 rounded-2xl border border-indigo-200 bg-white/70 px-4 py-3 hover:bg-white"
+            className="w-full flex items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-white px-6 py-4 hover:bg-indigo-50/50 transition-colors"
           >
-            <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
-              Code (diff)
+            <div className="flex items-center gap-3">
+              <div className="h-0.5 w-1.5 bg-indigo-600 rounded-full" />
+              <div className="text-xs font-semibold uppercase tracking-wider text-indigo-700">
+                Code (diff)
+              </div>
             </div>
             <ChevronDown
               className={[
-                "h-5 w-5 text-indigo-700 transition-transform",
+                "h-5 w-5 text-indigo-700 transition-transform flex-shrink-0",
                 isCodeDiffOpen ? "rotate-180" : "",
               ].join(" ")}
               aria-hidden="true"
             />
           </button>
           {isCodeDiffOpen ? (
-            <div className="mt-4">
+            <div className="mt-6 bg-white rounded-xl border border-indigo-100 p-6">
               <NotebookCodeDiffComparison notebooks={visibleNotebooks} />
             </div>
           ) : null}
-              </div>
+              </section>
             </>
           )}
         </div>
