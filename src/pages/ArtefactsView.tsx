@@ -385,7 +385,7 @@ export default function ArtefactsView() {
               onClick={() => navigate("/artefact")}
               className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
             >
-              Artefact
+              Artefacts
             </button>
             <button
               type="button"

@@ -37,6 +37,19 @@ function buildArtifactNameIndex(notebooks: NotebookData[], type: ArtifactType) {
   return Array.from(names).sort((a, b) => a.localeCompare(b));
 }
 
+function buildNotebookArtifactNames(notebook: NotebookData, type: ArtifactType) {
+  const names = new Set<string>();
+  for (const a of getArtifactsByType(notebook, type)) names.add(a.name);
+  return Array.from(names).sort((a, b) => a.localeCompare(b));
+}
+
+function formatNamesSummary(names: string[], maxItems = 3) {
+  if (names.length === 0) return "";
+  const head = names.slice(0, maxItems);
+  const rest = names.length - head.length;
+  return rest > 0 ? `${head.join(", ")} (+${rest})` : head.join(", ");
+}
+
 function findArtifactsByName(notebook: NotebookData, type: ArtifactType, name: string) {
   return notebook.artifacts
     .filter((a) => a.type === type && a.name === name)
@@ -148,6 +161,12 @@ export function NotebookArtefactsComparison({
                 <div className="text-xs text-slate-500">
                   {n.artifacts.length} artefacts
                 </div>
+                <div
+                  className="text-xs text-slate-600 truncate"
+                  title={buildNotebookArtifactNames(n, "metric").join(", ")}
+                >
+                  Métriques: {formatNamesSummary(buildNotebookArtifactNames(n, "metric"), 2) || "—"}
+                </div>
               </div>
             </div>
           ))}
@@ -174,8 +193,8 @@ export function NotebookArtefactsComparison({
               >
                 <div className="flex items-center gap-3">
                   <Icon className="h-4 w-4 text-slate-700" aria-hidden="true" />
-                  <div className="text-sm font-semibold text-slate-900">
-                    {meta.label}
+                  <div className="min-w-0 text-sm font-semibold text-slate-900">
+                    <span className="shrink-0">{meta.label}</span>
                     <span className="ml-2 text-xs font-semibold text-slate-500">
                       ({count})
                     </span>

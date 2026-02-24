@@ -2,6 +2,7 @@ import type { NotebookData } from "@/data/mockData";
 import { buildNotebookContextViewModel } from "@/utils/notebookContext";
 import { NotebookBadge } from "@/components/artefacts/NotebookBadge";
 import { getVisibleNotebooks } from "@/utils/notebookComparison";
+import { getPrimaryMetricArtifact } from "@/utils/notebookPerformanceEvaluation";
 
 export type NotebookComparisonDetailsTableProps = {
   notebooks: NotebookData[];
@@ -42,15 +43,47 @@ function extractOutputSize(notebook: NotebookData): string {
   return "—";
 }
 
-function extractAccuracy(notebook: NotebookData): string {
-  const acc = notebook.artifacts.find(
-    (a) => a.type === "metric" && a.metadata?.metric === "accuracy",
-  );
-  const v = acc?.metadata?.value;
-  if (typeof v === "number") {
-    return `${(v * 100).toFixed(1)}%`;
+function extractPrimaryMetricName(notebook: NotebookData): string {
+  const metric = getPrimaryMetricArtifact(notebook);
+  if (!metric) return "—";
+  return metric.metadata?.metric ?? metric.name ?? "—";
+}
+
+function extractPrimaryMetricValue(notebook: NotebookData): string {
+  const metric = getPrimaryMetricArtifact(notebook);
+  const v = metric?.metadata?.value;
+  if (typeof v !== "number") return "—";
+
+  if (v >= 0 && v <= 1) return `${(v * 100).toFixed(1)}%`;
+  if (Number.isInteger(v)) return String(v);
+  return v.toFixed(2);
+}
+
+function extractExecutionTime(notebook: NotebookData): string {
+  const seconds = notebook.context?.codeQuality?.executionTimeSeconds;
+  if (typeof seconds !== "number") return "—";
+  if (Number.isInteger(seconds)) return `${seconds}s`;
+  return `${seconds.toFixed(1)}s`;
+}
+
+function extractMetricsList(notebook: NotebookData): string {
+  const metrics = notebook.artifacts.filter((a) => a.type === "metric");
+  if (metrics.length === 0) return "—";
+  const names = metrics
+    .map((m) => m.metadata?.metric ?? m.name)
+    .filter(Boolean)
+    .map((x) => x.trim())
+    .filter(Boolean);
+  if (names.length === 0) return "—";
+  const seen = new Set<string>();
+  const deduped: string[] = [];
+  for (const n of names) {
+    const key = n.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(n);
   }
-  return "—";
+  return deduped.join(", ");
 }
 
 function extractVisualizationsCount(notebook: NotebookData): string {
@@ -81,6 +114,22 @@ export function NotebookComparisonDetailsTable({
   const vms = visibleNotebooks.map((n) => buildNotebookContextViewModel(n));
 
   const rows: ComparisonRow[] = [
+    {
+      label: "Performance (score)",
+      values: visibleNotebooks.map(extractPrimaryMetricValue),
+    },
+    {
+      label: "Métrique (score)",
+      values: visibleNotebooks.map(extractPrimaryMetricName),
+    },
+    {
+      label: "Temps d'exécution",
+      values: visibleNotebooks.map(extractExecutionTime),
+    },
+    {
+      label: "Métriques disponibles",
+      values: visibleNotebooks.map(extractMetricsList),
+    },
     {
       label: "Type de tâche",
       values: vms.map((vm) => vm.problem.taskTypeLabel || "—"),
@@ -133,10 +182,6 @@ export function NotebookComparisonDetailsTable({
       label: "Visualisations",
       values: visibleNotebooks.map(extractVisualizationsCount),
     },
-    {
-      label: "Performance finale",
-      values: visibleNotebooks.map(extractAccuracy),
-    },
   ];
 
   return (
@@ -152,13 +197,13 @@ export function NotebookComparisonDetailsTable({
         <table className="w-full border-separate border-spacing-0">
           <thead>
             <tr>
-              <th className="sticky left-0 bg-white px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="sticky left-0 bg-slate-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 border-b border-slate-200">
                 Critère
               </th>
               {visibleNotebooks.map((n, idx) => (
                 <th
                   key={n.id}
-                  className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+                  className="bg-slate-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 border-b border-slate-200"
                 >
                   <div className="flex items-center gap-2">
                     <NotebookBadge index={idx + 1} />
@@ -169,15 +214,20 @@ export function NotebookComparisonDetailsTable({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => {
+            {rows.map((row, idx) => {
               const differs = isRowDifferent(row.values);
+              const zebra = idx % 2 === 0 ? "bg-white" : "bg-slate-100";
+              const rowBg = differs ? "bg-amber-100" : zebra;
               return (
-                <tr key={row.label} className={differs ? "bg-amber-50" : undefined}>
-                  <td className="sticky left-0 bg-inherit px-4 py-3 text-sm font-medium text-slate-800">
+                <tr key={row.label} className={rowBg}>
+                  <td className="sticky left-0 bg-inherit px-4 py-3 text-sm font-medium text-slate-900 border-b border-slate-200">
                     {row.label}
                   </td>
                   {row.values.map((v, i) => (
-                    <td key={i} className="px-4 py-3 text-sm text-slate-800">
+                    <td
+                      key={i}
+                      className="px-4 py-3 text-sm text-slate-900 border-b border-slate-200"
+                    >
                       {v || "—"}
                     </td>
                   ))}
