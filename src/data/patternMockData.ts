@@ -1,4 +1,4 @@
-import { PatternType } from '../PatternType';
+import { PatternType } from '../types/PatternType';
 
 export const mockDataPattern: PatternType[] = [
     {

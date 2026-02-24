@@ -1,5 +1,5 @@
 import React from 'react';
-import { PatternType } from "@/PatternType"; 
+import { PatternType } from "@/types/PatternType"; 
 
 interface PatternListNotebookProps {
     pattern: PatternType;

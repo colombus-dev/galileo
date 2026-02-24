@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'; 
 import { useNavigate } from 'react-router';
 import Plotly from 'plotly.js-dist-min';
-import { type PatternType } from '@/PatternType';
+import { type PatternType } from '@/types/PatternType';
 
 type Bins = {
     '[0-0.2[': number;
@@ -10,6 +10,14 @@ type Bins = {
     '[0.6-0.8[': number;
     '[0.8-1.0]': number;
 };
+
+const BASE_COLORS = [
+    '220, 38, 38',
+    '234, 88, 12',
+    '234, 179, 8',
+    '132, 204, 22',
+    '22, 163, 74'
+];
 
 interface PatternHeatmapProps {
     title?: string;
@@ -51,7 +59,6 @@ const PatternHeatmap = ({
         const counts: Bins = { '[0-0.2[': 0, '[0.2-0.4[': 0, '[0.4-0.6[': 0, '[0.6-0.8[': 0, '[0.8-1.0]': 0 };
         if (!values) return counts;
         
-        // C'est ici que l'on range chaque notebook dans sa tranche de score !
         values.forEach(v => {
             if (v < 0.2) counts['[0-0.2[']++;
             else if (v < 0.4) counts['[0.2-0.4[']++;
@@ -70,7 +77,6 @@ const PatternHeatmap = ({
         let formattedData = data.map(pattern => {
             let rawValues: number[] = [];
 
-            // Pour le score, on prend toutes les valeurs du dictionnaire "notebooks"
             if (activeMetric === 'score' || activeMetric === 'notebooks') {
                 rawValues = Object.values(pattern.notebooks || {});
             } else {
@@ -83,7 +89,6 @@ const PatternHeatmap = ({
             return { id: pattern.id, counts, total: frequency };
         });
 
-        // Tri par nombre total de notebooks (fréquence)
         formattedData.sort((a, b) => a.total - b.total);
 
         let displayData = [];
@@ -93,27 +98,60 @@ const PatternHeatmap = ({
             displayData = formattedData.slice(-limit);
         }
 
-        const zValues = displayData.map(d => DATA_KEYS.map(key => d.counts[key]));
+        let maxFreqInView = 1; 
+        displayData.forEach(d => {
+            DATA_KEYS.forEach(key => {
+                maxFreqInView = Math.max(maxFreqInView, d.counts[key]);
+            });
+        });
 
-        const trace: Plotly.Data = {
-            z: zValues,
-            x: currentLabels,
-            y: displayData.map(d => d.id),
-            type: 'heatmap',
-            colorscale: [
-                [0.0, '#f8fafc'],
-                [0.01, '#ef4444'], 
-                [0.25, '#f97316'],
-                [0.5, '#facc15'], 
-                [0.75, '#84cc16'],
-                [1.0, '#22c55e']
-            ],
-            showscale: true,
-            xgap: 2,
-            ygap: 2,
-            // J'ai remplacé "Occurrences" par "Notebooks" pour plus de clarté
-            hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Notebooks: %{z}<extra></extra>'
-        };
+        let traces: Plotly.Data[] = [];
+
+        if (activeMetric === 'score') {
+            traces = DATA_KEYS.map((key, colIndex) => {
+                const zMatrix = displayData.map(d => {
+                    const row: (number | null)[] = [null, null, null, null, null];
+                    row[colIndex] = d.counts[key];
+                    return row;
+                });
+
+                return {
+                    z: zMatrix,
+                    x: currentLabels,
+                    y: displayData.map(d => d.id),
+                    type: 'heatmap',
+                    colorscale: [
+                        [0, `rgba(${BASE_COLORS[colIndex]}, 0)`],
+                        [1, `rgba(${BASE_COLORS[colIndex]}, 1)`]
+                    ],
+                    zmin: 0,
+                    zmax: maxFreqInView,
+                    showscale: false,
+                    xgap: 2,
+                    ygap: 2,
+                    hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Notebooks: %{z}<extra></extra>',
+                    hoverongaps: false
+                };
+            });
+        } else {
+            const zValues = displayData.map(d => DATA_KEYS.map(key => d.counts[key]));
+            traces = [{
+                z: zValues,
+                x: currentLabels,
+                y: displayData.map(d => d.id),
+                type: 'heatmap',
+                colorscale: [
+                    [0, 'rgba(59, 130, 246, 0)'], 
+                    [1, 'rgba(59, 130, 246, 1)']
+                ],
+                zmin: 0,
+                zmax: maxFreqInView,
+                showscale: false,
+                xgap: 2,
+                ygap: 2,
+                hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Notebooks: %{z}<extra></extra>'
+            }];
+        }
 
         const layout: Plotly.Layout = {
             autosize: true,
@@ -131,7 +169,7 @@ const PatternHeatmap = ({
             }
         };
 
-        Plotly.newPlot(chartRef.current, [trace], layout, { 
+        Plotly.newPlot(chartRef.current, traces, layout, { 
             responsive: true, 
             displayModeBar: false 
         }).then((gd: any) => {

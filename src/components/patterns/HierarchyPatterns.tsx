@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { GitCommit, Activity, FileCode } from 'lucide-react';
 
 import { mockDataPattern } from "@/data/patternMockData";
-import { PatternType } from "@/PatternType";
+import { PatternType } from "@/types/PatternType";
 
 interface HierarchyPatternsProps {
     pattern: PatternType; 

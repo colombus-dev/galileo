@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { type PatternType } from '@/PatternType';
+import { type PatternType } from '@/types/PatternType';
 
 interface PatternsListProps {
     data: PatternType[];

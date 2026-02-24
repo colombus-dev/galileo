@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { PatternType } from "@/PatternType";
+import { PatternType } from "@/types/PatternType";
 import { mockDataPattern } from '@/data/patternMockData';
 
 interface PatternRankingProps {

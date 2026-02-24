@@ -10,7 +10,7 @@ import {
     Legend,
     Tooltip
 } from 'recharts';
-import { PatternType } from '@/PatternType';
+import { PatternType } from '@/types/PatternType';
 
 const calculateScore = (pattern: any): number => {
     const notebooks = pattern.notebooks;

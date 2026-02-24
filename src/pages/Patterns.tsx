@@ -52,7 +52,6 @@ export default function Patterns() {
         const matchType = selectedType === '' || pattern.typePattern === selectedType;
         const matchAlgo = selectedAlgo === '' || pattern.typeAlgo === selectedAlgo;
         
-        // CORRECTION ICI : On vérifie l'existence de 'notebooks' si on filtre par 'score'
         const matchMetric = selectedMetric === '' || 
             (selectedMetric === 'score' ? pattern.notebooks !== undefined : pattern[selectedMetric as keyof typeof pattern] !== undefined);
 
