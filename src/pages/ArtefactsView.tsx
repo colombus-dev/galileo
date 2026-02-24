@@ -23,6 +23,18 @@ export default function ArtefactsView() {
 	const navigate = useNavigate();
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
 
+  const scrollCollapseStateRef = useRef<{
+    lastY: number;
+    lastDirection: -1 | 0 | 1;
+    accumulatorPx: number;
+    raf: number;
+  }>({
+    lastY: 0,
+    lastDirection: 0,
+    accumulatorPx: 0,
+    raf: 0,
+  });
+
   const [mode, setMode] = useState<ModeType>("simple");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectedId = selectedIds[0];
@@ -197,6 +209,60 @@ export default function ArtefactsView() {
     };
   }, [headerHeight, sectionSteps, selectedId]);
 
+  useEffect(() => {
+    const state = scrollCollapseStateRef.current;
+    state.lastY = window.scrollY ?? 0;
+    state.lastDirection = 0;
+    state.accumulatorPx = 0;
+
+    const compute = () => {
+      state.raf = 0;
+      const y = window.scrollY ?? 0;
+      const delta = y - state.lastY;
+      state.lastY = y;
+
+      // Always show navigation near the top of the page.
+      if (y <= 16) {
+        state.lastDirection = 0;
+        state.accumulatorPx = 0;
+        setIsNavCollapsed(false);
+        return;
+      }
+
+      // Ignore tiny scroll noise.
+      if (Math.abs(delta) < 2) return;
+
+      const direction: -1 | 1 = delta > 0 ? 1 : -1;
+      if (direction !== state.lastDirection) {
+        state.lastDirection = direction;
+        state.accumulatorPx = 0;
+      }
+      state.accumulatorPx += Math.abs(delta);
+
+      // Collapse when scrolling down, expand when scrolling up.
+      if (direction === 1 && state.accumulatorPx >= 40) {
+        setIsNavCollapsed(true);
+      }
+      if (direction === -1 && state.accumulatorPx >= 20) {
+        setIsNavCollapsed(false);
+      }
+    };
+
+    const onScroll = () => {
+      if (state.raf) return;
+      state.raf = window.requestAnimationFrame(compute);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // Run once to sync initial state.
+    compute();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (state.raf) window.cancelAnimationFrame(state.raf);
+      state.raf = 0;
+    };
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -305,63 +371,113 @@ export default function ArtefactsView() {
 
       <div className="flex items-center gap-3">
         <ModeSwitchButton mode={mode} onChange={setMode} />
-        <button
-          type="button"
-          onClick={() => setIsNavCollapsed((v) => !v)}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-        >
-          {isNavCollapsed ? "Afficher navigation" : "Masquer navigation"}
-        </button>
+        {isNavCollapsed ? (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => navigate("/storytelling")}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+            >
+              Storytelling
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/artefact")}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+            >
+              Artefact
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/patterns")}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+            >
+              Patterns
+            </button>
+          </div>
+        ) : null}
       </div>
         </div>
-      {!isNavCollapsed && selectedId && primaryNotebook ? (
-				<div className="border-b bg-white/95">
-					<div className="p-4">
-						<div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-							<div className="flex items-center justify-between gap-3">
-								<div className="flex items-center gap-2 min-w-0">
-									<span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-										Navigation
-									</span>
-									<span className="text-xs font-semibold text-slate-700 truncate">
-										{sectionSteps[stepIndex]?.label ?? ""}
-									</span>
-								</div>
-								<div className="text-xs font-semibold text-slate-500 shrink-0">
-									{stepIndex + 1}/{sectionSteps.length}
-								</div>
-							</div>
+      {selectedId && primaryNotebook ? (
+        <div className="border-b bg-white/95">
+          <div className={isNavCollapsed ? "px-4 py-2" : "p-4"}>
+            <div
+              className={[
+                "border border-slate-200 bg-white shadow-sm",
+                isNavCollapsed
+                  ? "rounded-xl px-3 py-2"
+                  : "rounded-2xl px-4 py-3",
+              ].join(" ")}
+            >
+              {isNavCollapsed ? (
+                <div className="flex items-center gap-2 overflow-x-auto">
+                  {sectionSteps.map((step) => {
+                    const isActive = step.id === activeSectionId;
+                    return (
+                      <button
+                        key={step.id}
+                        type="button"
+                        onClick={() => scrollToSection(step.id)}
+                        className={[
+                          "shrink-0 rounded-full px-3 py-1 text-xs font-semibold border",
+                          isActive
+                            ? "border-indigo-200 bg-indigo-50 text-indigo-700"
+                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                        ].join(" ")}
+                    >
+                      {step.label}
+                    </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Navigation
+                      </span>
+                      <span className="text-xs font-semibold text-slate-700 truncate">
+                        {sectionSteps[stepIndex]?.label ?? ""}
+                      </span>
+                    </div>
+                    <div className="text-xs font-semibold text-slate-500 shrink-0">
+                      {stepIndex + 1}/{sectionSteps.length}
+                    </div>
+                  </div>
 
-							<div className="mt-3 h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-								<div
-									className="h-full bg-indigo-600"
-									style={{ width: `${scrollProgressPct}%` }}
-									aria-hidden="true"
-								/>
-							</div>
-							<div className="mt-3 flex items-center gap-2 overflow-x-auto">
-								{sectionSteps.map((step) => {
-									const isActive = step.id === activeSectionId;
-									return (
-										<button
-											key={step.id}
-											type="button"
-											onClick={() => scrollToSection(step.id)}
-											className={[
-												"shrink-0 rounded-full px-3 py-1 text-xs font-semibold border",
-												isActive
-													? "border-indigo-200 bg-indigo-50 text-indigo-700"
-													: "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-											].join(" ")}
-									>
-										{step.label}
-									</button>
-									);
-								})}
-							</div>
-						</div>
-					</div>
-				</div>
+                  <div className="mt-3 h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className="h-full bg-indigo-600"
+                      style={{ width: `${scrollProgressPct}%` }}
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="mt-3 flex items-center gap-2 overflow-x-auto">
+                    {sectionSteps.map((step) => {
+                      const isActive = step.id === activeSectionId;
+                      return (
+                        <button
+                          key={step.id}
+                          type="button"
+                          onClick={() => scrollToSection(step.id)}
+                          className={[
+                            "shrink-0 rounded-full px-3 py-1 text-xs font-semibold border",
+                            isActive
+                              ? "border-indigo-200 bg-indigo-50 text-indigo-700"
+                              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                          ].join(" ")}
+                      >
+                        {step.label}
+                      </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       ) : null}
       </div>
 		<div
