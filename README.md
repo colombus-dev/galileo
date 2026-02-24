@@ -12,6 +12,43 @@ The final report structure (Markdown pages + appendices + references) is in:
 
 React + TypeScript + Vite
 
+## Installation with npm
+
+Installation nodes module:
+```bash
+$ npm install
+```
+
+## Installation whith yarn
+```bash
+$ yarn install
+```
+
+## Launch software whit npm
+
+Launch software:
+```bash
+$ npm run dev
+```
+
+Launch Storybook (documentations):
+```bash
+$ npm run storybook
+```
+
+## Launch software whit yarn
+
+Launch software:
+or
+```bash
+$ yarn dev
+```
+
+Launch Storybook (documentation):
+```bash
+$ yarn storybook
+```
+
 ## Deployment
 
 Using docker compose (recommended):
@@ -21,9 +58,16 @@ $ docker compose build
 $ docker compose up
 ```
 
-Using yarn:
+## Link
 
+Link software
 ```bash
-$ yarn install
-$ yarn dev
+http://localhost:5173/⁠
 ```
+
+Link Storybook (documentation):
+```bash
+http://localhost:6006/⁠
+```
+
+
