@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'; // Suppression de useState
+import { useEffect, useRef } from 'react'; 
 import { useNavigate } from 'react-router';
 import Plotly from 'plotly.js-dist-min';
 import { type PatternType } from '@/PatternType';
@@ -25,7 +25,7 @@ const PatternHeatmap = ({
     activeMetric = 'score',
     fullWidth = true,
     className = '',
-    display = 'more' // Contrôle statique via les props
+    display = 'more' 
 }: PatternHeatmapProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -36,7 +36,6 @@ const PatternHeatmap = ({
     const limit = totalCount < 20 ? Math.ceil(totalCount / 2) : 10;
     const displayCount = Math.min(limit, totalCount);
 
-    // Le titre s'adapte directement à la prop "display"
     const dynamicTitle = `Les ${displayCount} patterns les ${display === 'more' ? 'plus' : 'moins'} fréquents`;
     const subtitle = `${displayCount} patterns affichés sur les ${totalCount}`;
 
@@ -52,6 +51,7 @@ const PatternHeatmap = ({
         const counts: Bins = { '[0-0.2[': 0, '[0.2-0.4[': 0, '[0.4-0.6[': 0, '[0.6-0.8[': 0, '[0.8-1.0]': 0 };
         if (!values) return counts;
         
+        // C'est ici que l'on range chaque notebook dans sa tranche de score !
         values.forEach(v => {
             if (v < 0.2) counts['[0-0.2[']++;
             else if (v < 0.4) counts['[0.2-0.4[']++;
@@ -70,6 +70,7 @@ const PatternHeatmap = ({
         let formattedData = data.map(pattern => {
             let rawValues: number[] = [];
 
+            // Pour le score, on prend toutes les valeurs du dictionnaire "notebooks"
             if (activeMetric === 'score' || activeMetric === 'notebooks') {
                 rawValues = Object.values(pattern.notebooks || {});
             } else {
@@ -82,10 +83,10 @@ const PatternHeatmap = ({
             return { id: pattern.id, counts, total: frequency };
         });
 
+        // Tri par nombre total de notebooks (fréquence)
         formattedData.sort((a, b) => a.total - b.total);
 
         let displayData = [];
-        // On se base uniquement sur la prop 'display' pour découper le tableau
         if (display === 'less') {
             displayData = formattedData.slice(0, limit);
         } else {
@@ -110,7 +111,8 @@ const PatternHeatmap = ({
             showscale: true,
             xgap: 2,
             ygap: 2,
-            hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Occurrences: %{z}<extra></extra>'
+            // J'ai remplacé "Occurrences" par "Notebooks" pour plus de clarté
+            hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Notebooks: %{z}<extra></extra>'
         };
 
         const layout: Plotly.Layout = {
@@ -160,7 +162,6 @@ const PatternHeatmap = ({
                 Plotly.purge(chartRef.current); 
             }
         };
-    // On a remplacé filterMode par display dans les dépendances
     }, [data, activeMetric, display, navigate, limit]);
 
     return (
@@ -170,7 +171,6 @@ const PatternHeatmap = ({
                     <h2 className="text-lg font-semibold text-gray-800">{dynamicTitle}</h2>
                     <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
                 </div>
-                {/* Suppression du bloc contenant les boutons "Moins" et "Plus" */}
             </div>
             <div ref={chartRef} className="w-full h-[500px]" />
         </div>
