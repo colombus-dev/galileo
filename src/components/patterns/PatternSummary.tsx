@@ -6,21 +6,14 @@ interface PatternSummaryProps {
     className?: string;
 }
 
-const bucketMidpoints: Record<string, number> = {
-    '[0-0.2[': 0.1, '[0.2-0.4[': 0.3, '[0.4-0.6[': 0.5, '[0.6-0.8[': 0.7, '[0.8-1.0]': 0.9
-};
-
 export const PatternSummary: React.FC<PatternSummaryProps> = ({ pattern, className = '' }) => {
     
-    const totalFrequency = Object.values(pattern.score).reduce((sum, count) => sum + count, 0);
+    const totalFrequency = pattern.notebooks ? Object.keys(pattern.notebooks).length : 0;
 
-    let weightedScoreSum = 0;
-    Object.entries(pattern.score).forEach(([bucket, count]) => {
-        const midpoint = bucketMidpoints[bucket] || 0;
-        weightedScoreSum += midpoint * count;
-    });
-
-    const rawScore = totalFrequency > 0 ? (weightedScoreSum / totalFrequency) : 0;
+    const scores = pattern.notebooks ? Object.values(pattern.notebooks) : [];
+    const rawScore = totalFrequency > 0 
+        ? scores.reduce((sum, score) => sum + score, 0) / totalFrequency 
+        : 0;
     
     const displayScore = totalFrequency > 0 ? rawScore.toFixed(2) : "N/A";
 
@@ -52,7 +45,7 @@ export const PatternSummary: React.FC<PatternSummaryProps> = ({ pattern, classNa
             <div className="flex items-center gap-6 text-sm">
 
                 <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">Freq.</span>
+                    <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">Notebooks</span>
                     <span className="font-mono font-bold text-gray-900">
                         {new Intl.NumberFormat('fr-FR').format(totalFrequency)}
                     </span>

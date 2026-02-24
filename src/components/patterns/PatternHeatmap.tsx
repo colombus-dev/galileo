@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import Plotly from 'plotly.js-dist-min';
-import { type PatternType, type Counts } from '@/PatternType';
+import { type PatternType } from '@/PatternType';
+
+type Bins = {
+    '[0-0.2[': number;
+    '[0.2-0.4[': number;
+    '[0.4-0.6[': number;
+    '[0.6-0.8[': number;
+    '[0.8-1.0]': number;
+};
 
 interface PatternHeatmapProps {
     title?: string;
@@ -21,7 +29,7 @@ const PatternHeatmap = ({
     const navigate = useNavigate();
     const [filterMode, setFilterMode] = useState<'more' | 'less'>('more');
 
-    const DATA_KEYS: (keyof Counts)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
+    const DATA_KEYS: (keyof Bins)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
 
     const totalCount = data?.length || 0;
     const limit = totalCount < 20 ? Math.ceil(totalCount / 2) : 10;
@@ -38,14 +46,16 @@ const PatternHeatmap = ({
         }
     };
 
-    const transformArrayToCounts = (values: number[]): Counts => {
-        const counts: Counts = { '[0-0.2[': 0, '[0.2-0.4[': 0, '[0.4-0.6[': 0, '[0.6-0.8[': 0, '[0.8-1.0]': 0 };
+    const transformArrayToCounts = (values: number[]): Bins => {
+        const counts: Bins = { '[0-0.2[': 0, '[0.2-0.4[': 0, '[0.4-0.6[': 0, '[0.6-0.8[': 0, '[0.8-1.0]': 0 };
+        if (!values) return counts;
+        
         values.forEach(v => {
-            if (v < 0.2) counts['[0-0.2[']!++;
-            else if (v < 0.4) counts['[0.2-0.4[']!++;
-            else if (v < 0.6) counts['[0.4-0.6[']!++;
-            else if (v < 0.8) counts['[0.6-0.8[']!++;
-            else counts['[0.8-1.0]']!++;
+            if (v < 0.2) counts['[0-0.2[']++;
+            else if (v < 0.4) counts['[0.2-0.4[']++;
+            else if (v < 0.6) counts['[0.4-0.6[']++;
+            else if (v < 0.8) counts['[0.6-0.8[']++;
+            else counts['[0.8-1.0]']++;
         });
         return counts;
     };
@@ -53,16 +63,20 @@ const PatternHeatmap = ({
     useEffect(() => {
         if (!chartRef.current || !data || data.length === 0) return;
 
-        const metricKey = activeMetric as keyof PatternType;
         const currentLabels = getLabels();
 
         let formattedData = data.map(pattern => {
-            const rawValue = pattern[metricKey];
-            const counts = Array.isArray(rawValue) 
-                ? transformArrayToCounts(rawValue) 
-                : (rawValue as Counts) || {};
+            let rawValues: number[] = [];
+
+            if (activeMetric === 'score' || activeMetric === 'notebooks') {
+                rawValues = Object.values(pattern.notebooks || {});
+            } else {
+                rawValues = (pattern[activeMetric as keyof PatternType] as number[]) || [];
+            }
             
-            const total = Object.values(counts).reduce((acc, v) => acc + (v || 0), 0);
+            const counts = transformArrayToCounts(rawValues);
+            const total = Object.values(counts).reduce((acc, v) => acc + v, 0);
+            
             return { id: pattern.id, counts, total };
         });
 
@@ -75,7 +89,7 @@ const PatternHeatmap = ({
             displayData = formattedData.slice(-limit);
         }
 
-        const zValues = displayData.map(d => DATA_KEYS.map(key => d.counts[key] || 0));
+        const zValues = displayData.map(d => DATA_KEYS.map(key => d.counts[key]));
 
         const trace: Plotly.Data = {
             z: zValues,

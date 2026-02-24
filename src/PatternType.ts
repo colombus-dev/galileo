@@ -1,7 +1,6 @@
 export interface PatternType {
     id: string;
     schema: string;
-    score: Counts;
     ram?: number[];
     executionTime?: number[];
     notebooks: Record<string, number>;
@@ -10,14 +9,6 @@ export interface PatternType {
     hierarchy: Hierarchy
 }
 
-
-export interface Counts {
-    '[0-0.2['?: number;
-    '[0.2-0.4['?: number;
-    '[0.4-0.6['?: number;
-    '[0.6-0.8['?: number;
-    '[0.8-1.0]'?: number;
-}
 
 export interface Hierarchy {
     parent: string | null;

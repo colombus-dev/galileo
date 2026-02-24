@@ -10,35 +10,23 @@ import {
     Legend,
     Tooltip
 } from 'recharts';
-import { PatternType, Counts } from '@/PatternType';
-
+import { PatternType } from '@/PatternType';
 
 const calculateScore = (pattern: any): number => {
-    const counts = pattern.score || pattern.counts;
-    if (!counts) return 0;
-
-    const weights: Record<string, number> = {
-        '[0-0.2[': 0.1,
-        '[0.2-0.4[': 0.3,
-        '[0.4-0.6[': 0.5,
-        '[0.6-0.8[': 0.7,
-        '[0.8-1.0]': 0.9,
-    };
-    let totalScore = 0;
-    let totalCount = 0;
-    Object.entries(counts as Counts).forEach(([key, val]) => {
-        const count = val || 0;
-        totalScore += count * (weights[key] || 0);
-        totalCount += count;
-    });
-    return totalCount === 0 ? 0 : totalScore / totalCount;
+    const notebooks = pattern.notebooks;
+    if (!notebooks) return 0;
+    
+    const scores = Object.values(notebooks) as number[];
+    if (scores.length === 0) return 0;
+    
+    const totalScore = scores.reduce((sum, score) => sum + score, 0);
+    return totalScore / scores.length;
 };
 
 const calculateAverage = (arr?: number[]): number => {
     if (!arr || !Array.isArray(arr) || arr.length === 0) return 0;
     return arr.reduce((a, b) => a + b, 0) / arr.length;
 };
-
 
 interface PatternRadarChartProps {
     currentPattern: PatternType;

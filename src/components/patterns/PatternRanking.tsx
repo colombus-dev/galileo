@@ -11,19 +11,14 @@ interface PatternRankingProps {
 }
 
 const getAverageScore = (pattern: PatternType): number => {
-    const bucketMidpoints: Record<string, number> = {
-        '[0-0.2[': 0.1, '[0.2-0.4[': 0.3, '[0.4-0.6[': 0.5, '[0.6-0.8[': 0.7, '[0.8-1.0]': 0.9
-    };
+    const notebooks = pattern.notebooks;
+    if (!notebooks) return 0;
     
-    const totalFreq = Object.values(pattern.score).reduce((a, b) => a + b, 0);
-    if (totalFreq === 0) return 0;
+    const scores = Object.values(notebooks);
+    if (scores.length === 0) return 0;
     
-    let weightedSum = 0;
-    Object.entries(pattern.score).forEach(([bucket, count]) => {
-        weightedSum += (bucketMidpoints[bucket] || 0) * count;
-    });
-    
-    return weightedSum / totalFreq;
+    const totalScore = scores.reduce((sum, score) => sum + score, 0);
+    return totalScore / scores.length;
 };
 
 const getScoreColor = (score: number) => {
@@ -48,8 +43,9 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
         );
 
         return sameGroupPatterns
-            .map(p => ({ ...p, score: getAverageScore(p) }))
-            .sort((a, b) => b.score - a.score); 
+            // On calcule et on stocke la moyenne dans une nouvelle propriété "averageScore"
+            .map(p => ({ ...p, averageScore: getAverageScore(p) }))
+            .sort((a, b) => b.averageScore - a.averageScore); 
     }, [currentPattern, allPatterns, criteria]);
 
     const displayItems = useMemo(() => {
@@ -126,8 +122,8 @@ export const PatternRanking: React.FC<PatternRankingProps> = ({
                                 </div>
                             </div>
 
-                            <div className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${getScoreColor(patternItem.score)}`}>
-                                {patternItem.score.toFixed(2)}
+                            <div className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${getScoreColor(patternItem.averageScore)}`}>
+                                {patternItem.averageScore.toFixed(2)}
                             </div>
                         </div>
                     );

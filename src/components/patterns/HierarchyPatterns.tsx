@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { GitCommit, Activity, FileCode } from 'lucide-react';
 
 import { mockDataPattern } from "@/data/patternMockData";
-import { PatternType, Counts } from "@/PatternType";
+import { PatternType } from "@/PatternType";
 
 interface HierarchyPatternsProps {
     pattern: PatternType; 
@@ -11,23 +11,12 @@ interface HierarchyPatternsProps {
     currentPatternId?: string; 
 }
 
-const calculateAverageScore = (counts: Counts): number => {
-    const intervalValues: Record<string, number> = {
-        '[0-0.2[': 0.1,
-        '[0.2-0.4[': 0.3,
-        '[0.4-0.6[': 0.5,
-        '[0.6-0.8[': 0.7,
-        '[0.8-1.0]': 0.9,
-    };
-    let totalScore = 0;
-    let totalCount = 0;
-    Object.entries(counts).forEach(([interval, count]) => {
-        const value = count || 0;
-        const weight = intervalValues[interval] || 0;
-        totalScore += value * weight;
-        totalCount += value;
-    });
-    return totalCount === 0 ? 0 : totalScore / totalCount;
+const calculateAverageScore = (notebooks: Record<string, number>): number => {
+    const scores = Object.values(notebooks);
+    if (scores.length === 0) return 0;
+    
+    const totalScore = scores.reduce((sum, score) => sum + score, 0);
+    return totalScore / scores.length;
 };
 
 const getScoreStyle = (score: number) => {
@@ -79,7 +68,7 @@ const PatternNode = ({
             .filter((p): p is PatternType => !!p)
         : [];
 
-    const score = calculateAverageScore(pattern.score);
+    const score = calculateAverageScore(pattern.notebooks);
     const scoreClass = getScoreStyle(score);
     const sideBarClass = getSideBarStyle(score);
 
