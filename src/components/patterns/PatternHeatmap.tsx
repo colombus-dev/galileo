@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react'; // Suppression de useState
 import { useNavigate } from 'react-router';
 import Plotly from 'plotly.js-dist-min';
 import { type PatternType } from '@/PatternType';
@@ -17,17 +17,18 @@ interface PatternHeatmapProps {
     activeMetric?: string;
     fullWidth?: boolean;
     className?: string;
+    display?: 'more' | 'less'; 
 }
 
 const PatternHeatmap = ({
     data,
     activeMetric = 'score',
     fullWidth = true,
-    className = ''
+    className = '',
+    display = 'more' // Contrôle statique via les props
 }: PatternHeatmapProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
-    const [filterMode, setFilterMode] = useState<'more' | 'less'>('more');
 
     const DATA_KEYS: (keyof Bins)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
 
@@ -35,7 +36,8 @@ const PatternHeatmap = ({
     const limit = totalCount < 20 ? Math.ceil(totalCount / 2) : 10;
     const displayCount = Math.min(limit, totalCount);
 
-    const dynamicTitle = `Les ${displayCount} patterns les ${filterMode === 'more' ? 'plus' : 'moins'} fréquents`;
+    // Le titre s'adapte directement à la prop "display"
+    const dynamicTitle = `Les ${displayCount} patterns les ${display === 'more' ? 'plus' : 'moins'} fréquents`;
     const subtitle = `${displayCount} patterns affichés sur les ${totalCount}`;
 
     const getLabels = () => {
@@ -75,15 +77,16 @@ const PatternHeatmap = ({
             }
             
             const counts = transformArrayToCounts(rawValues);
-            const total = Object.values(counts).reduce((acc, v) => acc + v, 0);
+            const frequency = pattern.notebooks ? Object.keys(pattern.notebooks).length : 0;
             
-            return { id: pattern.id, counts, total };
+            return { id: pattern.id, counts, total: frequency };
         });
 
         formattedData.sort((a, b) => a.total - b.total);
 
         let displayData = [];
-        if (filterMode === 'less') {
+        // On se base uniquement sur la prop 'display' pour découper le tableau
+        if (display === 'less') {
             displayData = formattedData.slice(0, limit);
         } else {
             displayData = formattedData.slice(-limit);
@@ -107,7 +110,7 @@ const PatternHeatmap = ({
             showscale: true,
             xgap: 2,
             ygap: 2,
-            hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Fréquence: %{z}<extra></extra>'
+            hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Occurrences: %{z}<extra></extra>'
         };
 
         const layout: Plotly.Layout = {
@@ -157,7 +160,8 @@ const PatternHeatmap = ({
                 Plotly.purge(chartRef.current); 
             }
         };
-    }, [data, activeMetric, filterMode, navigate, limit]);
+    // On a remplacé filterMode par display dans les dépendances
+    }, [data, activeMetric, display, navigate, limit]);
 
     return (
         <div className={`bg-white p-5 rounded-lg shadow-md ${className}`} style={{ width: fullWidth ? '100%' : 'auto' }}>
@@ -166,10 +170,7 @@ const PatternHeatmap = ({
                     <h2 className="text-lg font-semibold text-gray-800">{dynamicTitle}</h2>
                     <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
                 </div>
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                    <button onClick={() => setFilterMode('less')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'less' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Moins</button>
-                    <button onClick={() => setFilterMode('more')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'more' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Plus</button>
-                </div>
+                {/* Suppression du bloc contenant les boutons "Moins" et "Plus" */}
             </div>
             <div ref={chartRef} className="w-full h-[500px]" />
         </div>

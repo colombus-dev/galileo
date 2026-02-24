@@ -130,6 +130,14 @@ export default function Patterns() {
                         data={filteredData}
                         activeMetric={selectedMetric}
                         fullWidth
+                        display="more"
+                    />
+                    <PatternHeatmap
+                        title={`Patterns (${filteredData.length})`}
+                        data={filteredData}
+                        activeMetric={selectedMetric}
+                        fullWidth
+                        display="less"
                     />
                 </div>
                 <div className="shrink-0">
