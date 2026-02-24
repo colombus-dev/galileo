@@ -10,35 +10,23 @@ import {
     Legend,
     Tooltip
 } from 'recharts';
-import { PatternType, Counts } from '@/PatternType';
-
+import { PatternType } from '@/types/PatternType';
 
 const calculateScore = (pattern: any): number => {
-    const counts = pattern.score || pattern.counts;
-    if (!counts) return 0;
-
-    const weights: Record<string, number> = {
-        '[0-0.2[': 0.1,
-        '[0.2-0.4[': 0.3,
-        '[0.4-0.6[': 0.5,
-        '[0.6-0.8[': 0.7,
-        '[0.8-1.0]': 0.9,
-    };
-    let totalScore = 0;
-    let totalCount = 0;
-    Object.entries(counts as Counts).forEach(([key, val]) => {
-        const count = val || 0;
-        totalScore += count * (weights[key] || 0);
-        totalCount += count;
-    });
-    return totalCount === 0 ? 0 : totalScore / totalCount;
+    const notebooks = pattern.notebooks;
+    if (!notebooks) return 0;
+    
+    const scores = Object.values(notebooks) as number[];
+    if (scores.length === 0) return 0;
+    
+    const totalScore = scores.reduce((sum, score) => sum + score, 0);
+    return totalScore / scores.length;
 };
 
 const calculateAverage = (arr?: number[]): number => {
     if (!arr || !Array.isArray(arr) || arr.length === 0) return 0;
     return arr.reduce((a, b) => a + b, 0) / arr.length;
 };
-
 
 interface PatternRadarChartProps {
     currentPattern: PatternType;
@@ -112,16 +100,18 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
             time: calculateAverage(currentPattern.executionTime)
         };
 
-        const normalize = (val: number, max: number) => (val / max) * 100;
+        const normalizeScore = (val: number) => Math.min(100, Math.max(0, val * 100));
+        
+        const invertNormalize = (val: number, max: number) => max === 0 ? 100 : Math.max(0, 100 - ((val / max) * 100));
 
         return [
             {
                 subject: 'Score',
                 fullMark: 100,
-                current: normalize(currentStats.score, maxValues.score),
-                avg: normalize(avgValues.score, maxValues.score),
-                best: normalize(bestPatterns.score.score, maxValues.score),
-                worst: normalize(worstPatterns.score.score, maxValues.score),
+                current: normalizeScore(currentStats.score),
+                avg: normalizeScore(avgValues.score),
+                best: normalizeScore(bestPatterns.score.score),
+                worst: normalizeScore(worstPatterns.score.score),
                 
                 unit: '',
                 realCurrent: currentStats.score.toFixed(2),
@@ -132,12 +122,12 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
                 worstName: worstPatterns.score.id
             },
             {
-                subject: 'RAM',
+                subject: 'Efficacité RAM', 
                 fullMark: 100,
-                current: normalize(currentStats.ram, maxValues.ram),
-                avg: normalize(avgValues.ram, maxValues.ram),
-                best: normalize(bestPatterns.ram.ram, maxValues.ram),
-                worst: normalize(worstPatterns.ram.ram, maxValues.ram),
+                current: invertNormalize(currentStats.ram, maxValues.ram),
+                avg: invertNormalize(avgValues.ram, maxValues.ram),
+                best: invertNormalize(bestPatterns.ram.ram, maxValues.ram),
+                worst: invertNormalize(worstPatterns.ram.ram, maxValues.ram),
                 
                 unit: 'MB',
                 realCurrent: currentStats.ram.toFixed(0),
@@ -148,12 +138,12 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
                 worstName: worstPatterns.ram.id
             },
             {
-                subject: 'Temps',
+                subject: 'Vitesse', 
                 fullMark: 100,
-                current: normalize(currentStats.time, maxValues.time),
-                avg: normalize(avgValues.time, maxValues.time),
-                best: normalize(bestPatterns.time.time, maxValues.time),
-                worst: normalize(worstPatterns.time.time, maxValues.time),
+                current: invertNormalize(currentStats.time, maxValues.time),
+                avg: invertNormalize(avgValues.time, maxValues.time),
+                best: invertNormalize(bestPatterns.time.time, maxValues.time),
+                worst: invertNormalize(worstPatterns.time.time, maxValues.time),
 
                 unit: 's',
                 realCurrent: currentStats.time.toFixed(2),
@@ -184,7 +174,6 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
                 className="cursor-pointer hover:opacity-80 transition-opacity"
             >
                 <circle cx={cx} cy={cy} r={10} fill="transparent" />
-                
                 <circle cx={cx} cy={cy} r={4} fill={color} stroke="white" strokeWidth={1} />
             </g>
         );
@@ -265,9 +254,9 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
                         name="Pire"
                         dataKey="worst"
                         stroke="#ef4444"
-                        strokeWidth={1}
+                        strokeOpacity={0}
                         fill="#ef4444"
-                        fillOpacity={0.15}
+                        fillOpacity={0}
                         dot={<InteractiveDot type="worst" />}
                     />
 
@@ -275,9 +264,9 @@ const PatternRadarChart = ({ currentPattern, allPatterns }: PatternRadarChartPro
                         name="Meilleur"
                         dataKey="best"
                         stroke="#22c55e"
-                        strokeWidth={1}
+                        strokeOpacity={0}
                         fill="#22c55e"
-                        fillOpacity={0.25}
+                        fillOpacity={0}
                         dot={<InteractiveDot type="best" />}
                     />
 

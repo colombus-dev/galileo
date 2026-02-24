@@ -1,7 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react'; 
 import { useNavigate } from 'react-router';
 import Plotly from 'plotly.js-dist-min';
-import { type PatternType, type Counts } from '@/PatternType';
+import { type PatternType } from '@/types/PatternType';
+
+type Bins = {
+    '[0-0.2[': number;
+    '[0.2-0.4[': number;
+    '[0.4-0.6[': number;
+    '[0.6-0.8[': number;
+    '[0.8-1.0]': number;
+};
+
+const BASE_COLORS = [
+    '220, 38, 38',
+    '234, 88, 12',
+    '234, 179, 8',
+    '132, 204, 22',
+    '22, 163, 74'
+];
 
 interface PatternHeatmapProps {
     title?: string;
@@ -9,25 +25,26 @@ interface PatternHeatmapProps {
     activeMetric?: string;
     fullWidth?: boolean;
     className?: string;
+    display?: 'more' | 'less'; 
 }
 
 const PatternHeatmap = ({
     data,
     activeMetric = 'score',
     fullWidth = true,
-    className = ''
+    className = '',
+    display = 'more' 
 }: PatternHeatmapProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
-    const [filterMode, setFilterMode] = useState<'more' | 'less'>('more');
 
-    const DATA_KEYS: (keyof Counts)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
+    const DATA_KEYS: (keyof Bins)[] = ['[0-0.2[', '[0.2-0.4[', '[0.4-0.6[', '[0.6-0.8[', '[0.8-1.0]'];
 
     const totalCount = data?.length || 0;
     const limit = totalCount < 20 ? Math.ceil(totalCount / 2) : 10;
     const displayCount = Math.min(limit, totalCount);
 
-    const dynamicTitle = `Les ${displayCount} patterns les ${filterMode === 'more' ? 'plus' : 'moins'} fréquents`;
+    const dynamicTitle = `Les ${displayCount} patterns les ${display === 'more' ? 'plus' : 'moins'} fréquents`;
     const subtitle = `${displayCount} patterns affichés sur les ${totalCount}`;
 
     const getLabels = () => {
@@ -38,14 +55,16 @@ const PatternHeatmap = ({
         }
     };
 
-    const transformArrayToCounts = (values: number[]): Counts => {
-        const counts: Counts = { '[0-0.2[': 0, '[0.2-0.4[': 0, '[0.4-0.6[': 0, '[0.6-0.8[': 0, '[0.8-1.0]': 0 };
+    const transformArrayToCounts = (values: number[]): Bins => {
+        const counts: Bins = { '[0-0.2[': 0, '[0.2-0.4[': 0, '[0.4-0.6[': 0, '[0.6-0.8[': 0, '[0.8-1.0]': 0 };
+        if (!values) return counts;
+        
         values.forEach(v => {
-            if (v < 0.2) counts['[0-0.2[']!++;
-            else if (v < 0.4) counts['[0.2-0.4[']!++;
-            else if (v < 0.6) counts['[0.4-0.6[']!++;
-            else if (v < 0.8) counts['[0.6-0.8[']!++;
-            else counts['[0.8-1.0]']!++;
+            if (v < 0.2) counts['[0-0.2[']++;
+            else if (v < 0.4) counts['[0.2-0.4[']++;
+            else if (v < 0.6) counts['[0.4-0.6[']++;
+            else if (v < 0.8) counts['[0.6-0.8[']++;
+            else counts['[0.8-1.0]']++;
         });
         return counts;
     };
@@ -53,48 +72,86 @@ const PatternHeatmap = ({
     useEffect(() => {
         if (!chartRef.current || !data || data.length === 0) return;
 
-        const metricKey = activeMetric as keyof PatternType;
         const currentLabels = getLabels();
 
         let formattedData = data.map(pattern => {
-            const rawValue = pattern[metricKey];
-            const counts = Array.isArray(rawValue) 
-                ? transformArrayToCounts(rawValue) 
-                : (rawValue as Counts) || {};
+            let rawValues: number[] = [];
+
+            if (activeMetric === 'score' || activeMetric === 'notebooks') {
+                rawValues = Object.values(pattern.notebooks || {});
+            } else {
+                rawValues = (pattern[activeMetric as keyof PatternType] as number[]) || [];
+            }
             
-            const total = Object.values(counts).reduce((acc, v) => acc + (v || 0), 0);
-            return { id: pattern.id, counts, total };
+            const counts = transformArrayToCounts(rawValues);
+            const frequency = pattern.notebooks ? Object.keys(pattern.notebooks).length : 0;
+            
+            return { id: pattern.id, counts, total: frequency };
         });
 
         formattedData.sort((a, b) => a.total - b.total);
 
         let displayData = [];
-        if (filterMode === 'less') {
+        if (display === 'less') {
             displayData = formattedData.slice(0, limit);
         } else {
             displayData = formattedData.slice(-limit);
         }
 
-        const zValues = displayData.map(d => DATA_KEYS.map(key => d.counts[key] || 0));
+        let maxFreqInView = 1; 
+        displayData.forEach(d => {
+            DATA_KEYS.forEach(key => {
+                maxFreqInView = Math.max(maxFreqInView, d.counts[key]);
+            });
+        });
 
-        const trace: Plotly.Data = {
-            z: zValues,
-            x: currentLabels,
-            y: displayData.map(d => d.id),
-            type: 'heatmap',
-            colorscale: [
-                [0.0, '#f8fafc'],
-                [0.01, '#ef4444'], 
-                [0.25, '#f97316'],
-                [0.5, '#facc15'], 
-                [0.75, '#84cc16'],
-                [1.0, '#22c55e']
-            ],
-            showscale: true,
-            xgap: 2,
-            ygap: 2,
-            hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Fréquence: %{z}<extra></extra>'
-        };
+        let traces: Plotly.Data[] = [];
+
+        if (activeMetric === 'score') {
+            traces = DATA_KEYS.map((key, colIndex) => {
+                const zMatrix = displayData.map(d => {
+                    const row: (number | null)[] = [null, null, null, null, null];
+                    row[colIndex] = d.counts[key];
+                    return row;
+                });
+
+                return {
+                    z: zMatrix,
+                    x: currentLabels,
+                    y: displayData.map(d => d.id),
+                    type: 'heatmap',
+                    colorscale: [
+                        [0, `rgba(${BASE_COLORS[colIndex]}, 0)`],
+                        [1, `rgba(${BASE_COLORS[colIndex]}, 1)`]
+                    ],
+                    zmin: 0,
+                    zmax: maxFreqInView,
+                    showscale: false,
+                    xgap: 2,
+                    ygap: 2,
+                    hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Notebooks: %{z}<extra></extra>',
+                    hoverongaps: false
+                };
+            });
+        } else {
+            const zValues = displayData.map(d => DATA_KEYS.map(key => d.counts[key]));
+            traces = [{
+                z: zValues,
+                x: currentLabels,
+                y: displayData.map(d => d.id),
+                type: 'heatmap',
+                colorscale: [
+                    [0, 'rgba(59, 130, 246, 0)'], 
+                    [1, 'rgba(59, 130, 246, 1)']
+                ],
+                zmin: 0,
+                zmax: maxFreqInView,
+                showscale: false,
+                xgap: 2,
+                ygap: 2,
+                hovertemplate: '<b>%{y}</b><br>Tranche: %{x}<br>Notebooks: %{z}<extra></extra>'
+            }];
+        }
 
         const layout: Plotly.Layout = {
             autosize: true,
@@ -112,7 +169,7 @@ const PatternHeatmap = ({
             }
         };
 
-        Plotly.newPlot(chartRef.current, [trace], layout, { 
+        Plotly.newPlot(chartRef.current, traces, layout, { 
             responsive: true, 
             displayModeBar: false 
         }).then((gd: any) => {
@@ -143,7 +200,7 @@ const PatternHeatmap = ({
                 Plotly.purge(chartRef.current); 
             }
         };
-    }, [data, activeMetric, filterMode, navigate, limit]);
+    }, [data, activeMetric, display, navigate, limit]);
 
     return (
         <div className={`bg-white p-5 rounded-lg shadow-md ${className}`} style={{ width: fullWidth ? '100%' : 'auto' }}>
@@ -151,10 +208,6 @@ const PatternHeatmap = ({
                 <div>
                     <h2 className="text-lg font-semibold text-gray-800">{dynamicTitle}</h2>
                     <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
-                </div>
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                    <button onClick={() => setFilterMode('less')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'less' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Moins</button>
-                    <button onClick={() => setFilterMode('more')} className={`px-3 py-1 text-sm rounded-md transition-colors ${filterMode === 'more' ? 'bg-white text-blue-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Plus</button>
                 </div>
             </div>
             <div ref={chartRef} className="w-full h-[500px]" />

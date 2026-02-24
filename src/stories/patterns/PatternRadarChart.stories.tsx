@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import PatternRadarChart from '@/components/patterns/PatternRadarChart';
-import { PatternType } from '@/PatternType';
+import { PatternType } from '@/types/PatternType';
 
 const mockPatterns: PatternType[] = [
     {

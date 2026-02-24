@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router';
-import { PatternType, Counts } from '@/PatternType';
+import { PatternType, Counts } from '@/types/PatternType';
 
 const DEFAULT_COLORS: Record<string, string> = {
   green: '#10B981',
