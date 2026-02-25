@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import BadgePattern from '@/components/BagdePattern';
-import { mockDataPattern } from '@/data/patternMockData';
+import { ensureMockPatternsForNotebook, mockDataPattern } from '@/data/patternMockData';
 
 interface PatternPipelineProps {
   notebookName: string;
@@ -13,6 +13,7 @@ const PatternPipeline: React.FC<PatternPipelineProps> = ({
 }) => {
   
   const pipelinePatterns = useMemo(() => {
+    ensureMockPatternsForNotebook(notebookName);
     const filtered = mockDataPattern.filter((pattern) => 
       Object.prototype.hasOwnProperty.call(pattern.notebooks, notebookName)
     );

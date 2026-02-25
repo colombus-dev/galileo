@@ -403,3 +403,81 @@ export const mockDataPattern: PatternType[] = [
         hierarchy: { parent: 'NN_Deep_Learning_Pipeline', children: null }
     }
 ];
+
+type StoredNotebookHistoryEntry = {
+    id?: unknown;
+    name?: unknown;
+};
+
+const NOTEBOOK_HISTORY_STORAGE_KEY = "galileo_notebook_history";
+
+function canUseLocalStorage(): boolean {
+    return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+}
+
+function safeParseJson<T>(value: string | null): T | null {
+    if (!value) return null;
+    try {
+        return JSON.parse(value) as T;
+    } catch {
+        return null;
+    }
+}
+
+function normalizeNotebookId(value: string): string {
+    const trimmed = value.trim();
+    const base = trimmed.split(/[/\\]/).pop() ?? trimmed;
+    const lowered = base.toLowerCase();
+    return lowered.endsWith(".ipynb") ? lowered : `${lowered}.ipynb`;
+}
+
+function pickTemplateKey(filename: string): string {
+    const v = filename.toLowerCase();
+    if (v.includes("prep") || v.includes("preproc") || v.includes("clean") || v.includes("feature")) return "prep.ipynb";
+    if (v.includes("train") || v.includes("fit") || v.includes("learn")) return "train.ipynb";
+    if (v.includes("model") || v.includes("clf") || v.includes("reg")) return "model.ipynb";
+    if (v.includes("eval") || v.includes("test") || v.includes("metric") || v.includes("score")) return "eval.ipynb";
+    if (v.includes("explore") || v.includes("eda") || v.includes("visual") || v.includes("plot")) return "explore.ipynb";
+    if (v.includes("experiment") || v.includes("exp")) return "experiment.ipynb";
+    return "train.ipynb";
+}
+
+function hasAnyPatternForNotebook(notebookId: string): boolean {
+    for (const pattern of mockDataPattern) {
+        if (Object.prototype.hasOwnProperty.call(pattern.notebooks, notebookId)) return true;
+    }
+    return false;
+}
+
+function readImportedHistory(): Array<{ id: string; name: string }> {
+    if (!canUseLocalStorage()) return [];
+    const parsed = safeParseJson<StoredNotebookHistoryEntry[]>(
+        window.localStorage.getItem(NOTEBOOK_HISTORY_STORAGE_KEY),
+    );
+    if (!parsed || !Array.isArray(parsed)) return [];
+
+    const result: Array<{ id: string; name: string }> = [];
+    for (const e of parsed) {
+        const rawId = typeof e?.id === "string" ? e.id : null;
+        const rawName = typeof e?.name === "string" ? e.name : null;
+        if (!rawId || !rawName) continue;
+        result.push({ id: normalizeNotebookId(rawId), name: rawName });
+    }
+    return result;
+}
+
+export function ensureMockPatternsForNotebook(rawNotebookId: string): void {
+    const notebookId = normalizeNotebookId(rawNotebookId);
+    if (hasAnyPatternForNotebook(notebookId)) return;
+
+    const imported = readImportedHistory();
+    const entry = imported.find((e) => e.id === notebookId);
+    if (!entry) return;
+
+    const templateKey = pickTemplateKey(entry.name);
+    for (const pattern of mockDataPattern) {
+        const templateScore = pattern.notebooks?.[templateKey];
+        if (typeof templateScore !== "number") continue;
+        pattern.notebooks[notebookId] = templateScore;
+    }
+}

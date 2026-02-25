@@ -80,7 +80,7 @@ export default function ArtefactsView() {
   }, [mode]);
 
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
-  const [scrollProgressPct, setScrollProgressPct] = useState(0);
+  const [activeSectionProgressPct, setActiveSectionProgressPct] = useState(0);
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -160,38 +160,29 @@ export default function ArtefactsView() {
   }, []);
 
   useEffect(() => {
-    if (!selectedId) {
-      setScrollProgressPct(0);
+    if (!selectedId || !activeSectionId) {
+      setActiveSectionProgressPct(0);
       return;
     }
 
     let raf = 0;
     const compute = () => {
       raf = 0;
-      const first = document.getElementById(sectionSteps[0]?.id ?? "");
-      const last = document.getElementById(
-        sectionSteps[sectionSteps.length - 1]?.id ?? "",
-      );
-      if (!first || !last) {
-        setScrollProgressPct(0);
+      const activeEl = document.getElementById(activeSectionId);
+      if (!activeEl) {
+        setActiveSectionProgressPct(0);
         return;
       }
 
       const scrollY = window.scrollY ?? 0;
-      const start =
-        first.getBoundingClientRect().top +
-        scrollY -
-        Math.max(0, headerHeight + 24);
-      const end =
-        last.getBoundingClientRect().bottom +
-        scrollY -
-        Math.max(0, window.innerHeight - 80);
+      const headerOffset = Math.max(0, headerHeight + 24);
+      const start = activeEl.getBoundingClientRect().top + scrollY - headerOffset;
+      const end = activeEl.getBoundingClientRect().bottom + scrollY - headerOffset;
 
       const denom = Math.max(1, end - start);
-      const pos = scrollY;
-      const raw = (pos - start) / denom;
+      const raw = (scrollY - start) / denom;
       const clamped = Math.max(0, Math.min(1, raw));
-      setScrollProgressPct(clamped * 100);
+      setActiveSectionProgressPct(clamped * 100);
     };
 
     const onScrollOrResize = () => {
@@ -207,7 +198,7 @@ export default function ArtefactsView() {
       window.removeEventListener("resize", onScrollOrResize);
       if (raf) window.cancelAnimationFrame(raf);
     };
-  }, [headerHeight, sectionSteps, selectedId]);
+  }, [activeSectionId, headerHeight, selectedId]);
 
   useEffect(() => {
     const state = scrollCollapseStateRef.current;
@@ -411,21 +402,38 @@ export default function ArtefactsView() {
             >
               {isNavCollapsed ? (
                 <div className="flex items-center gap-2 overflow-x-auto">
-                  {sectionSteps.map((step) => {
+                  {sectionSteps.map((step, index) => {
                     const isActive = step.id === activeSectionId;
+                    const fill =
+                      index < stepIndex
+                        ? 1
+                        : index === stepIndex
+                          ? activeSectionProgressPct / 100
+                          : 0;
+                    const fillPct = Math.round(fill * 100);
+                    const isFilled = fillPct > 0;
                     return (
                       <button
                         key={step.id}
                         type="button"
                         onClick={() => scrollToSection(step.id)}
                         className={[
-                          "shrink-0 rounded-full px-3 py-1 text-xs font-semibold border",
+                          "relative overflow-hidden shrink-0 rounded-full px-3 py-1 text-xs font-semibold border bg-white",
                           isActive
                             ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                            : isFilled
+                              ? "border-indigo-200 text-indigo-700"
+                              : "border-slate-200 text-slate-700 hover:bg-slate-50",
                         ].join(" ")}
                     >
-                      {step.label}
+                      {isFilled ? (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-y-0 left-0 bg-indigo-100"
+                          style={{ width: `${fillPct}%` }}
+                        />
+                      ) : null}
+                      <span className="relative z-10">{step.label}</span>
                     </button>
                     );
                   })}
@@ -445,30 +453,39 @@ export default function ArtefactsView() {
                       {stepIndex + 1}/{sectionSteps.length}
                     </div>
                   </div>
-
-                  <div className="mt-3 h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                    <div
-                      className="h-full bg-indigo-600"
-                      style={{ width: `${scrollProgressPct}%` }}
-                      aria-hidden="true"
-                    />
-                  </div>
                   <div className="mt-3 flex items-center gap-2 overflow-x-auto">
-                    {sectionSteps.map((step) => {
+                      {sectionSteps.map((step, index) => {
                       const isActive = step.id === activeSectionId;
+                        const fill =
+                          index < stepIndex
+                            ? 1
+                            : index === stepIndex
+                              ? activeSectionProgressPct / 100
+                              : 0;
+                        const fillPct = Math.round(fill * 100);
+                        const isFilled = fillPct > 0;
                       return (
                         <button
                           key={step.id}
                           type="button"
                           onClick={() => scrollToSection(step.id)}
                           className={[
-                            "shrink-0 rounded-full px-3 py-1 text-xs font-semibold border",
+                              "relative overflow-hidden shrink-0 rounded-full px-3 py-1 text-xs font-semibold border bg-white",
                             isActive
                               ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                                : isFilled
+                                  ? "border-indigo-200 text-indigo-700"
+                                  : "border-slate-200 text-slate-700 hover:bg-slate-50",
                           ].join(" ")}
                       >
-                        {step.label}
+                          {isFilled ? (
+                            <span
+                              aria-hidden="true"
+                              className="absolute inset-y-0 left-0 bg-indigo-100"
+                              style={{ width: `${fillPct}%` }}
+                            />
+                          ) : null}
+                          <span className="relative z-10">{step.label}</span>
                       </button>
                       );
                     })}

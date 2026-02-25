@@ -3,6 +3,7 @@ export interface PatternType {
     schema: string;
     ram?: number[];
     executionTime?: number[];
+    score?: Record<string, number>;
     notebooks: Record<string, number>;
     typeAlgo: string;
     typePattern: string;

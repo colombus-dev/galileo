@@ -4,7 +4,7 @@ export interface NotebookWorkspaceLayoutProps {
   sidebar: React.ReactNode;
   main: React.ReactNode;
   docPanel?: React.ReactNode;
-  mainRef?: React.RefObject<HTMLDivElement>;
+  mainRef?: React.RefObject<HTMLDivElement | null>;
   className?: string;
 }
 
