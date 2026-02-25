@@ -13,6 +13,13 @@ const STORAGE_KEY = "galileo_notebook_history";
 const CURRENT_KEY = "galileo_current_notebook";
 const MAX_NOTEBOOKS = 10;
 
+function normalizeImportedNotebookId(filename: string): string {
+  const trimmed = filename.trim();
+  const base = trimmed.split(/[/\\]/).pop() ?? trimmed;
+  const lowered = base.toLowerCase();
+  return lowered.endsWith(".ipynb") ? lowered : `${lowered}.ipynb`;
+}
+
 export function useNotebookHistory() {
   const [notebooks, setNotebooks] = useState<StoredNotebook[]>([]);
   const [currentNotebook, setCurrentNotebook] = useState<StoredNotebook | null>(
@@ -49,7 +56,7 @@ export function useNotebookHistory() {
   const addNotebook = useCallback(
     (notebook: Record<string, unknown>, filename: string, dependencies?: any) => {
       const newEntry: StoredNotebook = {
-        id: `nb_${Date.now()}`,
+        id: normalizeImportedNotebookId(filename),
         name: filename,
         timestamp: Date.now(),
         notebook,
@@ -57,7 +64,7 @@ export function useNotebookHistory() {
       };
 
       setNotebooks((prev) => {
-        const updated = [newEntry, ...prev].slice(0, MAX_NOTEBOOKS);
+        const updated = [newEntry, ...prev.filter((nb) => nb.id !== newEntry.id)].slice(0, MAX_NOTEBOOKS);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
         return updated;
       });

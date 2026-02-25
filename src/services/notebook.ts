@@ -16,6 +16,13 @@ type StoredNotebook = {
 
 const STORAGE_KEY = "galileo_notebook_history";
 
+function normalizeImportedNotebookId(filename: string): string {
+	const trimmed = filename.trim();
+	const base = trimmed.split(/[/\\]/).pop() ?? trimmed;
+	const lowered = base.toLowerCase();
+	return lowered.endsWith(".ipynb") ? lowered : `${lowered}.ipynb`;
+}
+
 function canUseLocalStorage(): boolean {
 	return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
@@ -349,7 +356,7 @@ function readImportedNotebookHistory(): StoredNotebook[] {
 	if (!canUseLocalStorage()) return [];
 	const parsed = safeParseJson<StoredNotebook[]>(window.localStorage.getItem(STORAGE_KEY));
 	if (!parsed || !Array.isArray(parsed)) return [];
-	return parsed
+	const filtered = parsed
 		.filter(
 			(x) =>
 				Boolean(x) &&
@@ -360,6 +367,25 @@ function readImportedNotebookHistory(): StoredNotebook[] {
 				x.notebook !== null,
 		)
 		.sort((a, b) => b.timestamp - a.timestamp);
+
+	let didChange = false;
+	const dedup = new Map<string, StoredNotebook>();
+	for (const entry of filtered) {
+		const normalizedId = normalizeImportedNotebookId(entry.name);
+		const migrated =
+			entry.id.startsWith("nb_") || entry.id !== normalizedId
+				? { ...entry, id: normalizedId }
+				: entry;
+		if (migrated !== entry) didChange = true;
+		if (!dedup.has(migrated.id)) dedup.set(migrated.id, migrated);
+	}
+
+	const result = Array.from(dedup.values()).sort((a, b) => b.timestamp - a.timestamp);
+	if (didChange) {
+		window.localStorage.setItem(STORAGE_KEY, JSON.stringify(result));
+	}
+
+	return result;
 }
 
 function toNotebookDataFromImported(entry: StoredNotebook): NotebookData {

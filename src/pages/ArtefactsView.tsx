@@ -411,21 +411,34 @@ export default function ArtefactsView() {
             >
               {isNavCollapsed ? (
                 <div className="flex items-center gap-2 overflow-x-auto">
-                  {sectionSteps.map((step) => {
+                  {sectionSteps.map((step, index) => {
                     const isActive = step.id === activeSectionId;
+                    const stepProgress = (scrollProgressPct / 100) * sectionSteps.length;
+                    const fill = Math.max(0, Math.min(1, stepProgress - index));
+                    const fillPct = Math.round(fill * 100);
+                    const isFilled = fillPct > 0;
                     return (
                       <button
                         key={step.id}
                         type="button"
                         onClick={() => scrollToSection(step.id)}
                         className={[
-                          "shrink-0 rounded-full px-3 py-1 text-xs font-semibold border",
+                          "relative overflow-hidden shrink-0 rounded-full px-3 py-1 text-xs font-semibold border bg-white",
                           isActive
                             ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                            : isFilled
+                              ? "border-indigo-200 text-indigo-700"
+                              : "border-slate-200 text-slate-700 hover:bg-slate-50",
                         ].join(" ")}
                     >
-                      {step.label}
+                      {isFilled ? (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-y-0 left-0 bg-indigo-100"
+                          style={{ width: `${fillPct}%` }}
+                        />
+                      ) : null}
+                      <span className="relative z-10">{step.label}</span>
                     </button>
                     );
                   })}
@@ -445,30 +458,35 @@ export default function ArtefactsView() {
                       {stepIndex + 1}/{sectionSteps.length}
                     </div>
                   </div>
-
-                  <div className="mt-3 h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                    <div
-                      className="h-full bg-indigo-600"
-                      style={{ width: `${scrollProgressPct}%` }}
-                      aria-hidden="true"
-                    />
-                  </div>
                   <div className="mt-3 flex items-center gap-2 overflow-x-auto">
-                    {sectionSteps.map((step) => {
+                      {sectionSteps.map((step, index) => {
                       const isActive = step.id === activeSectionId;
+                        const stepProgress = (scrollProgressPct / 100) * sectionSteps.length;
+                        const fill = Math.max(0, Math.min(1, stepProgress - index));
+                        const fillPct = Math.round(fill * 100);
+                        const isFilled = fillPct > 0;
                       return (
                         <button
                           key={step.id}
                           type="button"
                           onClick={() => scrollToSection(step.id)}
                           className={[
-                            "shrink-0 rounded-full px-3 py-1 text-xs font-semibold border",
+                              "relative overflow-hidden shrink-0 rounded-full px-3 py-1 text-xs font-semibold border bg-white",
                             isActive
                               ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                                : isFilled
+                                  ? "border-indigo-200 text-indigo-700"
+                                  : "border-slate-200 text-slate-700 hover:bg-slate-50",
                           ].join(" ")}
                       >
-                        {step.label}
+                          {isFilled ? (
+                            <span
+                              aria-hidden="true"
+                              className="absolute inset-y-0 left-0 bg-indigo-100"
+                              style={{ width: `${fillPct}%` }}
+                            />
+                          ) : null}
+                          <span className="relative z-10">{step.label}</span>
                       </button>
                       );
                     })}
