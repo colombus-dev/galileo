@@ -1,35 +1,68 @@
-# 3) Solutions (solution space + selection)
+# 3) Solution space & selected approach
 
-## 3.1 Solution space
+## 3.1 Exploring possible solutions
 
-Describe **multiple realistic options**, even if only one is ultimately selected.
+### 3.1.1 Approaches considered
 
-- Option A — Static notebook rendering (Markdown + images)
-- Option B — Interactive UI (filtering, comparison, section navigation)
-- Option C — End-to-end pipeline (import, parsing, extraction, scoring, publishing)
+Our approach was to explore solutions by functional axis, starting from the real project need: better connect code, produced artefacts, and the global reading of a notebook workflow.
 
-For each option:
+We did not look for “one single tool”, but rather for families of approaches:
 
-- Pros
-- Cons
-- Risks
-- Cost (dev time / maintenance)
+- experiment tracking,
+- provenance / fine-grained traceability,
+- pipeline visualization,
+- visual or narrative storytelling,
+- coordinated multiple views.
 
-## 3.2 Selected solution
+In parallel, the project DOW helped us stay aligned with the core objectives (traceability, patterns analysis, visual narration, integration into a unified interface) without drifting into out-of-scope features.
 
-- Selected solution: (describe clearly)
-- Rationale: (why this solution is best given the context)
+### 3.1.2 Technical alternatives
 
-## 3.3 Architecture (high-level view)
+We considered several alternatives:
 
-- Modules: import/parsing, token registry, UI pages, components, services
-- Key choices: React + TS, Vite, Tailwind, Storybook
+- **A) Rely on experiment tracking platforms** (e.g., MLflow, Weights & Biases) to manage runs, metrics, and artefacts.
+- **B) Use a structured pipeline approach** (e.g., Kedro / DVC) with a more macro-level graph visualization.
+- **C) Build a notebook-specific solution** by combining inspirations from the state of the art: structure/dependency extraction, fine traceability, interactive visualizations, storytelling, and coordinated views.
 
-## 3.4 Key decisions (ADR)
+The last option progressively became the most suitable for our context.
 
-List the important decisions (short format):
+### 3.1.3 Pros and cons
 
-- Decision 1: …
-- Decision 2: …
+- Tracking platforms are robust for metrics, but often run-centric and not well suited for fine navigation at cell/artefact level.
+- Pipeline-centric approaches improve macro readability, but assume an explicit and stable pipeline, while notebooks are often exploratory, iterative, and non-linear.
+- Provenance and structural analysis are highly relevant for fine traceability, but insufficient alone to meet UX, narration, and pedagogical needs.
+- Storytelling and visual analytics provide strong UX principles, but do not natively address ML notebook specifics.
 
-> Optional: add ADR files under `docs/annexes/adr/`.
+Our conclusion was to combine these contributions rather than depend on a single existing paradigm.
+
+## 3.2 Why this solution was selected
+
+### 3.2.1 Decision criteria
+
+The final choice was guided by criteria such as:
+
+- compatibility with non-linear notebooks,
+- fine-grained traceability between cells and artefacts,
+- ability to provide both global and local workflow views,
+- quality of the user experience,
+- feasibility within the available time.
+
+### 3.2.2 Technical reasoning
+
+We used the state of the art as inspiration, without trying to reproduce it as-is.
+
+- Tracking platforms inspired the notion of artefacts and metrics.
+- Provenance and structure analysis inspired artefact↔code relationships and more explicit dependencies.
+- Storytelling and coordinated views inspired navigation and contextualization.
+
+From these elements, we built the current prototype as a dedicated, usage-oriented interface rather than a raw assembly of external tools.
+
+### 3.2.3 Key trade-offs
+
+The main trade-off was to prioritize the **frontend** over the backend at the end of the project due to time constraints.
+
+Concretely, we prioritized a functional, readable, and demonstrable interface (visualizations, view transitions, user experience) over a complex backend.
+
+This decision matches the current goal of the project: validate usage value and the visualization approach first, while keeping a clear enough structure to enable backend extensions later.
+
+We also decided early to de-prioritize the “sonar-like” notebook diagnostics module, because it did not align well with the updated objectives and timelines.
