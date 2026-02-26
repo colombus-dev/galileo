@@ -5,15 +5,35 @@ import { NotebookSelectorDropdown } from "../../components/NotebookSelectorDropd
 const meta: Meta<typeof NotebookSelectorDropdown> = {
   title: "Artefacts/NotebookSelectorDropdown",
   component: NotebookSelectorDropdown,
+tags: ["autodocs"],
+parameters: { layout: "padded", },
 };
 
 export default meta;
 type Story = StoryObj<typeof NotebookSelectorDropdown>;
 
 const options = [
-  { id: "marie", user: "Marie Dupont", project: "Classification de fleurs Iris" },
-  { id: "lucas", user: "Lucas Martin", project: "Classification de fleurs Iris" },
-  { id: "sophie", user: "Sophie Rousseau", project: "Classification de fleurs Iris" },
+  {
+    id: "marie",
+    user: "Marie Dupont",
+    project: "Diagnostic de pneumonie (radiographie)",
+    domain: "Médecine",
+    problem: "Classification binaire",
+  },
+  {
+    id: "lucas",
+    user: "Lucas Martin",
+    project: "Analyse de lettres anciennes",
+    domain: "Histoire",
+    problem: "Classification multi-classes",
+  },
+  {
+    id: "sophie",
+    user: "Sophie Rousseau",
+    project: "Classification de fleurs Iris",
+    domain: "Botanique",
+    problem: "Classification multi-classes",
+  },
 ];
 
 export const Simple: Story = {

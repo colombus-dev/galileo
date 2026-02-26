@@ -1,4 +1,4 @@
-import { CodeViewer } from "@/components/CodeViewer";
+import { CodeViewer } from "@/components/artefacts/CodeViewer";
 import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof CodeViewer> = {

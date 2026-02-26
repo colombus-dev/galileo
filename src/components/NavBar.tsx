@@ -1,20 +1,26 @@
 
+import { resolveImageSrc } from '@/utils/imageSrc';
+
 interface NavBarProps {
     logoUrl: string;
+  logoMimeType?: string;
     title: string;
     children: React.ReactNode;
 }
 
 export const NavBar = ({ 
     logoUrl,
+    logoMimeType,
     title,
     children
 }: NavBarProps) => {
+  const logoSrc = resolveImageSrc(logoUrl, logoMimeType);
+
   return (
     <nav className="flex items-center justify-between px-6 py-4 bg-white shadow-md">
       {/* Partie Gauche : Logo */}
       <div className="flex items-center flex-1">
-        <img src={logoUrl} alt="Logo" className="h-10 w-auto" />
+        {logoSrc ? <img src={logoSrc} alt="Logo" className="h-10 w-auto" /> : null}
       </div>
 
       {/* Partie Centrale : Titre Modifiable */}

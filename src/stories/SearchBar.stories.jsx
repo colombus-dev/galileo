@@ -1,7 +1,7 @@
-import SearchBar from '../components/SearchBar';
+import SearchBar from '@/components/SearchBar';
 
 export default {
-  title: 'Patterns/SearchBar',
+  title: 'General/SearchBar',
   component: SearchBar,
   parameters: {
     layout: 'centered',

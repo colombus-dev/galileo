@@ -1,4 +1,4 @@
-import { ArtefactItem } from "@/components/ArtefactItem";
+import { ArtefactItem } from "@/components/artefacts/ArtefactItem";
 import { mockNotebooks } from "@/data/mockData";
 import type { Meta, StoryObj } from "@storybook/react";
 
