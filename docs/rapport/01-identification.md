@@ -31,8 +31,8 @@
 ## 1.6 Deliverables
 
 - **Source code**: this Git repository
-- **Report**: `docs/rapport/` (Markdown chapters)
-- **Appendices**: `docs/annexes/`
+- **Report**: [docs/rapport/](./) (Markdown chapters)
+- **Appendices**: [docs/rapport/12-appendices.md](12-appendices.md) (and related assets under [docs/rapport/assets/](assets/))
 
 ## 1.7 Technical context (repository)
 

@@ -4,7 +4,7 @@
 
 ### 2.1.1 What is the problem?
 
-The Galileo platform already provides several useful visualizations (heatmaps, node-link graphs, radar charts, small multiples) to analyze the structure of Machine Learning notebooks. However, these views remain largely independent and strongly code-centric.
+The **Colombus** platform (the ecosystem in which Galileo is developed) already provides several useful visualizations (heatmaps, node-link graphs, radar charts, small multiples) to analyze the structure of Machine Learning notebooks. However, these views remain largely independent and strongly code-centric.
 
 They do not explicitly connect code to the produced artefacts (datasets, models, metrics, visualizations), and they do not provide a clear narrative or temporal representation of the workflow. As a result, users must mentally reconstruct the pipeline logic and the relationship between results and the code cells that produced them.
 

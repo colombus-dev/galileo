@@ -27,6 +27,12 @@ Even though the interface works, important limitations appear when analyzing the
 
 First, a large share of the data used to feed visualizations is **mocked (simulated)**. This is not limited to patterns: other elements displayed in analysis views are also simulated.
 
+In the current codebase, this is materialized by dedicated demo datasets, notably:
+
+- [src/data/patternMockData.ts](../../src/data/patternMockData.ts) for the Patterns pages,
+- [src/data/mockData.ts](../../src/data/mockData.ts) for Artefacts-oriented content (context cards, pedagogical validation checkpoints, sample artefacts, etc.),
+- [src/mocks/docs.mock.ts](../../src/mocks/docs.mock.ts), [src/mocks/mockApi.ts](../../src/mocks/mockApi.ts), [src/mocks/notebook.mock.ts](../../src/mocks/notebook.mock.ts) for the Storytelling pages.
+
 In other words, the interface demonstrates how information would be presented, but it does not guarantee that all those data can actually be extracted automatically from a raw notebook.
 
 In practice, a `.ipynb` file does not always contain structured information in an exploitable form. Metrics may be printed in free text, outputs may be mixed with code, and some expected information may simply be absent. Therefore, it is not certain that the current visualizations can be fully rebuilt from real notebooks without additional advanced processing.

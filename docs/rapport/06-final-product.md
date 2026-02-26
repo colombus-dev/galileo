@@ -20,6 +20,8 @@ Storytelling is the entry point of the application. Users can import a `.ipynb` 
 
 The imported notebook is then stored locally in the browser storage, so that it can be reused later without re-importing.
 
+In the current implementation, this persistence is handled through a local history stored in `localStorage` (with a separate “current notebook” entry). The history is capped (to keep storage bounded), and the imported file name is normalized to a stable notebook id.
+
 Once imported, the notebook is displayed in a structured workspace:
 
 - section-based navigation inferred from headings,
@@ -127,12 +129,12 @@ The architecture is organized into three functional layers:
 
 This organization is reflected in the repository structure:
 
-- `src/pages/`: main routes and screen orchestration
-- `src/components/`: reusable UI components (with `artefacts/`, `patterns/`, `storytelling/` subfolders)
-- `src/hooks/`: import state, persistence, and UI state management
-- `src/services/`: notebook parsing and processing
-- `src/utils/`: shared utilities (diff, markdown rendering, mapping)
-- `src/data/` and `src/mocks/`: demo data and simulated elements
+- [`src/pages/`](../../src/pages/): main routes and screen orchestration
+- [`src/components/`](../../src/components/): reusable UI components (with [`src/components/artefacts/`](../../src/components/artefacts/), [`src/components/patterns/`](../../src/components/patterns/), [`src/components/storytelling/`](../../src/components/storytelling/))
+- [`src/hooks/`](../../src/hooks/): import state, persistence, and UI state management
+- [`src/services/`](../../src/services/): notebook parsing and processing
+- [`src/utils/`](../../src/utils/): shared utilities (diff, markdown rendering, mapping)
+- [`src/data/`](../../src/data/) and [`src/mocks/`](../../src/mocks/): demo data and simulated elements
 
 ### 6.2.3 Internal pipeline (import → parsing → views)
 
@@ -151,13 +153,19 @@ Notebook processing follows a client-side functional pipeline:
 
 ### 6.2.4 Main modules
 
-- **NotebookParser** (`src/services/notebookParser.ts`): JSON → internal model, section generation, token extraction
-- **NotebookProcessor** (`src/services/notebookProcessor.ts`): import orchestration, memory caching, access to processed notebooks
-- **Notebook history hook**: local persistence of notebook history and selected notebook
-- **Storytelling workspace**: guided reading with summary/sections/code/documentation
-- **Artefacts view**: synthetic analysis + comparison + code/diff visualization
-- **Patterns pages**: pattern library browsing and detail view with charts
-- **Contextual documentation**: token-based documentation display driven by code parsing
+- **Notebook Import UI** ([src/components/NotebookImporter.tsx](../../src/components/NotebookImporter.tsx)): file selection and import flow entry point
+- **NotebookParser** ([src/services/notebookParser.ts](../../src/services/notebookParser.ts)): JSON → internal model, section generation, token extraction
+- **NotebookProcessor** ([src/services/notebookProcessor.ts](../../src/services/notebookProcessor.ts)): import orchestration utilities and in-memory caching (`cacheImportedNotebook()` / `getCachedNotebook()`)
+- **Notebook history hook** ([src/hooks/useNotebookHistory.ts](../../src/hooks/useNotebookHistory.ts)): local persistence of notebook history and selected notebook (using `localStorage` keys `galileo_notebook_history` and `galileo_current_notebook`, capped to 10 notebooks)
+- **Storytelling workspace UI** ([src/pages/storytelling/](../../src/pages/storytelling/) and [src/components/storytelling/](../../src/components/storytelling/)): guided reading with summary/sections/code/documentation
+- **Artefacts view** ([src/pages/ArtefactsView.tsx](../../src/pages/ArtefactsView.tsx) and [src/components/artefacts/](../../src/components/artefacts/)): synthetic analysis + comparison + code/diff visualization
+- **Patterns pages** ([src/pages/Patterns.tsx](../../src/pages/Patterns.tsx), [src/pages/PatternDetails.tsx](../../src/pages/PatternDetails.tsx), and [src/components/patterns/](../../src/components/patterns/)): pattern library browsing and detail view with charts
+- **Mock data sources**:
+   - Artefacts demo data: [src/data/mockData.ts](../../src/data/mockData.ts)
+   - Patterns demo data: [src/data/patternMockData.ts](../../src/data/patternMockData.ts)
+   - Storytelling demo data: [src/mocks/docs.mock.ts](../../src/mocks/docs.mock.ts), [src/mocks/mockApi.ts](../../src/mocks/mockApi.ts), [src/mocks/notebook.mock.ts](../../src/mocks/notebook.mock.ts)
+
+> Important scope note: the prototype mixes **real extracted structure** (cells/sections/tokens parsed from the imported `.ipynb`) with **simulated analytical overlays** used by some views (Storytelling, Artefacts and Patterns). This is intentional for UX validation under time constraints.
 
 ## 6.3 Tests and validation
 

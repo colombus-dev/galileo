@@ -5,10 +5,10 @@ This folder contains the final written report as Markdown chapters, directly ver
 ## Table of contents
 
 1. [Project identification](01-identification.md)
-2. [Problem statement & context](02-sujet.md)
+2. [Problem statement & context](02-subject.md)
 3. [Solution space & selected approach](03-solutions.md)
-4. [State of the art & positioning](04-etat-de-l-art.md)
-5. [Work method & standards](05-travail-realise.md)
+4. [State of the art & positioning](04-state-of-the-art.md)
+5. [Work method & standards](05-methodology.md)
 6. [The final product](06-final-product.md)
 7. [Results obtained](07-results.md)
 8. [Critical analysis & hindsight](08-critical-analysis.md)
@@ -19,15 +19,14 @@ This folder contains the final written report as Markdown chapters, directly ver
 
 ## How to navigate the codebase
 
-- Frontend: `src/`
-- Mock data and demo datasets: `src/data/` and `src/mocks/`
-- Notebook processing: `src/services/`
-- Hooks: `src/hooks/`
-- Shared utilities: `src/utils/`
-- Storybook: `src/stories/` and `.storybook/`
+- Frontend: [src/](../../src/)
+- Mock data and demo datasets: [src/data/](../../src/data/) and [src/mocks/](../../src/mocks/)
+- Notebook processing: [src/services/](../../src/services/)
+- Hooks: [src/hooks/](../../src/hooks/)
+- Shared utilities: [src/utils/](../../src/utils/)
+- Storybook: [src/stories/](../../src/stories/) and [.storybook/](../../.storybook/)
 
 ## Reproducibility (developer)
 
 - Dev server: `npm run dev`
-- Build: `npm run build`
 - Docker (optional): `docker compose up --build`

@@ -135,3 +135,32 @@ If Galileo evolves into a durable product, key steps would include:
 - securing data,
 - full automated testing,
 - deployment and continuous maintenance.
+
+### 8.7.5 Accessibility
+
+#### Preliminary analysis (design review)
+
+Even though none of the user tests specifically targeted accessibility, several design choices were made in that direction after a preliminary analysis of the platform available before the project described in this report.
+
+#### Choices already made
+
+- **Colorblind-friendly palette** adopted early based on the initial platform analysis.
+- **Reduced reliance on color alone**: introducing alternatives (e.g., shapes, labels, visual variations) so information is not conveyed only through color codes.
+- **Limited animations**: movements and transitions kept to a minimum to reduce visual overload and improve comfort.
+
+#### Current limitations
+
+- The conducted user tests did not evaluate accessibility (no dedicated protocol and no participants relying on assistive technologies).
+- The impact of non-mouse interactions (keyboard navigation, focus management, tab order) has not been measured.
+- Usability with screen readers has not been evaluated (text alternatives, semantic structure, ARIA, etc.).
+
+#### Proposed improvements
+
+- Run a targeted **RGAA-inspired evaluation** (contrast ratios, text size/hierarchy, visible focus, interaction consistency).
+- Make the product fully **keyboard-usable** (main actions accessible without hover, optional shortcuts, clear focus management).
+- Provide **accessible alternatives** to visualizations (summary tables, textual summaries, and structured descriptions of charts for screen readers).
+- Add dedicated testing (NVDA/VoiceOver + keyboard-only journeys) with a small set of concerned users, to prioritize the most impactful fixes.
+
+#### Justification
+
+Delivering full accessibility within the available time was not feasible, so comprehensive accessibility work was deliberately kept in backlog.
